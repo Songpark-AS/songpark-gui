@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Band Static Mock</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="src/styles/normalize.css" />
+    <link rel="stylesheet" href="src/styles/grid.css" />
+    <link rel="stylesheet" href="src/styles/styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <div class="app-content">
+        <header class="header">
+          <div class="header--action">
+            <i class="fas fa-times header--action--icon"></i>
+            <span class="header--action--text">Exit Band</span>
+          </div>
+        </header>
+        <div class="equalizer">
+          <div class="equalizer--wrapper">
+            <div class="equalizer--aside">
+              <div class="equalizer--volume">
+                <span class="equalizer--volume--slider left"></span>
+              </div>
+              <div class="equalizer--chart">
+                <p class="equalizer--title">Master</p>
+                <div id="left-side" class="equalizer--anim"></div>
+              </div>
+            </div>
+            <div class="equalizer--center">
+              <div class="equilser--users">
+                <div class="equalizer--users--user">Markus</div>
+                <div class="equalizer--users--user">Vegard</div>
+                <div class="equalizer--users--user">Jose</div>
+                <div class="equalizer--users--user">Rose</div>
+              </div>
+
+              <div class="equalizer--current-track">
+                <img src="src/assets/img.png" alt="test user image" />
+              </div>
+            </div>
+            <div class="equalizer--aside">
+              <div class="equalizer--chart">
+                <p class="equalizer--title">Jose</p>
+                <div id="right-side" class="equalizer--anim"></div>
+              </div>
+              <div class="equalizer--volume">
+                <span class="equalizer--volume--slider right"></span>
+              </div>
+            </div>
+          </div>
+          <div class="equalizer--slider">
+            <span class="equalizer--slider--left">L</span>
+
+            <span class="equalizer--slider--center">
+              <span class="equalizer--slider--center--slider-btn"></span>
+            </span>
+
+            <span class="equalizer--slider--right">R</span>
+          </div>
+        </div>
+
+        <div class="equalizer-actions">
+          <div class="equalizer-actions--btn">
+            <i class="fas fa-circle"></i>
+            <span class="equalizer-actions--btn--text">REC</span>
+          </div>
+          <div class="equalizer-actions--btn">
+            <i class="fas fa-microphone"></i>
+            <span class="equalizer-actions--btn--text"> Talk </span>
+          </div>
+          <div class="equalizer-actions--btn">
+            <i class="fas fa-volume-mute"></i>
+            <span class="equalizer-actions--btn--text"> Mute </span>
+          </div>
+        </div>
+
+        <div class="navigation">
+          <a href="#">
+            <div class="navigation--item">
+              <i class="fas fa-home"></i>
+              <span>Band</span>
+            </div>
+          </a>
+          <a href="#">
+            <div class="navigation--item active">
+              <i class="fas fa-broom"></i>
+              <span>Studio</span>
+            </div>
+          </a>
+          <a href="#">
+            <div class="navigation--item">
+              <i class="fas fa-comment-dots"></i>
+              <span>Chat</span>
+            </div>
+          </a>
+          <a href="#">
+            <div class="navigation--item">
+              <i class="fas fa-book"></i>
+              <span>Library</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Jquery lib  -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+      integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://kit.fontawesome.com/c08f9f07ab.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="src/scripts/script.js"></script>
+  </body>
+</html>
