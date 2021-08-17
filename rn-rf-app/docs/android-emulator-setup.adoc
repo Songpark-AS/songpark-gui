@@ -1,0 +1,56 @@
+== Setting up an Android emulator
+
+=== Prerequisites
+==== Required libraries for 64-bit machines
+If you are running a 64-bit version of Ubuntu, you need to install some 32-bit libraries with the following command:
+
+[source,bash]
+----
+sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 libbz2-1.0:i386
+----
+
+If you are running 64-bit Fedora, the command is:
+
+[source,bash]
+----
+sudo yum install zlib.i686 ncurses-libs.i686 bzip2-libs.i686
+----
+
+
+=== Steps
+. Download Android studio https://developer.android.com/studio[here]
+. Extract the archive and put the `android-studio` directory where you want it (I have it in my home directory).
+. run the `studio.sh` file in `android-studio/bin` directory
+. Follow the steps in the wizard that pops up to install android studio and the android SDK.
+
+==== Once installed it will show the welcome screen.
+. Click on "More Actions" and then AVD Manager which will open up the Android Virtual Device Manager.
+. Click on the "Create Virtual Device" button.
+. Choose what kind of android device you want your emulator to emulate, those with the Play Store logo has Google Play Store (and services) preinstalled.
+. Choose a system image, the one with the highest API level is preferred but check to make sure that Expo / React Native (or whatever you are planning to use) can build to the system image you choose.
+. Click Download on the system image selected if the next button is grayed out.
+. Accept the license agreement in order to download the android SDK.
+. Click next and leave the standard configuration as is and click Finish.
+
+After you have downloaded the system image it is useful to add the platform-tools directory to your path so that you can run `adb` commands and other android related commands in your terminal anywhere.
+
+I put my `android-studio` directory in my home directory and the Android SDK got downloaded to `~/Android` on my system.
+Check to make sure you are referencing the correct directories when you add it to your path.
+
+My exports ended up looking like this:
+[source,bash]
+----
+# Android studio
+export PATH=$HOME/android-studio/bin:$PATH
+export PATH=$HOME/Android/Sdk/platform-tools:$PATH
+----
+
+. Add the exports to your `.bashrc` or `.zshrc` if you are using zsh or wherever you define your exports for your shell.
+. Source the file with `source ~/.bashrc` or `source ~/.zshrc` if you want it to be available in your current terminal session.
+
+TIP: You can verify that you have added the directories to your path correctly by running `adb devices` outside of the platform-tools directory
+
+---
+At this point you have a virtual device in the AVD manager window and you can launch it by clicking on the green play icon.
+
+You have to open the AVD manager from android studio in the same way you did when setting up your emulator when you want to run it in the future (running `studio.sh` clicking "More Actions" and choosing "AVD Manager")
