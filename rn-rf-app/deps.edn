@@ -6,6 +6,10 @@
 
  :deps {reagent {:mvn/version "1.0.0-alpha2"}
         re-frame {:mvn/version "1.1.2"}
-        thheller/shadow-cljs {:mvn/version "2.11.8"}}
+        cljs-ajax {:mvn/version "0.8.3"}
+        day8.re-frame/http-fx {:mvn/version "0.2.3"}
+        com.cognitect/transit-cljs {:mvn/version "0.8.269"}
+        thheller/shadow-cljs {:mvn/version "2.11.8"}
+        funcool/promesa {:mvn/version "6.0.2"}}
 
  :aliases {:dev {:extra-paths ["src/test" "src/dev"]}}}
