@@ -18,12 +18,14 @@
     (map (keys @topic-handlers))
     ((get @topic-handlers (topic-to-keyword destination-name)) message)))
 
-(defn on-connect [invocation-context topic-handlers]
+(defn on-connect [invocation-context mqtt-client]
   (log/debug ::MqttClient.on-connect "Connected to broker, " invocation-context)
-  (when (not (nil? @topic-handlers))
-    (log/debug ::MqttClient.on-connect "Resubscribing to topics")
-    (doseq [[k f] @topic-handlers]
-      (do (protocol.mqtt/subscribe client (keyword-to-topic k) f)))
+    (let [topic-handlers (:topic-handlers mqtt-client)
+          client (:client mqtt-client)]
+      (when (not (nil? @topic-handlers))
+        (log/debug ::MqttClient.on-connect "Resubscribing to topics")
+      (doseq [[k f] @topic-handlers]
+        (do (protocol.mqtt/subscribe client (keyword-to-topic k) f))))
     )
   )
 
@@ -57,7 +59,7 @@
     (let [client ^Paho/Client(:client this)
           topic-handlers (:topic-handlers this)]
       (log/debug ::MqttClient.connect (js->clj client :keywordize-keys true))
-      (.connect client #js {:reconnect true :onSuccess #(on-connect % topic-handlers)})
+      (.connect client #js {:reconnect true :onSuccess #(on-connect % this)})
       #_(reset! topic-handlers {})
       #_(-> (.connect client)
           (.then (fn []
