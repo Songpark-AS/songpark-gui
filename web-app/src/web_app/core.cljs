@@ -5,6 +5,7 @@
    [web-app.events :as events]
    [web-app.views :as views]
    [web-app.config :as config]
+   [web-app.init :as init]
    ))
 
 
@@ -18,7 +19,10 @@
     (rdom/unmount-component-at-node root-el)
     (rdom/render [views/main-panel] root-el)))
 
-(defn init []
-  (re-frame/dispatch-sync [::events/initialize-db])
+(defn start []
   (dev-setup)
   (mount-root))
+
+(defn init []
+  (init/init {})
+  (start))
