@@ -2,7 +2,7 @@
   (:require [com.stuartsierra.component :as component]
             [re-frame.core :as rf]
             [taoensso.timbre :as log]
-            ;; [songpark.common.taxonomy.teleporter]
+            [songpark.common.taxonomy.teleporter]
             ;; [songpark.common.taxonomy.mqtt]
             [songpark.common.config :as config]
             ;; [app.config :as app.config]

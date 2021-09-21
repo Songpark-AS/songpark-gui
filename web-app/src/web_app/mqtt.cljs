@@ -33,7 +33,10 @@
     (let [client ^Paho/Client(:client this)
           topic-handlers (:topic-handlers this)]
       (log/debug ::MqttClient.connect (js->clj client :keywordize-keys true))
-      (.connect client #js {:reconnect true :onSuccess #(on-connect % this)})
+      (.connect client #js {:userName "webapp"
+                            :password "SecretPass"
+                            :reconnect true
+                            :onSuccess #(on-connect % this)})
       #_(reset! topic-handlers {})
       #_(-> (.connect client)
           (.then (fn []
@@ -117,6 +120,8 @@
 (defn connect []
   (when (not (protocol.mqtt/is-connected? client))
     (protocol.mqtt/connect client)))
+
+(connect)
 
 (defn publish! [topic message]
   (protocol.mqtt/publish! client topic message))
