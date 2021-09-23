@@ -16,6 +16,7 @@
   [cider/cider-nrepl "0.26.0"]
   [com.taoensso/timbre "5.1.2"]
   [songpark/common "0.1.1-SNAPSHOT"]
+  [metosin/reitit "0.5.15"]
   [ez-wire "0.5.0"]]
 
  :dev-http
