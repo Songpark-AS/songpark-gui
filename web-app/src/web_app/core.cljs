@@ -19,21 +19,22 @@
   (when config/debug?
     (println "dev mode")))
 
-(defn ^:dev/after-load mount-root []
-  (re-frame/clear-subscription-cache!)
-  (let [root-el (.getElementById js/document "app")]
-    (rdom/unmount-component-at-node root-el)
-    (rdom/render [views/main-panel] root-el)))
-
 (defn init-router! []
   (rfe/start!
    router
    (fn [m] (reset! views/match m))
    {:use-fragment true}))
 
+(defn ^:dev/after-load mount-root []
+  (init-router!)
+  (re-frame/clear-subscription-cache!)
+  (let [root-el (.getElementById js/document "app")]
+    (rdom/unmount-component-at-node root-el)
+    (rdom/render [views/main-panel] root-el)))
+
+
 (defn start []
   (dev-setup)
-  (init-router!)
   (mount-root))
 
 (defn init []
