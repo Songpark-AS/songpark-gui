@@ -3,6 +3,7 @@
             [re-frame.core :as rf]
             [taoensso.timbre :as log]
             [web-app.db :as db]
+            [web-app.utils :refer [get-random-teleporters]]
             #_[app.event.auth]
             #_[app.event.data]
             [web-app.event.ui]))
@@ -22,6 +23,7 @@
       this
       (do (log/info "Starting EventManager")
           (rf/dispatch-sync [::initialize-db])
+          (rf/dispatch [:set-teleporters (get-random-teleporters 7)])
           ;; (rf/dispatch [:auth/whoami]) ;; check if we are logged in
           (assoc this
                  :started? true))))
