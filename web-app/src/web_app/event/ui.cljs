@@ -31,6 +31,26 @@
 ;;    (assoc-in db [:studio :balance-sliding] is-sliding)))
 
 (rf/reg-event-db
+ :set-tp-list-selection-mode
+ (fn [db [_ value]]
+   (assoc db :tp-list-selection-mode value)))
+
+(rf/reg-event-db
+ :set-teleporters
+ (fn [db [_ teleporters]]
+   (assoc db :teleporters teleporters)))
+
+(rf/reg-event-db
+ :set-selected-teleporters
+ (fn [db [_ teleporters]]
+   (assoc db :selected-teleporters teleporters)))
+
+(rf/reg-event-db
+ :set-selected-teleporters-staging
+ (fn [db [_ teleporters]]
+   (assoc db :selected-teleporters-staging teleporters)))
+
+(rf/reg-event-db
  :teleporter/response
  (fn [db [_ {:keys [teleporter/bits teleporter/uuid teleporter/nickname
                     mqtt/username mqtt/password] :as response}]]

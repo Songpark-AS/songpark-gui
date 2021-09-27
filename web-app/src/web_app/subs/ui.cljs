@@ -22,6 +22,26 @@
 ;;    (get-in db [:studio :audio/balance-slider] 0)))
 
 (rf/reg-sub
+ :tp-list-selection-mode
+ (fn [db _]
+   (:tp-list-selection-mode db)))
+
+(rf/reg-sub
+ :selected-teleporters
+ (fn [db _]
+   (:selected-teleporters db)))
+
+(rf/reg-sub
+ :selected-teleporters-staging
+ (fn [db _]
+   (:selected-teleporters-staging db)))
+
+(rf/reg-sub
+ :teleporters
+ (fn [db _]
+   (:teleporters db)))
+
+(rf/reg-sub
  :teleporter/data
  (fn [db _]
    (:teleporter/data db)))
@@ -34,4 +54,5 @@
 
 (comment
   @(rf/subscribe [:data/msg])
+  @(rf/subscribe [:teleporters])
   )
