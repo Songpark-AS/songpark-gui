@@ -1,4 +1,7 @@
 (ns web-app.db)
 
 (def default-db
-  {:name "re-frame"})
+  {:teleporters []
+   :selected-teleporters []
+   :selected-teleporters-staging []
+   :tp-list-selection-mode false})
