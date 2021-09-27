@@ -68,13 +68,7 @@
 
 (defn index []
   ;; TODO setup subscription for selected teleporters
-  (let [match web-app.views/match]
-    (fn []
-      [:div
-       [:div (str "match: " @match)]
-            [:div.session-view
-             [:p "teleporters selected, select teleporters "
-              [:a {:href (rfe/href :views/teleporter {:id 1})} "here"]]]
-            ])
-    )
+  [:div.session-view
+   [:p "No teleporters selected, select teleporters "
+    [:a {:href (rfe/href :views/teleporters)} "here"]]]
   )
