@@ -1,0 +1,15 @@
+.session-view {}
+.teleporter-list-view {
+    padding: 1rem;
+    .teleporter-row {
+        .ant-checkbox-wrapper {
+            margin: 0 1rem;
+        }
+        cursor: pointer;
+    }
+    .selection-action-bar {
+        span {
+            margin: 0 1rem;
+        }
+    }
+}
