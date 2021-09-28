@@ -5,9 +5,7 @@
    [reagent.core :as r]
    [taoensso.timbre :as log]
    [web-app.mqtt :as mqtt]
-   ["@material-ui/core/Button$default" :as Button]
-   ["@material-ui/core/ButtonGroup$default" :as ButtonGroup]
-   ["@material-ui/core/Slider$default" :as Slider]
+   ["antd" :refer [Button Slider]]
    ))
 
 ;; Here be session view
@@ -40,35 +38,44 @@
   (log/debug ::on-balance-value-change (str "Change balance of tp: " tp " to: " value)))
 
 
-(defn tp-panel [tp-id]
-  [:div
-   [:h4 "Volume:"]
-   [:> Slider {:style (:slider styles)
-               :min 0
-               :max 1
-               :step 0.01
-               :default-value 0.8
-               :value-label-display "auto"
-               :value-label-format (fn [x] (Math/floor (* x 100)))
-               :on-change (fn[_ value] (on-volume-value-change tp-id value))}]
-   [:h4 "Balance:"]
-   [:> Slider {:style (:slider styles)
-               :min 0
-               :max 1
-               :step 0.01
-               :default-value 0.5
-               :value-label-display "auto"
-               :on-change (fn[_ value] (on-balance-value-change tp-id value))}]
-   ])
+(defn tp-panel [teleporter]
+  (let [uuid (:uuid teleporter)
+        nickname (:nickname teleporter)]
+    [:div.tp-panel {:key (str "tp-panel-" uuid)}
+     [:h2 nickname]
+     [:h4 "Volume:"]
+     [:> Slider {:style (:slider styles)
+                 :min 0
+                 :max 1
+                 :step 0.01
+                 :default-value 0.8
+                 :tip-formatter (fn [x] (Math/floor (* x 100)))
+                 :on-change (fn [value] (on-volume-value-change uuid value))}]
+     [:h4 "Balance:"]
+     [:> Slider {:style (:slider styles)
+                 :min 0
+                 :max 1
+                 :step 0.01
+                 :default-value 0.5
+                 :on-change (fn [value] (on-balance-value-change uuid value))}]
+     ]))
 
 (defn session-controls []
-  [:> ButtonGroup
-   [:> Button {:color "primary"} "Start session"]
-   [:> Button {:color "secondary"} "Stop session"]])
+  [:div.session-controls
+   [:> Button {:type "primary"} "Start session"]
+   [:> Button {:type "danger"} "Stop session"]])
+
 
 (defn index []
-  ;; TODO setup subscription for selected teleporters
-  [:div.session-view
-   [:p "No teleporters selected, select teleporters "
-    [:a {:href (rfe/href :views/teleporters)} "here"]]]
+  (let [selected-teleporters @(rf/subscribe [:selected-teleporters])
+        num-selected-teleporters (count selected-teleporters)]
+    [:div.session-view
+     [:h1 "Session view"]
+     (when (>= num-selected-teleporters 2)
+       [session-controls])
+     (if (> num-selected-teleporters 0)
+       (map tp-panel selected-teleporters)
+       [:p "No teleporters selected, select teleporters "
+        [:a {:href (rfe/href :views/teleporters)} "here"]])
+     ])
   )
