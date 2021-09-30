@@ -78,10 +78,10 @@
                            :event/type :tap/cancel)))
 
 
-(defn- handle-short-tap [{:keys [uuid] :as teleporter}]
+(defn- handle-short-tap [{:teleporter/keys [uuid] :as teleporter}]
   (let [tp-list-selection-mode @(rf/subscribe [:tp-list-selection-mode])
         selected-teleporters-staging @(rf/subscribe [:selected-teleporters-staging])
-        teleporter-selected? (not (empty? (filter #(= (str (:uuid %)) (str uuid)) selected-teleporters-staging)))]
+        teleporter-selected? (not (empty? (filter #(= (str (:teleporter/uuid %)) (str uuid)) selected-teleporters-staging)))]
     (when
         (and (true? tp-list-selection-mode)
              (or
@@ -89,11 +89,11 @@
               (< (count selected-teleporters-staging) max-num-selected-teleporters)))
       (if teleporter-selected?
         ;; tp is selected, we should unselect it
-        (rf/dispatch [:set-selected-teleporters-staging (filter #(not (= (str (:uuid %)) (str uuid))) selected-teleporters-staging)])
+        (rf/dispatch [:set-selected-teleporters-staging (filter #(not (= (str (:teleporter/uuid %)) (str uuid))) selected-teleporters-staging)])
         ;; tp is not selected, we should select it
         (rf/dispatch [:set-selected-teleporters-staging (conj selected-teleporters-staging teleporter)])))))
 
-(defn- handle-long-tap [{:keys [uuid] :as event}]
+(defn- handle-long-tap [{:teleporter/keys [uuid]}]
   (rf/dispatch [:set-tp-list-selection-mode true]))
 
 
@@ -120,7 +120,7 @@
   (let [touch? (is-touch?)
         tp-list-selection-mode @(rf/subscribe [:tp-list-selection-mode])
         selected-teleporters-staging @(rf/subscribe [:selected-teleporters-staging])
-        uuid (:uuid teleporter)
+        uuid (:teleporter/uuid teleporter)
         props (if touch?
                 {:on-touch-start #(long-tap teleporter handle-long-tap)
                  :on-touch-end #(short-tap teleporter handle-short-tap)
@@ -130,11 +130,11 @@
     [:> List.Item (merge props {:class-name "teleporter-row" :actions [(r/as-element [:a {:key (str uuid "-config-link") :href (rfe/href :views/teleporter {:id uuid})} "Configure"])]})
      (when (true? tp-list-selection-mode)
        [:> Checkbox {
-                     :checked (not (empty? (filter #(= (str (:uuid %)) (str uuid)) selected-teleporters-staging)))
-                     :disabled (and (empty? (filter #(= (str (:uuid %)) (str uuid)) selected-teleporters-staging))
+                     :checked (not (empty? (filter #(= (str (:teleporter/uuid %)) (str uuid)) selected-teleporters-staging)))
+                     :disabled (and (empty? (filter #(= (str (:teleporter/uuid %)) (str uuid)) selected-teleporters-staging))
                                     (>= (count selected-teleporters-staging) max-num-selected-teleporters))
                      }])
-     [:> List.Item.Meta {:title (:nickname teleporter) :description (r/as-element [:span (:uuid teleporter)])}]
+     [:> List.Item.Meta {:title (:teleporter/nickname teleporter) :description (r/as-element [:span (:teleporter/mac teleporter)])}]
      ]))
 
 (defn list-component []
@@ -142,7 +142,7 @@
 		(fn []
 			[:> List
 			 (for [item @items]
-				 (r/as-element ^{:key (:uuid item)} [teleporter-row item]))])))
+				 (r/as-element ^{:key (:teleporter/uuid item)} [teleporter-row item]))])))
 
 
 

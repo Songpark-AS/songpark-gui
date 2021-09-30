@@ -51,6 +51,11 @@
    (assoc db :selected-teleporters-staging teleporters)))
 
 (rf/reg-event-db
+ :set-jam
+ (fn [db [_ jam]]
+   (assoc db :jam jam)))
+
+(rf/reg-event-db
  :teleporter/response
  (fn [db [_ {:keys [teleporter/bits teleporter/uuid teleporter/nickname
                     mqtt/username mqtt/password] :as response}]]
@@ -63,27 +68,37 @@
                       :mqtt/password password})))
 
 ;; TODO: get config vars from a config.edn for this
-(rf/reg-event-fx
- :teleporter/status
- (fn [{db :db} [_ data]]
-   {:dispatch [:http/get "http://192.168.11.123:3000/api/client/connect" data :teleporter/response]}))
 
 (rf/reg-event-fx
- :mqtt/connect
- (fn []
-   (mqtt/connect)))
+ :fetch-teleporters
+ (fn [_ _]
+   {:dispatch [:http/get "http://127.0.0.1:3000/api/app" nil :set-teleporters]}))
 
 (rf/reg-event-fx
- :mqtt/publish!
- (fn [_ [_ topic message]]
-   (mqtt/publish! topic message)))
+ :start-session
+ (fn [_ [_ uuids]]
+   {:dispatch [:http/put "http://127.0.0.1:3000/api/jam" uuids :set-jam]}))
+
+
+
+
 
 ;; testing ground
 (comment
   (rf/dispatch [:teleporter/status {:teleporter/nickname "christians.dream"}])
   
 
+  (rf/reg-event-fx
+   :teleporter/status
+   (fn [{db :db} [_ data]]
+     {:dispatch [:http/get "http://192.168.11.123:3000/api/client/connect" data :teleporter/response]}))
 
   (log/info @re-frame.db/app-db)
 
+  )
+
+
+(comment
+  (rf/dispatch [:fetch-teleporters])
+  "e2f7ce6a-54fb-5704-b903-d7a772fce86e"
   )

@@ -11,6 +11,7 @@
             ;; [app.i18n :as i18n]
             ;; [app.logging :as logging]
             [web-app.mqtt :as mqtt]
+            [web-app.message :as message]
             ))
 
 (defonce -system (atom nil))
@@ -54,9 +55,12 @@
      :communication-manager (component/using
                              (communication/communication-manager (:communication-manager @config/config))
                              [])
-     #_#_:mqtt-manager (component/using
+     :mqtt-manager (component/using
                     (mqtt/mqtt-manager (:mqtt-settings @config/config))
-                    []))))
+                    [])
+     :message-service (component/using
+                       (message/message-service {:injection-ks [:mqtt]})
+                       {:mqtt :mqtt-manager}))))
 
 (defn init [config-settings]
   (log/info "Initializing system")
