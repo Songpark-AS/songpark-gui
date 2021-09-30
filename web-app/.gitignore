@@ -1,6 +1,7 @@
 /out/
 /resources/public/js/compiled/
 /resources/public/css/vendor/
+/resources/vendor/
 /target/
 /*-init.clj
 /*.log
