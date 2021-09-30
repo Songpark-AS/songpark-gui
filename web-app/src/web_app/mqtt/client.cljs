@@ -11,12 +11,6 @@
 (defn keyword-to-topic [keyword]
   (clojure.string/replace (name keyword) #"_-_" "/"))
 
-(defn on-message-receive [message topic-handlers]
-  (log/info ::MqttClient.receive "[MQTT rx]: " ^String(. message -payloadString))
-  (let [destination-name ^String(. message -destinationName)]
-    ;; (map topic-handlers (fn [keyword] (when match destination-name (run thing))))
-    (map (keys @topic-handlers))
-    ((get @topic-handlers (topic-to-keyword destination-name)) message)))
 
 (defn on-connect [invocation-context mqtt-client]
   (log/debug ::MqttClient.on-connect "Connected to broker, " invocation-context)
@@ -30,22 +24,13 @@
 (defrecord MqttClient [config]
   protocol.mqtt.client/IMqttClient
   (connect [this]
-    (let [client ^Paho/Client(:client this)
-          topic-handlers (:topic-handlers this)]
+    (let [client ^Paho/Client(:client this)]
       (log/debug ::MqttClient.connect (js->clj client :keywordize-keys true))
       (.connect client #js {:userName "webapp"
                             :password "SecretPass"
                             :reconnect true
                             :onSuccess #(on-connect % this)})
-      #_(reset! topic-handlers {})
-      #_(-> (.connect client)
-          (.then (fn []
-                   (reset! connection-lost-event-listener listener-fn)
-                   (.on client "connectionLost" listener-fn)
-                   )))
-
-      #_(-> (.connect client)
-          (.catch  #(log/error ::MqttClient.connect %)))))
+      ))
   (connected? [this]
     (.isConnected (:client this)))
   (publish [this topic message]
@@ -57,17 +42,15 @@
         (catch js/Error e (log/error ::MqttClient.publish e)))))
   (disconnect [this]
     (.disconnect (:client this)))
-  (subscribe [this topic on-message]
+  (subscribe [this topics on-message]
     (let [client (:client this)
           topic-handlers (:topic-handlers this)]
       (when (protocol.mqtt.client/connected? this)
-        (log/debug ::MqttClient.subscribe "Subscribing to topic: " topic)
-        (.subscribe client topic)
-        (swap! topic-handlers assoc (topic-to-keyword topic) on-message)
-        #_(-> (.subscribe client topic)
-            (.then #(log/debug ::MqttClient.subscribe "Subscribed to topic: " topic))
-            (.then #(swap! topic-handlers assoc (topic-to-keyword topic) on-message))
-            (.catch js/Error #(log/error ::MqttClient.subscribe %))))))
+        (doseq [topic topics]
+          (log/debug ::MqttClient.subscribe "Subscribing to topic: " topic)
+          (.subscribe client topic)
+          #_(swap! topic-handlers assoc (topic-to-keyword topic) on-message))
+        )))
   (unsubscribe [this topic]
     (let [client (:client this)
           topic-handlers (:topic-handlers this)]
@@ -81,16 +64,9 @@
    (let [topic-handlers (atom {})]
      {:config config
       :topic-handlers topic-handlers
-      :client (let [{:keys [host port client-id]} config
+      :client (let [{:keys [host port client-id on-message]} config
                     client (Paho/Client. host port client-id)]
                 (set! (.-onConnectionLost client) (fn [& args] (log/debug ::mqtt-client "Lost connection" args)))
-                (set! (.-onMessageArrived client) (fn [message] (on-message-receive message topic-handlers)))
-                #_(.on client "messageReceived" (fn [message] (on-message-receive message topic-handlers)))
+                (set! (.-onMessageArrived client) (fn [message] (on-message message)))
                 client)})))
-
-
-;; (let [mqtt-settings (:mqtt-settings @config/config)]
-;;   (def client (mqtt-client mqtt-settings)))
-
-;; (connect)
 

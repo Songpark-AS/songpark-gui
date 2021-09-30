@@ -3,12 +3,16 @@
             [reitit.coercion.spec :as coercion.spec]
             [web-app.views.session :as views.session]
             [web-app.views.teleporter.list :as views.teleporter.list]
+            [web-app.views.playground :as views.playground]
             [web-app.views.teleporter.detail :as views.teleporter.detail]))
 
 (def routes
   [["/"
     {:name :views/session
      :view views.session/index}]
+   ["/playground"
+    {:name :views/playground
+     :view views.playground/index}]
    ["/teleporters"
     ["" 
      {:name :views/teleporters
