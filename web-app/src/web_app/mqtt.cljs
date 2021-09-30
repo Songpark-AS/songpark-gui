@@ -11,35 +11,44 @@
             [songpark.common.communication :refer [writer]]
             [web-app.mqtt.client :refer [mqtt-client]]
             ))
+
+(def reader (transit/reader :json))
+
+(defn- ->transit [m]
+  (transit/write writer m)
+  )
+(defn- <-transit [s]
+  (transit/read reader s))
+
 (comment
+  (<-transit (->transit {:foo "bar"}))
   (transit/read reader (transit/write writer {:foo "bar"}))
   (message-handler (transit/write writer #js {:destinationName "World" :payloadString {:message/type :some.cmd/test
                                                                                        :message/body {:this/id 1212}}}))
   )
 
-(def reader (transit/reader :json))
 
 (defn handle-message [message]
   (log/debug ::handle-message "message: " message))
 
 (defn on-message [message]
-  (let [parsed-message (transit/read reader message)
-        payload (get parsed-message "payloadString")
-        topic (get parsed-message "destinationName")]
+  (log/debug ::on-message "I EXIST!! " (js->clj message))
+  (js/console.log message)
+  (let [payload (<-transit (get message "payloadString"))
+        topic (get message "destinationName")]
     (->> (merge payload {:message/topic topic})
          handle-message)
   ))
 
 (defn- subscribe* [{:keys [client] :as mqtt-manager} topics]
-  (doseq [topic topics]
-    (protocol.mqtt.client/subscribe client topic on-message)))
+    (protocol.mqtt.client/subscribe client topics on-message))
 
 (defn- unsubscribe* [{:keys [client] :as mqtt-manager} topics]
   (doseq [topic topics]
     (protocol.mqtt.client/unsubscribe client topic)))
 
 (defn- publish* [{:keys [client] :as mqtt-manager} topic message]
-  (let [transit-formatted-message (transit/write writer message)]
+  (let [transit-formatted-message (->transit message)]
     (protocol.mqtt.client/publish client topic transit-formatted-message)))
 
 (defrecord MQTTManager [started? host port client-id]
@@ -47,7 +56,7 @@
   (start [this]
     (if started?
       this
-      (let [client (mqtt-client {:host host :port port :client-id client-id})
+      (let [client (mqtt-client {:host host :port port :client-id client-id :on-message on-message})
             test-topic-handler (fn [message]
                                  (let [payload ^String (. message -payloadString)]
                                    (prn "Test topic handler")

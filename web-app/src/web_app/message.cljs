@@ -2,7 +2,20 @@
   (:require [com.stuartsierra.component :as component]
             [taoensso.timbre :as log]
             [songpark.common.protocol.message :as protocol.message]
+            [web-app.message.handler.incoming :as handler.incoming]
+            [web-app.message.handler.outgoing :as handler.outgoing]
+            [songpark.common.protocol.mqtt.manager :as protocol.mqtt.manager]
+            [goog.object :as gobj]
             ))
+
+(comment
+  (send-message!* @store {:message/type :app.cmd/subscribe
+                          :message/topics ["foo" "bar"]
+                          })
+  (pr-str (gobj/get (:client (:client (:mqtt @store))) "onMessageArrived"))
+  (protocol.mqtt.manager/publish (:mqtt @store) "foo" {:message/type :teleporter.msg/info
+                                                       :message/body "AUHSFIUAGYWIYF"})
+  )
 
 (defonce store (atom nil))
 
