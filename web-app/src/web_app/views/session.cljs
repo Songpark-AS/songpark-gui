@@ -30,7 +30,7 @@
   (log/debug ::on-volume-value-change (str "Change volume of tp: " tp " to: " value))
   (swap! times conj (system-time))
   (when (> (- (system-time) @last-time) 50)
-    (mqtt/publish! topic (str {:pointer [:tpx-unit :adjust-volume-unit] :arguments [value]}))
+    ;; TODO: publish here
     (reset! last-time (system-time)))
   )
 
@@ -38,9 +38,7 @@
   (log/debug ::on-balance-value-change (str "Change balance of tp: " tp " to: " value)))
 
 
-(defn tp-panel [teleporter]
-  (let [uuid (:uuid teleporter)
-        nickname (:nickname teleporter)]
+(defn tp-panel [{:teleporter/keys [uuid nickname]}]
     [:div.tp-panel {:key (str "tp-panel-" uuid)}
      [:h2 nickname]
      [:h4 "Volume:"]
@@ -58,11 +56,19 @@
                  :step 0.01
                  :default-value 0.5
                  :on-change (fn [value] (on-balance-value-change uuid value))}]
-     ]))
+     ])
+
+(defn start-session []
+  (let [selected-teleporters @(rf/subscribe [:selected-teleporters])]
+    (log/debug ::start-session (str "selected teleporters" selected-teleporters))
+    (log/debug ::start-session "select-keys: " (select-keys selected-teleporters [:teleporter/uuid]))
+    (rf/dispatch [:start-session (map #(select-keys % [:teleporter/uuid]) selected-teleporters)])
+    )
+  )
 
 (defn session-controls []
   [:div.session-controls
-   [:> Button {:type "primary"} "Start session"]
+   [:> Button {:type "primary" :on-click #(start-session)} "Start session"]
    [:> Button {:type "danger"} "Stop session"]])
 
 

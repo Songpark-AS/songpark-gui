@@ -12,7 +12,7 @@
 (defn index [match]
   (let [uuid (:id (:path-params match))
         teleporters @(rf/subscribe [:teleporters])
-        nickname (->> teleporters (filter #(= (str (:uuid %)) uuid)) first :nickname)]
+        nickname (->> teleporters (filter #(= (str (:teleporter/uuid %)) uuid)) first :teleporter/nickname)]
     [:div.teleporter-detail-view
      [:h1 "Teleporter settings"]
      [:h2 nickname]
