@@ -34,8 +34,8 @@
 (defn on-message [message]
   (log/debug ::on-message "I EXIST!! " (js->clj message))
   (js/console.log message)
-  (let [payload (<-transit (get message "payloadString"))
-        topic (get message "destinationName")]
+  (let [payload (<-transit ^String(.-payloadString message))
+        topic ^String(.-destinationName message)]
     (->> (merge payload {:message/topic topic})
          handle-message)
   ))

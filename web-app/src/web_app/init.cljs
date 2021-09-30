@@ -12,6 +12,7 @@
             ;; [app.logging :as logging]
             [web-app.mqtt :as mqtt]
             [web-app.message :as message]
+            [web-app.api :as api]
             ))
 
 (defonce -system (atom nil))
@@ -55,6 +56,9 @@
      :communication-manager (component/using
                              (communication/communication-manager (:communication-manager @config/config))
                              [])
+     :api-manager (component/using
+                   (api/api-manager {:injection-ks [:message-service]})
+                   [:message-service])
      :mqtt-manager (component/using
                     (mqtt/mqtt-manager (:mqtt-settings @config/config))
                     [])
