@@ -9,10 +9,10 @@
   (log/debug :outgoing (str "Subscribing to " topics))
   (protocol.mqtt.manager/subscribe mqtt topics))
 
-(defmethod outgoing :platform.cmd/unsubscribe [{:message/keys [topics]
-                                                :keys [mqtt]}]
-  (log/debug :outgoing (str "Unsubscribing from " (keys topics)))
-  (.unsubscribe mqtt topics))
+
+(defmethod outgoing :teleporter.cmd/set-volume [{:message/keys [topic body]
+                                                 :keys [mqtt]}]
+  (protocol.mqtt.manager/publish mqtt (str topic) body))
 
 (defmethod outgoing :teleporter.msg/info [{:message/keys [topic body]
                                            :keys [mqtt]}]

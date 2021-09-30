@@ -32,6 +32,8 @@
                        (assoc :message-service message-service))]
     (handler.outgoing/outgoing (merge msg injections))))
 
+(defn public-send-message [msg]
+  (send-message!* @store msg))
 
 (defrecord MessageService [injection-ks started? mqtt]
   component/Lifecycle

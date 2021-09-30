@@ -5,6 +5,7 @@
    [reagent.core :as r]
    [taoensso.timbre :as log]
    [web-app.mqtt :as mqtt]
+   [web-app.api :refer [send-message!]]
    ["antd" :refer [Button Slider]]
    ))
 
@@ -26,11 +27,14 @@
 (def last-time (atom 0))
 (def topic "d7d52eea-c597-4a90-bd4d-abfad567075d")
 
-(defn on-volume-value-change [tp value]
-  (log/debug ::on-volume-value-change (str "Change volume of tp: " tp " to: " value))
+(defn on-volume-value-change [topic value]
+  (log/debug ::on-volume-value-change (str "Change volume of tp on topic: " topic " to: " value))
   (swap! times conj (system-time))
   (when (> (- (system-time) @last-time) 50)
     ;; TODO: publish here
+    (send-message! {:message/type :teleporter.cmd/set-volume
+                           :message/topic topic
+                           :message/body value})
     (reset! last-time (system-time)))
   )
 
