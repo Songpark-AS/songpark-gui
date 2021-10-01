@@ -1,6 +1,7 @@
 (ns web-app.views.teleporter.detail
   (:require
    [web-app.forms.ipv4 :as ipv4-form]
+   [web-app.forms.ipv6 :as ipv6-form]
    [taoensso.timbre :as log]
    [re-frame.core :as rf]
    ))
@@ -17,4 +18,5 @@
      [:h1 "Teleporter settings"]
      [:h2 nickname]
      [ipv4-form/ipv4-config uuid]
+     [ipv6-form/ipv6-config uuid]
      ]))
