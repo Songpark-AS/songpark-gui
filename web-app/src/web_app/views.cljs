@@ -11,14 +11,19 @@
 
 (defonce match (r/atom nil))
 
+(defn SessionIcon []
+  [:> ControlOutlined])
+(defn TeleportersIcon []
+  [:> UnorderedListOutlined])
+
 (defn main-panel []
   [:div.main-panel
    [:> Layout {:class-name "main-layout"}
     [:> Layout.Sider {:breakpoint "lg"
                       :collapsed-width "0"}
-     [:> Menu {:theme "dark" :mode "inline"}
-      [:> Menu.Item {:key "1" :on-click #(rfe/push-state :views/session)} "Session"]
-      [:> Menu.Item {:key "2" :on-click #(rfe/push-state :views/teleporters)} "Teleporters"]]
+     [:> Menu {:theme "dark" :mode "inline" :selected-keys (:name (:data @match))}
+      [:> Menu.Item {:key :views/session :icon (r/as-element [SessionIcon]) :on-click #(rfe/push-state :views/session)} "Session"]
+      [:> Menu.Item {:key :views/teleporters :icon (r/as-element [TeleportersIcon]) :on-click #(rfe/push-state :views/teleporters)} "Teleporters"]]
      ]
     [:> Layout
      [:> Layout.Content
