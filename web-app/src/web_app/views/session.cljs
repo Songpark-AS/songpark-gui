@@ -31,10 +31,10 @@
   (log/debug ::on-volume-value-change (str "Change volume of tp on topic: " topic " to: " value))
   (swap! times conj (system-time))
   (when (> (- (system-time) @last-time) 50)
-    ;; TODO: publish here
     (send-message! {:message/type :teleporter.cmd/set-volume
-                           :message/topic topic
-                           :message/body value})
+                    :message/topic topic
+                    :message/body {:message/type :teleporter.msg/info
+                                   :audio/volume value}})
     (reset! last-time (system-time)))
   )
 
