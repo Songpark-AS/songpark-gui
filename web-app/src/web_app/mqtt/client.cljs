@@ -14,11 +14,16 @@
 
 (defn on-connect [invocation-context mqtt-client]
   (log/debug ::MqttClient.on-connect "Connected to broker, " invocation-context)
-  (let [topic-handlers (:topic-handlers mqtt-client)
-        client (:client mqtt-client)]
-    (when (not (nil? @topic-handlers))
+  (let [topic-handlers (:topic-handlers mqtt-client)]
+    (when (not (empty? @topic-handlers))
       (log/debug ::MqttClient.on-connect "Resubscribing to topics")
-      (doseq [[k f] @topic-handlers]
+
+      ;; hack
+      (let [f (val (first @topic-handlers))
+            topics (map keyword-to-topic (keys @topic-handlers))]
+        (protocol.mqtt.client/subscribe mqtt-client topics f))
+
+      #_(doseq [[k f] @topic-handlers]
         (do (protocol.mqtt.client/subscribe client (keyword-to-topic k) f))))))
 
 (defrecord MqttClient [config]
@@ -49,7 +54,7 @@
         (doseq [topic topics]
           (log/debug ::MqttClient.subscribe "Subscribing to topic: " topic)
           (.subscribe client topic)
-          #_(swap! topic-handlers assoc (topic-to-keyword topic) on-message))
+          (swap! topic-handlers assoc (topic-to-keyword topic) on-message))
         )))
   (unsubscribe [this topic]
     (let [client (:client this)
