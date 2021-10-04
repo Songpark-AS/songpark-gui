@@ -2,8 +2,7 @@
   (:require [com.stuartsierra.component :as component]
             [taoensso.timbre :as log]
             [songpark.common.protocol.message :as protocol.message]
-            [web-app.message.handler.incoming :as handler.incoming]
-            [web-app.message.handler.outgoing :as handler.outgoing]
+            [web-app.message.dispatch :as dispatch]
             [songpark.common.protocol.mqtt.manager :as protocol.mqtt.manager]
             [goog.object :as gobj]
             ))
@@ -19,21 +18,12 @@
 
 (defonce store (atom nil))
 
-(defn handle-message [msg]
-  (let [message-service @store
-        injections (-> message-service
-                       (select-keys (:injection-ks message-service))
-                       (assoc :message-service message-service))]
-    (handler.incoming/incoming (merge msg injections))))
-
 (defn send-message!* [message-service msg]
   (let [injections (-> message-service
                        (select-keys (:injection-ks message-service))
                        (assoc :message-service message-service))]
-    (handler.outgoing/outgoing (merge msg injections))))
+    (dispatch/handler (merge msg injections))))
 
-(defn public-send-message [msg]
-  (send-message!* @store msg))
 
 (defrecord MessageService [injection-ks started? mqtt]
   component/Lifecycle
