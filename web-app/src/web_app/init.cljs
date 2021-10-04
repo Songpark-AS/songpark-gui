@@ -63,8 +63,8 @@
                     (mqtt/mqtt-manager (:mqtt-settings @config/config))
                     [])
      :message-service (component/using
-                       (message/message-service {:injection-ks [:mqtt]})
-                       {:mqtt :mqtt-manager}))))
+                       (message/message-service {:injection-ks [:mqtt-manager]})
+                       [:mqtt-manager]))))
 
 (defn init [config-settings]
   (log/info "Initializing system")
