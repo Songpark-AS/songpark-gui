@@ -83,15 +83,15 @@
     :label "Use DHCP?:"
     :name :ip/dhcp?}])
 
-(defn ipv4-config [tp-id]
+(defn ipv4-config [uuid]
   (let [form (form-ipv4 {} nil)
         data-form (rf/subscribe [:ez-wire.form/on-valid (:id form)])]
     (fn [tp-id]
-      [:div
-       [:pre (pr-str @data-form)]
-       [:pre (pr-str @(:data form))]
-       [:h4 "Network settings"]
+      [:div.ipv4-form
+       ;; [:pre (pr-str @data-form)]
+       ;; [:pre (pr-str @(:data form))]
        [form/as-table {} form]
        [:> Button {:type "primary" :disabled (not (or (:ip/dhcp? @(:data form))
-                                                      (valid? data-form)))} "Save"]
+                                                      (valid? data-form)))
+                   :on-click #(rf/dispatch [:save-ipv4 uuid @data-form])} "Save"]
        ])))

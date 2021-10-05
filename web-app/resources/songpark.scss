@@ -82,3 +82,9 @@ $breakpoints: (phone: 320px, tablet: 768px, desktop: 1024px);
         }
     }
 }
+
+.teleporter-detail-view {
+    .ipv4-form table, .ipv6-form table {
+        margin-bottom: 1rem;
+    }
+}

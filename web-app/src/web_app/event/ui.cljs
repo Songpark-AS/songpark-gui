@@ -1,6 +1,7 @@
 (ns web-app.event.ui
   (:require [re-frame.core :as rf]
             [taoensso.timbre :as log]
+            [web-app.api :refer [send-message!]]
             [web-app.mqtt :as mqtt]))
 
 
@@ -79,8 +80,21 @@
  (fn [_ [_ uuids]]
    {:dispatch [:http/put "http://127.0.0.1:3000/api/jam" uuids :set-jam]}))
 
+(rf/reg-event-fx
+ :save-ipv4
+ (fn [_ [_ topic values]]
+   (send-message! {:message/type :teleporter.cmd/save-ipv4
+                   :message/topic topic
+                   :message/body {:message/type :teleporter.msg/ipv4
+                                  :message/values values}})))
 
-
+(rf/reg-event-fx
+ :save-ipv6
+ (fn [_ [_ topic values]]
+   (send-message! {:message/type :teleporter.cmd/save-ipv6
+                   :message/topic topic
+                   :message/body {:message/type :teleporter.msg/info
+                                  :values values}})))
 
 
 ;; testing ground
