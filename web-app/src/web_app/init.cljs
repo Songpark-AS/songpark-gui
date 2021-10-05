@@ -9,7 +9,7 @@
             [web-app.communication :as communication]
             [web-app.event :as event]
             ;; [app.i18n :as i18n]
-            ;; [app.logging :as logging]
+            [web-app.logging :as logging]
             [web-app.mqtt :as mqtt]
             [web-app.message :as message]
             [web-app.api :as api]
@@ -44,9 +44,9 @@
      :init          (component/using
                      (init-manager (:init @config/config))
                      [])
-     ;; :logging-manager (component/using
-     ;;                   (logging/logging-manager (:logging-manager @config/config))
-     ;;                   [])
+     :logging-manager (component/using
+                       (logging/logging-manager (:logging-manager @config/config))
+                       [])
      :event-manager (component/using
                      (event/event-manager (:event-manager @config/config))
                      [])
