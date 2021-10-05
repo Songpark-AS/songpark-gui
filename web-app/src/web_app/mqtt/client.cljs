@@ -4,7 +4,8 @@
             [songpark.common.protocol.mqtt.client :as protocol.mqtt.client]
             [com.stuartsierra.component :as component]
             [songpark.common.config :as config]
-            ["paho-mqtt" :as Paho]))
+            ["paho-mqtt" :as Paho]
+            ["antd" :refer [message]]))
 
 (defn topic-to-keyword [topic]
   (keyword (clojure.string/replace topic #"/" "_-_")))
@@ -14,6 +15,7 @@
 
 (defn on-connect [invocation-context mqtt-client]
   (log/debug ::MqttClient.on-connect "Connected to broker, " invocation-context)
+  (.success message "Connected to MQTT")
   (let [topic-handlers (:topic-handlers mqtt-client)]
     (when (not (empty? @topic-handlers))
       (log/debug ::MqttClient.on-connect "Resubscribing to topics")
@@ -24,7 +26,11 @@
         (protocol.mqtt.client/subscribe mqtt-client topics f))
 
       #_(doseq [[k f] @topic-handlers]
-        (do (protocol.mqtt.client/subscribe client (keyword-to-topic k) f))))))
+          (do (protocol.mqtt.client/subscribe client (keyword-to-topic k) f))))))
+
+(defn on-connection-lost [& args]
+  (log/debug ::on-connection-lost "Lost connection to mqtt: " args)
+  (.error message "Lost connection to MQTT"))
 
 (defrecord MqttClient [config]
   protocol.mqtt.client/IMqttClient
@@ -71,7 +77,7 @@
       :topic-handlers topic-handlers
       :client (let [{:keys [host port client-id on-message]} config
                     client (Paho/Client. host port client-id)]
-                (set! (.-onConnectionLost client) (fn [& args] (log/debug ::mqtt-client "Lost connection" args)))
+                (set! (.-onConnectionLost client) (fn [& args] (on-connection-lost args)))
                 (set! (.-onMessageArrived client) (fn [message] (on-message message)))
                 client)})))
 
