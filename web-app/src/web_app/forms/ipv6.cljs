@@ -80,10 +80,9 @@
   (let [form (form-ipv6 {} nil)
         data-form (rf/subscribe [:ez-wire.form/on-valid (:id form)])]
     (fn [tp-id]
-      [:div
-       [:pre (pr-str @data-form)]
-       [:pre (pr-str @(:data form))]
-       [:h4 "Network settings (IPv6)"]
+      [:div.ipv6-form
+       ;; [:pre (pr-str @data-form)]
+       ;; [:pre (pr-str @(:data form))]
        [form/as-table {} form]
        [:> Button {:type "primary" :disabled (not (or (:ip/autoconfigure? @(:data form))
                                                       (valid? data-form)))} "Save"]

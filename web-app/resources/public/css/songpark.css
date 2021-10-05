@@ -82,4 +82,8 @@
   margin: 0 1rem;
 }
 
+.teleporter-detail-view .ipv4-form table, .teleporter-detail-view .ipv6-form table {
+  margin-bottom: 1rem;
+}
+
 /*# sourceMappingURL=songpark.css.map */

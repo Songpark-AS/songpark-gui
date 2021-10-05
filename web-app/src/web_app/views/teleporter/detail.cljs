@@ -4,6 +4,7 @@
    [web-app.forms.ipv6 :as ipv6-form]
    [taoensso.timbre :as log]
    [re-frame.core :as rf]
+   ["antd" :refer [Tabs Tabs.TabPane]]
    ))
 
 ;; Here be detailview of a teleporter
@@ -17,6 +18,10 @@
     [:div.teleporter-detail-view
      [:h1 "Teleporter settings"]
      [:h2 nickname]
-     [ipv4-form/ipv4-config uuid]
-     [ipv6-form/ipv6-config uuid]
+     [:h3 "Network settings:"]
+     [:> Tabs {:default-active-key "1"}
+      [:> Tabs.TabPane {:tab "IPv4" :key "1"}
+       [ipv4-form/ipv4-config uuid]]
+      [:> Tabs.TabPane {:tab "IPv6" :key "2"}
+       [ipv6-form/ipv6-config uuid]]]
      ]))

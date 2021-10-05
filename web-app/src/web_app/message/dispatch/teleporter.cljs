@@ -7,6 +7,11 @@
                                                          :keys [mqtt-manager]}]
   (protocol.mqtt.manager/publish mqtt-manager (str topic) body))
 
+(defmethod message/dispatch :teleporter.cmd/save-ipv4 [{:message/keys [topic body]
+                                                        :keys [mqtt-manager]}]
+  (log/debug ::save-ipv4 "body: " body)
+  (protocol.mqtt.manager/publish mqtt-manager (str topic) body))
+
 (defmethod message/dispatch :teleporter.msg/info [{:message/keys [topic body]
                                                    :keys [mqtt-manager]}]
   (protocol.mqtt.manager/publish mqtt-manager (str topic) body))
