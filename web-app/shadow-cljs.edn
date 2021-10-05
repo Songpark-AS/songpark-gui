@@ -18,6 +18,7 @@
   [songpark/common "0.1.1-SNAPSHOT"]
   [metosin/reitit "0.5.15"]
   [com.cognitect/transit-cljs "0.8.269"]
+  [com.google.guava/guava "31.0.1-jre"]
   [ez-wire "0.5.0"]]
 
  :dev-http
