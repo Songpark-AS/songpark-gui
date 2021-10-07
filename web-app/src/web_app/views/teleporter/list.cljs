@@ -5,6 +5,7 @@
             [cljs.core.async :as async :refer [go chan <! >!]]
             [reitit.frontend.easy :as rfe]
             ["antd" :refer [List List.Item List.Item.Meta Checkbox Button]]
+            ["@ant-design/icons" :refer [SettingFilled]]
             [web-app.subs]
             [web-app.utils :refer [is-touch?]]))
 
@@ -94,6 +95,7 @@
         (rf/dispatch [:set-selected-teleporters-staging (conj selected-teleporters-staging teleporter)])))))
 
 (defn- handle-long-tap [{:teleporter/keys [uuid]}]
+  (.vibrate js/window.navigator 50)
   (rf/dispatch [:set-tp-list-selection-mode true]))
 
 
@@ -105,15 +107,17 @@
 (defn handle-selection-action-select []
   (let [selected-teleporters-staging @(rf/subscribe [:selected-teleporters-staging])]
     (rf/dispatch [:set-selected-teleporters selected-teleporters-staging]))
+  (rfe/push-state :views/session)
   (rf/dispatch [:set-tp-list-selection-mode false]))
 
 (defn selection-action-bar []
   (let [selected-teleporters-staging @(rf/subscribe [:selected-teleporters-staging])
         num-selected-teleporters (count selected-teleporters-staging)]
     [:div.selection-action-bar
-     [:span (str num-selected-teleporters "/" max-num-selected-teleporters " Teleporters selected")]
-     [:> Button {:type "primary" :on-click #(handle-selection-action-select) :disabled (not (> num-selected-teleporters 1))} "Confirm"]
-     [:> Button {:on-click #(handle-selection-action-cancel)} "Cancel"]]))
+     [:span (str num-selected-teleporters "/" max-num-selected-teleporters " selected")]
+     [:div.actions 
+      [:> Button {:type "primary" :on-click #(handle-selection-action-select) :disabled (not (> num-selected-teleporters 1))} "Confirm"]
+      [:> Button {:on-click #(handle-selection-action-cancel)} "Cancel"]]]))
 
 
 (defn teleporter-row [teleporter]
@@ -127,7 +131,7 @@
                  :on-touch-move #(cancel-tap teleporter)}
                 {:on-click #(handle-short-tap teleporter)
                  :on-double-click #(handle-long-tap teleporter)})]
-    [:> List.Item (merge props {:class-name "teleporter-row" :actions [(r/as-element [:a {:key (str uuid "-config-link") :href (rfe/href :views/teleporter {:id uuid})} "Configure"])]})
+      [:> List.Item (merge props {:class-name "teleporter-row" :actions [(r/as-element [:a {:key (str uuid "-config-link") :href (rfe/href :views/teleporter {:id uuid})} [:> SettingFilled {:style {:font-size "1.2rem"}}]])]})
      (when (true? tp-list-selection-mode)
        [:> Checkbox {
                      :checked (not (empty? (filter #(= (str (:teleporter/uuid %)) (str uuid)) selected-teleporters-staging)))
