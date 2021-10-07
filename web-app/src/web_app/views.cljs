@@ -6,7 +6,7 @@
    [reitit.frontend.easy :as rfe]
    [web-app.components.mobile-navbar :refer [mobile-navbar]]
    ["antd" :refer [Layout Layout.Sider Layout.Content Layout.Footer Menu Menu.Item]]
-   ["@ant-design/icons" :refer [ControlOutlined UnorderedListOutlined]]
+   ["@ant-design/icons" :refer [ControlOutlined ControlFilled UnorderedListOutlined]]
    ))
 
 (defonce match (r/atom nil))
@@ -35,7 +35,9 @@
      (if @match
        (let [name (:name (:data @match))]
        [mobile-navbar {:navbar-items [{:title "Session"
-                                       :icon-component ControlOutlined
+                                       :icon-component (if (= name :views/session)
+                                                         ControlFilled
+                                                         ControlOutlined)
                                        :on-click #(rfe/push-state :views/session)
                                        :active? (= name :views/session)}
                                       {:title "Teleporters"

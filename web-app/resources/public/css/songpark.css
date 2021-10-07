@@ -28,6 +28,7 @@
   background-color: #EEE;
   color: #666;
   justify-content: space-around;
+  user-select: none;
   align-items: center;
   position: fixed;
   bottom: 0;
@@ -55,6 +56,10 @@
   flex-direction: column;
   align-items: center;
   height: 100%;
+  padding: 1rem;
+}
+.session-view h1 {
+  user-select: none;
 }
 .session-view .tp-panel {
   width: 100%;
@@ -63,8 +68,12 @@
 .session-view .session-controls {
   margin: 1rem 0;
 }
+.session-view .session-controls .ant-btn:not(:last-child) {
+  margin-right: 0.4rem;
+}
 
 .teleporter-list-view {
+  user-select: none;
   padding: 1rem;
 }
 @media (min-width: 320px) and (max-width: 767px) {
@@ -78,12 +87,30 @@
 .teleporter-list-view .teleporter-row .ant-checkbox-wrapper {
   margin: 0 1rem;
 }
-.teleporter-list-view .selection-action-bar span {
-  margin: 0 1rem;
+.teleporter-list-view .selection-action-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+@media (min-width: 320px) and (max-width: 767px) {
+  .teleporter-list-view .selection-action-bar span {
+    flex: 0.5;
+  }
+}
+.teleporter-list-view .selection-action-bar .actions .ant-btn:not(:last-child) {
+  margin-right: 0.4rem;
 }
 
 .teleporter-detail-view .ipv4-form table, .teleporter-detail-view .ipv6-form table {
   margin-bottom: 1rem;
+}
+.teleporter-detail-view .ipv4-form table td, .teleporter-detail-view .ipv6-form table td {
+  padding: 0.3rem;
+}
+.teleporter-detail-view .ipv4-form table .error, .teleporter-detail-view .ipv6-form table .error {
+  margin-top: 0.2rem;
 }
 
 /*# sourceMappingURL=songpark.css.map */
