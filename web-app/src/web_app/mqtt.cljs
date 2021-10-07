@@ -9,6 +9,7 @@
             [songpark.common.protocol.mqtt.manager :as protocol.mqtt.manager]
             [songpark.common.config :as config]
             [songpark.common.communication :refer [writer]]
+            [nano-id.core :refer [nano-id]]
             [web-app.mqtt.client :refer [mqtt-client]]
             ))
 
@@ -32,8 +33,6 @@
   (log/debug ::handle-message "message: " message))
 
 (defn on-message [message]
-  (log/debug ::on-message "I EXIST!! " (js->clj message))
-  (js/console.log message)
   (let [payload (<-transit ^String(.-payloadString message))
         topic ^String(.-destinationName message)]
     (->> (merge payload {:message/topic topic})
@@ -56,7 +55,7 @@
   (start [this]
     (if started?
       this
-      (let [client (mqtt-client {:host host :port port :client-id client-id :on-message on-message})
+      (let [client (mqtt-client {:host host :port port :client-id (str client-id "-" (nano-id 10)) :on-message on-message})
             test-topic-handler (fn [message]
                                  (let [payload ^String (. message -payloadString)]
                                    (prn "Test topic handler")
