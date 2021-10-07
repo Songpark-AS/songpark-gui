@@ -66,7 +66,7 @@
   (let [selected-teleporters @(rf/subscribe [:selected-teleporters])]
     (log/debug ::start-session (str "selected teleporters" selected-teleporters))
     (log/debug ::start-session "select-keys: " (select-keys selected-teleporters [:teleporter/uuid]))
-    (rf/dispatch [:start-session (map #(select-keys % [:teleporter/uuid]) selected-teleporters)])
+    (rf/dispatch [:start-session (mapv #(select-keys % [:teleporter/uuid]) selected-teleporters)])
     )
   )
 
