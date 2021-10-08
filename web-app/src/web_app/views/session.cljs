@@ -76,15 +76,25 @@
    [:> Button {:type "danger"} "Stop session"]])
 
 
+(defn subscribe-to-jam [jam]
+  (log/debug ::subscribe-to-jam jam)
+  (rf/dispatch [:mqtt/subscribe [(str (:jam/uuid jam))]])
+  (rf/dispatch [:session/set-started? true]))
+
 (defn index []
-  (let [selected-teleporters @(rf/subscribe [:selected-teleporters])
-        num-selected-teleporters (count selected-teleporters)]
+  (let [selected-teleporters (rf/subscribe [:selected-teleporters])
+        jam (rf/subscribe [:jam])
+        session-started? (rf/subscribe [:session/started?])
+        num-selected-teleporters (count @selected-teleporters)]
+    (when (and (not (nil? @jam))
+               (not @session-started?))
+      (subscribe-to-jam @jam))
     [:div.session-view
      [:h1 "Session view"]
      (when (>= num-selected-teleporters 2)
        [session-controls])
      (if (> num-selected-teleporters 0)
-       (map tp-panel selected-teleporters)
+       (map tp-panel @selected-teleporters)
        [:p "No teleporters selected, select teleporters "
         [:a {:href (rfe/href :views/teleporters)} "here"]])
      ])

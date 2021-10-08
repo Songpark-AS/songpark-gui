@@ -68,12 +68,18 @@
           :mqtt/data {:mqtt/username username
                       :mqtt/password password})))
 
+(rf/reg-event-db
+ :session/set-started?
+ (fn [db [_ started?]]
+   (assoc db
+          :session/started? started?)))
+
 ;; TODO: get config vars from a config.edn for this
 
 (rf/reg-event-fx
  :fetch-teleporters
  (fn [_ _]
-   {:dispatch [:http/get "http://127.0.0.1:3000/api/app" nil :set-teleporters]}))
+   {:dispatch [:http/get "http://192.168.11.123:3000/api/app" nil :set-teleporters]}))
 
 (rf/reg-event-fx
  :start-session
@@ -87,6 +93,12 @@
                    :message/topic topic
                    :message/body {:message/type :teleporter.msg/ipv4
                                   :message/values values}})))
+
+(rf/reg-event-fx
+ :mqtt/subscribe
+ (fn [_ [_ topics]]
+   (send-message! {:message/type :app.cmd/subscribe
+                   :message/topics topics})))
 
 (rf/reg-event-fx
  :save-ipv6

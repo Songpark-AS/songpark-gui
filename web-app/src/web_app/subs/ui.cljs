@@ -37,6 +37,11 @@
    (:selected-teleporters-staging db)))
 
 (rf/reg-sub
+ :session/started?
+ (fn [db _]
+   (:session/started? db)))
+
+(rf/reg-sub
  :teleporters
  (fn [db _]
    (:teleporters db)))
@@ -51,6 +56,11 @@
  (fn [db _]
    (:mqtt/data db)))
 
+
+(rf/reg-sub
+ :jam
+ (fn [db _]
+   (:jam db)))
 
 (comment
   @(rf/subscribe [:data/msg])

@@ -12,4 +12,4 @@
 (defmethod message/dispatch :app.cmd/unsubscribe [{:message/keys [topics]
                                                    :keys [mqtt-manager]}]
   (log/debug ::unsubscribe (str "Unsubscribing: " topics))
-  (protocol.mqtt.manager/unsubscribe topics))
+  (protocol.mqtt.manager/unsubscribe mqtt-manager topics))
