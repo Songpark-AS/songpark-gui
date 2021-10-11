@@ -79,7 +79,7 @@
 (rf/reg-event-fx
  :fetch-teleporters
  (fn [_ _]
-   {:dispatch [:http/get "http://192.168.11.123:3000/api/app" nil :set-teleporters]}))
+   {:dispatch [:http/get "http://127.0.0.1:3000/api/app" nil :set-teleporters]}))
 
 (rf/reg-event-fx
  :start-session
@@ -117,7 +117,7 @@
   (rf/reg-event-fx
    :teleporter/status
    (fn [{db :db} [_ data]]
-     {:dispatch [:http/get "http://192.168.11.123:3000/api/client/connect" data :teleporter/response]}))
+     {:dispatch [:http/get "http://127.0.0.1:3000/api/client/connect" data :teleporter/response]}))
 
   (log/info @re-frame.db/app-db)
 
