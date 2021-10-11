@@ -107,7 +107,7 @@
 (defn handle-selection-action-select []
   (let [selected-teleporters-staging @(rf/subscribe [:selected-teleporters-staging])]
     (rf/dispatch [:set-selected-teleporters selected-teleporters-staging]))
-  (rfe/push-state :views/session)
+  (rfe/push-state :views/jam)
   (rf/dispatch [:set-tp-list-selection-mode false]))
 
 (defn selection-action-bar []

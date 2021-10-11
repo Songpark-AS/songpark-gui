@@ -4,5 +4,5 @@
   {:teleporters []
    :selected-teleporters []
    :selected-teleporters-staging []
-   :session/started? false
+   :jam/started? false
    :tp-list-selection-mode false})

@@ -37,9 +37,9 @@
    (:selected-teleporters-staging db)))
 
 (rf/reg-sub
- :session/started?
+ :jam/started?
  (fn [db _]
-   (:session/started? db)))
+   (:jam/started? db)))
 
 (rf/reg-sub
  :teleporters
