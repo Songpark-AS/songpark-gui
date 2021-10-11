@@ -11,7 +11,7 @@
 
 (defonce match (r/atom nil))
 
-(defn SessionIcon []
+(defn JamIcon []
   [:> ControlOutlined])
 (defn TeleportersIcon []
   [:> UnorderedListOutlined])
@@ -22,7 +22,7 @@
     [:> Layout.Sider {:breakpoint "lg"
                       :collapsed-width "0"}
      [:> Menu {:theme "dark" :mode "inline" :selected-keys (:name (:data @match))}
-      [:> Menu.Item {:key :views/session :icon (r/as-element [SessionIcon]) :on-click #(rfe/push-state :views/session)} "Session"]
+      [:> Menu.Item {:key :views/jam :icon (r/as-element [JamIcon]) :on-click #(rfe/push-state :views/jam)} "Jam"]
       [:> Menu.Item {:key :views/teleporters :icon (r/as-element [TeleportersIcon]) :on-click #(rfe/push-state :views/teleporters)} "Teleporters"]]
      ]
     [:> Layout
@@ -34,12 +34,12 @@
          )]]
      (if @match
        (let [name (:name (:data @match))]
-       [mobile-navbar {:navbar-items [{:title "Session"
-                                       :icon-component (if (= name :views/session)
+       [mobile-navbar {:navbar-items [{:title "Jam"
+                                       :icon-component (if (= name :views/jam)
                                                          ControlFilled
                                                          ControlOutlined)
-                                       :on-click #(rfe/push-state :views/session)
-                                       :active? (= name :views/session)}
+                                       :on-click #(rfe/push-state :views/jam)
+                                       :active? (= name :views/jam)}
                                       {:title "Teleporters"
                                        :icon-component UnorderedListOutlined
                                        :on-click #(rfe/push-state :views/teleporters)

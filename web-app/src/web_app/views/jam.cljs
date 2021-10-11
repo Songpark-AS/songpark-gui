@@ -1,4 +1,4 @@
-(ns web-app.views.session
+(ns web-app.views.jam
   (:require
    [re-frame.core :as rf]
    [reitit.frontend.easy :as rfe]
@@ -9,12 +9,12 @@
    ["antd" :refer [Button Slider]]
    ))
 
-;; Here be session view
+;; Here be jam view
 ;; Select two teleporters with views.teleporter.list
 
 ;; This view will contain
 ;; View controls of both teleporters
-;; Start/stop session buttons
+;; Start/stop jam buttons
 
 
 (def styles {:teleporters-container {:display :flex
@@ -62,37 +62,35 @@
                  :on-change (fn [value] (on-balance-value-change uuid value))}]
      ])
 
-(defn start-session []
+(defn start-jam []
   (let [selected-teleporters @(rf/subscribe [:selected-teleporters])]
-    (log/debug ::start-session (str "selected teleporters" selected-teleporters))
-    (log/debug ::start-session "select-keys: " (select-keys selected-teleporters [:teleporter/uuid]))
-    (rf/dispatch [:start-session (mapv #(select-keys % [:teleporter/uuid]) selected-teleporters)])
+    (rf/dispatch [:start-jam (mapv #(select-keys % [:teleporter/uuid]) selected-teleporters)])
     )
   )
 
-(defn session-controls []
-  [:div.session-controls
-   [:> Button {:type "primary" :on-click #(start-session)} "Start session"]
-   [:> Button {:type "danger"} "Stop session"]])
+(defn stop-jam [jam]
+  (log/debug ::stop-jam jam)
+  (rf/dispatch [:stop-jam (:jam/uuid jam)]))
+
+(defn jam-controls []
+  (let [jam (rf/subscribe [:jam])
+        started? (rf/subscribe [:jam/started?])]
+    [:div.jam-controls
+     (if (not (true? @started?))
+       [:> Button {:type "primary" :on-click #(start-jam)} "Start jam"]
+       [:> Button {:type "danger" :on-click #(stop-jam @jam) } "Stop jam"])]))
 
 
-(defn subscribe-to-jam [jam]
-  (log/debug ::subscribe-to-jam jam)
-  (rf/dispatch [:mqtt/subscribe [(str (:jam/uuid jam))]])
-  (rf/dispatch [:session/set-started? true]))
 
 (defn index []
   (let [selected-teleporters (rf/subscribe [:selected-teleporters])
         jam (rf/subscribe [:jam])
-        session-started? (rf/subscribe [:session/started?])
+        started? (rf/subscribe [:jam/started?])
         num-selected-teleporters (count @selected-teleporters)]
-    (when (and (not (nil? @jam))
-               (not @session-started?))
-      (subscribe-to-jam @jam))
-    [:div.session-view
-     [:h1 "Session view"]
+    [:div.jam-view
+     [:h1 "Jam view"]
      (when (>= num-selected-teleporters 2)
-       [session-controls])
+       [jam-controls])
      (if (> num-selected-teleporters 0)
        (map tp-panel @selected-teleporters)
        [:p "No teleporters selected, select teleporters "

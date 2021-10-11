@@ -51,24 +51,24 @@
   font-weight: 800;
 }
 
-.session-view {
+.jam-view {
   display: flex;
   flex-direction: column;
   align-items: center;
   height: 100%;
   padding: 1rem;
 }
-.session-view h1 {
+.jam-view h1 {
   user-select: none;
 }
-.session-view .tp-panel {
+.jam-view .tp-panel {
   width: 100%;
   margin: 1rem 0;
 }
-.session-view .session-controls {
+.jam-view .jam-controls {
   margin: 1rem 0;
 }
-.session-view .session-controls .ant-btn:not(:last-child) {
+.jam-view .jam-controls .ant-btn:not(:last-child) {
   margin-right: 0.4rem;
 }
 

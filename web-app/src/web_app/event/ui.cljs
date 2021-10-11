@@ -51,10 +51,10 @@
  (fn [db [_ teleporters]]
    (assoc db :selected-teleporters-staging teleporters)))
 
-(rf/reg-event-db
- :set-jam
- (fn [db [_ jam]]
-   (assoc db :jam jam)))
+;; (rf/reg-event-db
+;;  :set-jam
+;;  (fn [db [_ jam]]
+;;    (assoc db :jam jam)))
 
 (rf/reg-event-db
  :teleporter/response
@@ -69,12 +69,35 @@
                       :mqtt/password password})))
 
 (rf/reg-event-db
- :session/set-started?
+ :jam/started?
  (fn [db [_ started?]]
    (assoc db
-          :session/started? started?)))
+          :jam/started? started?)))
 
 ;; TODO: get config vars from a config.edn for this
+
+(rf/reg-event-fx
+ :subscribe-jam
+ (fn [_ [_ jam]]
+   (let [uuid (:jam/uuid jam)]
+     {:dispatch-n [[:mqtt/subscribe [(str uuid)]] [:jam/started? true]]})))
+
+(rf/reg-event-fx
+ :set-jam
+ (fn [cofx [_ jam]]
+   {:db (assoc (:db cofx) :jam jam)
+    :fx [[:dispatch [:subscribe-jam jam]]]}
+   ))
+
+(rf/reg-event-fx
+ :on-jam-deleted
+ (fn [cofx [_ response]]
+   (log/debug ::on-jam-deleted "response" response)
+   (let [jam (rf/subscribe [:jam])]
+     {:fx [
+           [:dispatch [:mqtt/unsubscribe [(str (:jam/uuid @jam))]]]
+           [:dispatch [:jam/started false]]
+           ]})))
 
 (rf/reg-event-fx
  :fetch-teleporters
@@ -82,9 +105,15 @@
    {:dispatch [:http/get "http://127.0.0.1:3000/api/app" nil :set-teleporters]}))
 
 (rf/reg-event-fx
- :start-session
+ :start-jam
  (fn [_ [_ uuids]]
    {:dispatch [:http/put "http://127.0.0.1:3000/api/jam" uuids :set-jam]}))
+
+(rf/reg-event-fx
+ :stop-jam
+ (fn [_ [_ jam-uuid]]
+   {:dispatch [:http/delete "http://127.0.0.1:3000/api/jam" {:jam/uuid jam-uuid} :on-jam-deleted]}))
+
 
 (rf/reg-event-fx
  :save-ipv4
@@ -98,6 +127,12 @@
  :mqtt/subscribe
  (fn [_ [_ topics]]
    (send-message! {:message/type :app.cmd/subscribe
+                   :message/topics topics})))
+
+(rf/reg-event-fx
+ :mqtt/unsubscribe
+ (fn [_ [_ topics]]
+   (send-message! {:message/type :app.cmd/unsubscribe
                    :message/topics topics})))
 
 (rf/reg-event-fx
