@@ -96,7 +96,7 @@
    (let [jam (rf/subscribe [:jam])]
      {:fx [
            [:dispatch [:mqtt/unsubscribe [(str (:jam/uuid @jam))]]]
-           [:dispatch [:jam/started false]]
+           [:dispatch [:jam/started? false]]
            ]})))
 
 (rf/reg-event-fx
