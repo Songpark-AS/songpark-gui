@@ -4,7 +4,7 @@
             [taoensso.timbre :as log]
             [songpark.common.taxonomy.teleporter]
             ;; [songpark.common.taxonomy.mqtt]
-            [songpark.common.config :as config]
+            ;; [songpark.common.config :as config]
             ;; [app.config :as app.config]
             [web-app.communication :as communication]
             [web-app.event :as event]
@@ -13,6 +13,7 @@
             [web-app.mqtt :as mqtt]
             [web-app.message :as message]
             [web-app.api :as api]
+            ["/web_app/config" :as config]
             ))
 
 (defonce -system (atom nil))
@@ -35,32 +36,38 @@
 
 (defn init-manager [settings]
   (map->InitManager settings))
+(comment
+  (let [webapp-config (js->clj config)]
+    (:mqtt config))
 
+  )
 (defn- system-map [config-settings]
-  (let [#_#_config-manager (component/start (app.config/config-manager config-settings))]
+  (let [#_#_config-manager (component/start (app.config/config-manager config-settings))
+        webapp-config (js->clj config :keywordize-keys true)]
+    (log/debug ::system-map "webapp-config: " webapp-config)
     (component/system-map
      ;; :config-manager config-manager
 
      :init          (component/using
-                     (init-manager (:init @config/config))
+                     (init-manager (:init webapp-config))
                      [])
      :logging-manager (component/using
-                       (logging/logging-manager (:logging-manager @config/config))
+                       (logging/logging-manager (:logging-manager webapp-config))
                        [])
      :event-manager (component/using
-                     (event/event-manager (:event-manager @config/config))
+                     (event/event-manager (:event-manager webapp-config))
                      [])
      ;; :i18n-manager (component/using
-     ;;                (i18n/i18n-manager (:i18n-manager @config/config))
+     ;;                (i18n/i18n-manager (:i18n-manager @webapp-config/config))
      ;;                [])
      :communication-manager (component/using
-                             (communication/communication-manager (:communication-manager @config/config))
+                             (communication/communication-manager (:communication-manager webapp-config))
                              [])
      :api-manager (component/using
                    (api/api-manager {:injection-ks [:message-service]})
                    [:message-service])
      :mqtt-manager (component/using
-                    (mqtt/mqtt-manager (:mqtt-settings @config/config))
+                    (mqtt/mqtt-manager (:mqtt webapp-config))
                     [])
      :message-service (component/using
                        (message/message-service {:injection-ks [:mqtt-manager]})
