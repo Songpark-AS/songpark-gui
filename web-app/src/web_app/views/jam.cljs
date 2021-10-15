@@ -6,6 +6,7 @@
    [taoensso.timbre :as log]
    [web-app.mqtt :as mqtt]
    [web-app.api :refer [send-message!]]
+   [web-app.utils :refer [scale-value]]
    ["antd" :refer [Button Slider]]
    ))
 
@@ -31,27 +32,42 @@
   (log/debug ::on-volume-value-change (str "Change volume of tp on topic: " topic " to: " value))
   (swap! times conj (system-time))
   (when (> (- (system-time) @last-time) 50)
-    (send-message! {:message/type :teleporter.cmd/set-volume
+    (send-message! {:message/type :teleporter.cmd.volume/global
                     :message/topic topic
-                    :message/body {:message/type :teleporter.msg/info
-                                   :audio/volume value}})
+                    :message/body {:message/type :teleporter.cmd.volume/global
+                                   :teleporter/volume value}})
     (reset! last-time (system-time)))
   )
 
-(defn on-balance-value-change [tp value]
-  (log/debug ::on-balance-value-change (str "Change balance of tp: " tp " to: " value)))
+(defn on-balance-value-change [topic value]
+  (log/debug ::on-balance-value-change (str "Change balance of tp on topic: " topic " to: " value))
+
+  (swap! times conj (system-time))
+  (when (> (- (system-time) @last-time) 50)
+    (send-message! {:message/type :teleporter.cmd/balance
+                    :message/topic topic
+                    :message/body {:message/type :teleporter.cmd/balance
+                                   :teleporter/balance value}})
+    (reset! last-time (system-time)))
+
+  )
 
 
 (defn tp-panel [{:teleporter/keys [uuid nickname]}]
     [:div.tp-panel {:key (str "tp-panel-" uuid)}
      [:h2 nickname]
+     [:h4 "Status:"]
+     [:div.tp-status
+      [:pre "Volume: 80
+Balance: 0"]
+      ]
      [:h4 "Volume:"]
      [:> Slider {:style (:slider styles)
                  :min 0
                  :max 1
                  :step 0.01
                  :default-value 0.8
-                 :tip-formatter (fn [x] (Math/floor (* x 100)))
+                 :tip-formatter (fn [x] (int (* x 100)))
                  :on-change (fn [value] (on-volume-value-change uuid value))}]
      [:h4 "Balance:"]
      [:> Slider {:style (:slider styles)
@@ -59,6 +75,7 @@
                  :max 1
                  :step 0.01
                  :default-value 0.5
+                 :tip-formatter (fn [x] (int (scale-value x [0 1] [-50 50])))
                  :on-change (fn [value] (on-balance-value-change uuid value))}]
      ])
 
@@ -86,13 +103,16 @@
   (let [selected-teleporters (rf/subscribe [:selected-teleporters])
         jam (rf/subscribe [:jam])
         started? (rf/subscribe [:jam/started?])
-        num-selected-teleporters (count @selected-teleporters)]
+        num-selected-teleporters (count (keys @selected-teleporters))]
     [:div.jam-view
      [:h1 "Jam view"]
      (when (>= num-selected-teleporters 2)
        [jam-controls])
      (if (> num-selected-teleporters 0)
-       (map tp-panel @selected-teleporters)
+       ;; (map tp-panel @selected-teleporters)
+       (for [[_ tp] @selected-teleporters]
+         [tp-panel tp]
+         )
        [:p "No teleporters selected, select teleporters "
         [:a {:href (rfe/href :views/teleporters)} "here"]])
      ])

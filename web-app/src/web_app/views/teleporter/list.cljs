@@ -106,7 +106,9 @@
 
 (defn handle-selection-action-select []
   (let [selected-teleporters-staging @(rf/subscribe [:selected-teleporters-staging])]
-    (rf/dispatch [:set-selected-teleporters selected-teleporters-staging]))
+    (rf/dispatch [:set-selected-teleporters (->> selected-teleporters-staging
+                                                 (map (juxt :teleporter/uuid identity))
+                                                 (into {}))]))
   (rfe/push-state :views/jam)
   (rf/dispatch [:set-tp-list-selection-mode false]))
 
