@@ -87,7 +87,7 @@
    :subscribe-jam
    (fn [_ [_ jam]]
      (let [uuid (:jam/uuid jam)]
-       {:dispatch-n [[:mqtt/subscribe [(str uuid)]] [:jam/started? true]]})))
+       {:dispatch-n [[:mqtt/subscribe (str uuid)] [:jam/started? true]]})))
 
   (rf/reg-event-fx
    :set-jam
@@ -132,15 +132,15 @@
 
   (rf/reg-event-fx
    :mqtt/subscribe
-   (fn [_ [_ topics]]
+   (fn [_ [_ topic]]
      (send-message! {:message/type :app.cmd/subscribe
-                     :message/topics topics})))
+                     :message/topic topic})))
 
   (rf/reg-event-fx
    :mqtt/unsubscribe
-   (fn [_ [_ topics]]
+   (fn [_ [_ topic]]
      (send-message! {:message/type :app.cmd/unsubscribe
-                     :message/topics topics})))
+                     :message/topic topic})))
 
   (rf/reg-event-fx
    :save-ipv6
