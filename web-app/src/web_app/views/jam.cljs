@@ -1,14 +1,12 @@
 (ns web-app.views.jam
-  (:require
-   [re-frame.core :as rf]
-   [reitit.frontend.easy :as rfe]
-   [reagent.core :as r]
-   [taoensso.timbre :as log]
-   [web-app.mqtt :as mqtt]
-   [web-app.api :refer [send-message!]]
-   [web-app.utils :refer [scale-value]]
-   ["antd" :refer [Button Slider]]
-   ))
+  (:require ["antd" :refer [Button Slider]]
+            [re-frame.core :as rf]
+            [reagent.core :as r]
+            [reitit.frontend.easy :as rfe]
+            [taoensso.timbre :as log]
+            [web-app.api :refer [send-message!]]
+            [web-app.mqtt :as mqtt]
+            [web-app.utils :refer [scale-value]]))
 
 ;; Here be jam view
 ;; Select two teleporters with views.teleporter.list
@@ -26,7 +24,7 @@
 
 (def times (atom ()))
 (def last-time (atom 0))
-(def topic "d7d52eea-c597-4a90-bd4d-abfad567075d")
+;;(def topic "d7d52eea-c597-4a90-bd4d-abfad567075d")
 
 (defn on-volume-value-change [topic value]
   (log/debug ::on-volume-value-change (str "Change volume of tp on topic: " topic " to: " value))
@@ -49,7 +47,6 @@
                     :message/body {:message/type :teleporter.cmd/balance
                                    :teleporter/balance value}})
     (reset! last-time (system-time)))
-
   )
 
 
@@ -81,9 +78,7 @@ Balance: 0"]
 
 (defn start-jam []
   (let [selected-teleporters @(rf/subscribe [:selected-teleporters])]
-    (rf/dispatch [:start-jam (mapv #(select-keys % [:teleporter/uuid]) selected-teleporters)])
-    )
-  )
+    (rf/dispatch [:start-jam (mapv #(select-keys % [:teleporter/uuid]) (vals selected-teleporters))])))
 
 (defn stop-jam [jam]
   (log/debug ::stop-jam jam)
