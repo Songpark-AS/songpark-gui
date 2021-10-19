@@ -10,8 +10,7 @@
             [songpark.common.config :as config]
             [songpark.common.communication :refer [writer]]
             [nano-id.core :refer [nano-id]]
-            [web-app.mqtt.client :refer [mqtt-client]]
-            ))
+            [web-app.mqtt.client :refer [mqtt-client]]))
 
 (def reader (transit/reader :json))
 
@@ -36,8 +35,7 @@
   (let [payload (<-transit ^String(.-payloadString message))
         topic ^String(.-destinationName message)]
     (->> (merge payload {:message/topic topic})
-         handle-message)
-  ))
+         handle-message)))
 
 (defn- subscribe* [{:keys [client] :as mqtt-manager} topics]
     (protocol.mqtt.client/subscribe client topics on-message))
@@ -78,8 +76,7 @@
   (unsubscribe [this topics]
     (unsubscribe* this topics))
   (publish [this topic msg]
-    (publish* this topic msg))
-  )
+    (publish* this topic msg)))
 
 
 (defn mqtt-manager [settings]
