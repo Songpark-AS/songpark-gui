@@ -44,7 +44,6 @@
 (defn- system-map [config-settings]
   (let [#_#_config-manager (component/start (app.config/config-manager config-settings))
         webapp-config (js->clj config :keywordize-keys true)]
-    (log/debug ::system-map "webapp-config: " webapp-config)
     (component/system-map
      ;; :config-manager config-manager
 

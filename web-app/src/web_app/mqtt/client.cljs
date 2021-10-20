@@ -37,8 +37,8 @@
   (connect [this]
     (let [client ^Paho/Client(:client this)]
       (log/debug ::MqttClient.connect (js->clj client :keywordize-keys true))
-      (.connect client #js {:userName "webapp"
-                            :password "SecretPass"
+      (.connect client #js {:userName (:username config)
+                            :password (:password config)
                             :reconnect true
                             :onSuccess #(on-connect % this)})
       ))
@@ -75,7 +75,7 @@
    (let [topic-handlers (atom {})]
      {:config config
       :topic-handlers topic-handlers
-      :client (let [{:keys [host port client-id on-message]} config
+      :client (let [{:keys [host port client-id on-message username password]} config
                     client (Paho/Client. host port client-id)]
                 (set! (.-onConnectionLost client) (fn [& args] (on-connection-lost args)))
                 (set! (.-onMessageArrived client) (fn [message] (on-message message)))
