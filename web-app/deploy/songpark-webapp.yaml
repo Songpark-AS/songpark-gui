@@ -52,10 +52,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - spwa.inonit.no
-    secretName: spwa-inonit-no-tls
+    - songpark.inonit.no
+    secretName: songpark-inonit-no-tls
   rules:
-  - host: spwa.inonit.no
+  - host: songpark.inonit.no
     http:
       paths:
       - path: /
