@@ -2,9 +2,9 @@
   (:require [re-frame.core :as rf]
             [taoensso.timbre :as log]
             [web-app.api :refer [send-message!]]
+            [web-app.data :as data]
             [web-app.mqtt :as mqtt]
-            ["/web_app/config" :as config]
-            ))
+            ["/web_app/config" :as config]))
 
 
 ;; (rf/reg-event-db
@@ -92,6 +92,7 @@
   (rf/reg-event-fx
    :set-jam
    (fn [cofx [_ jam]]
+     (data/set-jam-id! (:jam/id jam))
      {:db (assoc (:db cofx) :jam jam)
       :fx [[:dispatch [:subscribe-jam jam]]]}
      ))

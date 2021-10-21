@@ -19,62 +19,71 @@
 (def styles {:teleporters-container {:display :flex
                                      :flex-direction :row
                                      :align-items :center
-                                     :justify-content :space-around}
-             })
+                                     :justify-content :space-around}})
 
 (def times (atom ()))
 (def last-time (atom 0))
 ;;(def topic "d7d52eea-c597-4a90-bd4d-abfad567075d")
 
-(defn on-volume-value-change [topic value]
-  (log/debug ::on-volume-value-change (str "Change volume of tp on topic: " topic " to: " value))
+(defn on-global-volume-change [global tp-id value]
+  (log/debug ::on-global-volume-change {:tp-id tp-id
+                                        :value value})
+  (reset! global value)
   (swap! times conj (system-time))
   (when (> (- (system-time) @last-time) 50)
-    (send-message! {:message/type :teleporter.cmd.volume/global
-                    :message/topic topic
-                    :message/body {:message/type :teleporter.cmd.volume/global
+    (send-message! {:message/type :teleporter.cmd/global-volume
+                    :message/body {:teleporter/id tp-id
                                    :teleporter/volume value}})
-    (reset! last-time (system-time)))
-  )
+    (reset! last-time (system-time))))
 
-(defn on-balance-value-change [topic value]
-  (log/debug ::on-balance-value-change (str "Change balance of tp on topic: " topic " to: " value))
+(defn on-network-volume-change [network tp-id value]
+  (log/debug ::on-network-volume-change {:tp-id tp-id
+                                         :value value})
 
+  (reset! network value)
   (swap! times conj (system-time))
   (when (> (- (system-time) @last-time) 50)
-    (send-message! {:message/type :teleporter.cmd/balance
-                    :message/topic topic
-                    :message/body {:message/type :teleporter.cmd/balance
-                                   :teleporter/balance value}})
-    (reset! last-time (system-time)))
-  )
+    (send-message! {:message/type :teleporter.cmd/network-volume
+                    :message/body {:teleporter/id tp-id
+                                   :teleporter/volume value}})
+    (reset! last-time (system-time))))
+
+(defn- tp-status [global network]
+  [:<>
+   [:h3 "Status"]
+   [:div.tp-status
+    [:div "Global volume " @global]
+    [:div "Network volume " @network]]])
+
+(defn tp-global-volume [uuid global]
+  [:<>
+   [:h3 "Global volume"]
+   [:> Slider {:style (:slider styles)
+               :min 0
+               :max 50
+               :step 1
+               :value @global
+               :on-change (fn [value] (on-global-volume-change global uuid value))}]])
+
+(defn tp-network-volume [uuid network]
+  [:<>
+   [:h3 "Network volume"]
+   [:> Slider {:style (:slider styles)
+               :min 0
+               :max 50
+               :step 1
+               :value @network
+               :on-change (fn [value] (on-network-volume-change network uuid value))}]])
 
 
 (defn tp-panel [{:teleporter/keys [uuid nickname]}]
+  (r/with-let [global (r/atom 50)
+               network (r/atom 50)]
     [:div.tp-panel {:key (str "tp-panel-" uuid)}
      [:h2 nickname]
-     [:h4 "Status:"]
-     [:div.tp-status
-      [:pre "Volume: 80
-Balance: 0"]
-      ]
-     [:h4 "Volume:"]
-     [:> Slider {:style (:slider styles)
-                 :min 0
-                 :max 1
-                 :step 0.01
-                 :default-value 0.8
-                 :tip-formatter (fn [x] (int (* x 100)))
-                 :on-change (fn [value] (on-volume-value-change uuid value))}]
-     [:h4 "Balance:"]
-     [:> Slider {:style (:slider styles)
-                 :min 0
-                 :max 1
-                 :step 0.01
-                 :default-value 0.5
-                 :tip-formatter (fn [x] (int (scale-value x [0 1] [-50 50])))
-                 :on-change (fn [value] (on-balance-value-change uuid value))}]
-     ])
+     [tp-status global network]
+     [tp-global-volume uuid global]
+     [tp-network-volume uuid network]]))
 
 (defn start-jam []
   (let [selected-teleporters @(rf/subscribe [:selected-teleporters])]

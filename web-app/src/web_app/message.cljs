@@ -4,8 +4,7 @@
             [songpark.common.protocol.message :as protocol.message]
             [web-app.message.dispatch :as dispatch]
             [songpark.common.protocol.mqtt.manager :as protocol.mqtt.manager]
-            [goog.object :as gobj]
-            ))
+            [goog.object :as gobj]))
 
 (comment
   (send-message!* @store {:message/type :app.cmd/subscribe
