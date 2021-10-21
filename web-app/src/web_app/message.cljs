@@ -8,8 +8,7 @@
 
 (comment
   (send-message!* @store {:message/type :app.cmd/subscribe
-                          :message/topics ["foo" "bar"]
-                          })
+                          :message/topics ["foo" "bar"]})
   (pr-str (gobj/get (:client (:client (:mqtt @store))) "onMessageArrived"))
   (protocol.mqtt.manager/publish (:mqtt @store) "foo" {:message/type :teleporter.msg/info
                                                        :message/body "AUHSFIUAGYWIYF"})
