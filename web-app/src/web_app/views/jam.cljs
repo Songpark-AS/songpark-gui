@@ -36,6 +36,18 @@
                                    :teleporter/volume value}})
     (reset! last-time (system-time))))
 
+(defn on-local-volume-change [local tp-id value]
+  (log/debug ::on-local-volume-change {:tp-id tp-id
+                                       :value value})
+
+  (reset! local value)
+  (swap! times conj (system-time))
+  (when (> (- (system-time) @last-time) 50)
+    (send-message! {:message/type :teleporter.cmd/local-volume
+                    :message/body {:teleporter/id tp-id
+                                   :teleporter/volume value}})
+    (reset! last-time (system-time))))
+
 (defn on-network-volume-change [network tp-id value]
   (log/debug ::on-network-volume-change {:tp-id tp-id
                                          :value value})
@@ -48,42 +60,38 @@
                                    :teleporter/volume value}})
     (reset! last-time (system-time))))
 
-(defn- tp-status [global network]
+
+(defn- tp-status [global local network]
   [:<>
    [:h3 "Status"]
    [:div.tp-status
     [:div "Global volume " @global]
+    [:div "Local volume" @local]
     [:div "Network volume " @network]]])
 
-(defn tp-global-volume [uuid global]
-  [:<>
-   [:h3 "Global volume"]
-   [:> Slider {:style (:slider styles)
-               :min 0
-               :max 50
-               :step 1
-               :value @global
-               :on-change (fn [value] (on-global-volume-change global uuid value))}]])
-
-(defn tp-network-volume [uuid network]
-  [:<>
-   [:h3 "Network volume"]
-   [:> Slider {:style (:slider styles)
-               :min 0
-               :max 50
-               :step 1
-               :value @network
-               :on-change (fn [value] (on-network-volume-change network uuid value))}]])
+(defn tp-volume [header uuid value on-change]
+  (r/with-let [started? (rf/subscribe [:jam/started?])]
+    [:<>
+     [:h3 header]
+     [:> Slider {:style (:slider styles)
+                 :min 0
+                 :max 50
+                 :step 1
+                 :disabled (not @started?)
+                 :value @value
+                 :on-change #(on-change value uuid %)}]]))
 
 
 (defn tp-panel [{:teleporter/keys [uuid nickname]}]
   (r/with-let [global (r/atom 50)
-               network (r/atom 50)]
+               network (r/atom 50)
+               local (r/atom 50)]
     [:div.tp-panel {:key (str "tp-panel-" uuid)}
      [:h2 nickname]
-     [tp-status global network]
-     [tp-global-volume uuid global]
-     [tp-network-volume uuid network]]))
+     [tp-status global local network]
+     [tp-volume "Global volume" uuid global on-global-volume-change]
+     [tp-volume "Local volume" uuid local on-local-volume-change]
+     [tp-volume "Network volume" uuid network on-network-volume-change]]))
 
 (defn start-jam []
   (let [selected-teleporters @(rf/subscribe [:selected-teleporters])]
@@ -102,7 +110,6 @@
        [:> Button {:type "danger" :on-click #(stop-jam @jam) } "Stop jam"])]))
 
 
-
 (defn index []
   (let [selected-teleporters (rf/subscribe [:selected-teleporters])
         jam (rf/subscribe [:jam])
@@ -118,6 +125,4 @@
          [tp-panel tp]
          )
        [:p "No teleporters selected, select teleporters "
-        [:a {:href (rfe/href :views/teleporters)} "here"]])
-     ])
-  )
+        [:a {:href (rfe/href :views/teleporters)} "here"]])]))

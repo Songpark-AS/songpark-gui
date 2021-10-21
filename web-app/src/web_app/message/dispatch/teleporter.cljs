@@ -19,6 +19,11 @@
   (protocol.mqtt.manager/publish mqtt-manager (data/get-jam-teleporters)
                                  (select-message data)))
 
+(defmethod message/dispatch :teleporter.cmd/local-volume [{:keys [mqtt-manager]
+                                                             :as data}]
+  (protocol.mqtt.manager/publish mqtt-manager (data/get-jam-teleporters)
+                                 (select-message data)))
+
 (defmethod message/dispatch :teleporter.cmd/save-ipv4 [{:message/keys [topic body]
                                                         :keys [mqtt-manager]}]
   (log/debug ::save-ipv4 "body: " body)
