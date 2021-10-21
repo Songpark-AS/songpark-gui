@@ -15,7 +15,7 @@
 
 (defmethod message/dispatch :app.cmd/unsubscribe [{:message/keys [topic]
                                                    :keys [mqtt-manager]}]
-  (let [topic (data/get-jam)]
+  #_(let [topic (data/get-jam)]
     (log/debug ::unsubscribe (str "Unsubscribing: " topic))
     (protocol.mqtt.manager/unsubscribe mqtt-manager [topic])
     (data/clear-jam-id!)))
