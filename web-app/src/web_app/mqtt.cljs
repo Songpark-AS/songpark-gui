@@ -10,8 +10,10 @@
             [songpark.common.config :as config]
             [songpark.common.communication :refer [writer]]
             [nano-id.core :refer [nano-id]]
-            [web-app.mqtt.client :refer [mqtt-client]]))
+            [web-app.mqtt.client :refer [mqtt-client]]
+            [web-app.message.dispatch :as dispatch]))
 
+(defonce ^:private mqtt-manager* (atom nil))
 (def reader (transit/reader :json))
 
 (defn- ->transit [m]
@@ -28,14 +30,12 @@
   )
 
 
-(defn handle-message [message]
-  (log/debug ::handle-message "message: " message))
-
 (defn on-message [message]
   (let [payload (<-transit ^String(.-payloadString message))
         topic ^String(.-destinationName message)]
-    (->> (merge payload {:message/topic topic})
-         handle-message)))
+    (->> (merge payload {:message/topic topic
+                         :mqtt-manager @mqtt-manager*})
+         dispatch/handler)))
 
 (defn- subscribe* [{:keys [client] :as mqtt-manager} topics]
     (protocol.mqtt.client/subscribe client topics on-message))
@@ -53,23 +53,22 @@
   (start [this]
     (if started?
       this
-      (let [client (mqtt-client {:host host :port port :client-id (str client-id-prefix "-" (nano-id 10)) :on-message on-message})
-            test-topic-handler (fn [message]
-                                 (let [payload ^String (. message -payloadString)]
-                                   (prn "Test topic handler")
-                                   (prn (str "payload: " payload))))]
+      (let [client (mqtt-client {:host host :port port :client-id (str client-id-prefix "-" (nano-id 10)) :on-message on-message})]
         (log/info "Starting MQTTManager")
         (log/info "Connecting to broker")
         (protocol.mqtt.client/connect client)
-        #_(protocol.mqtt.client/subscribe client "hello" test-topic-handler)
-        (assoc this :started? true :client client))))
+        (let [this* (assoc this :started? true :client client)]
+          (reset! mqtt-manager* this*)
+          this*))))
   (stop [this]
     (if-not started?
       this
       (do (log/info "Stopping MQTTManager")
           (let [client (:client this)]
             (when (protocol.mqtt.client/connected? client)
-              (protocol.mqtt.client/disconnect client))))))
+              (protocol.mqtt.client/disconnect client)))
+          (reset! mqtt-manager* nil)
+          (assoc this :started? false :client nil))))
   protocol.mqtt.manager/IMqttManager
   (subscribe [this topics]
     (subscribe* this topics))
