@@ -2,17 +2,18 @@
   (:require [reitit.frontend :as r.frontend]
             [reitit.coercion.spec :as coercion.spec]
             [web-app.views.jam :as views.jam]
+            [web-app.views.logs :as views.logs]
             [web-app.views.teleporter.list :as views.teleporter.list]
-            [web-app.views.playground :as views.playground]
             [web-app.views.teleporter.detail :as views.teleporter.detail]))
+
 
 (def routes
   [["/"
     {:name :views/jam
      :view views.jam/index}]
-   ["/playground"
-    {:name :views/playground
-     :view views.playground/index}]
+   ["/logs"
+    {:name :views/logs
+     :view views.logs/index}]
    ["/teleporters"
     ["" 
      {:name :views/teleporters
