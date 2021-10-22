@@ -32,6 +32,12 @@
 ;;  :set-balance-sliding
 ;;  (fn [db [_ is-sliding]]
 ;;    (assoc-in db [:studio :balance-sliding] is-sliding)))
+
+
+(defn rotate-log [log log-msg]
+  (let [n (max 999 (dec (count log)))]
+    (conj (take n log) log-msg)))
+
 (let [webapp-config (js->clj config :keywordize-keys true)
       platform-api-base-url (str (:host (:platform webapp-config))
                              ":"
@@ -43,10 +49,12 @@
    (fn [db [_ value]]
      (assoc db :tp-list-selection-mode value)))
 
-  (rf/reg-event-db
+  (rf/reg-event-fx
    :set-teleporters
-   (fn [db [_ teleporters]]
-     (assoc db :teleporters teleporters)))
+   (fn [{:keys [db] :as cofx} [_ teleporters]]
+     (send-message! {:message/type :teleporters/listen
+                     :message/body teleporters})
+     {:db (assoc db :teleporters teleporters)}))
 
   (rf/reg-event-db
    :set-selected-teleporters
@@ -94,8 +102,7 @@
    (fn [cofx [_ jam]]
      (data/set-jam-id! (:jam/id jam))
      {:db (assoc (:db cofx) :jam jam)
-      :fx [[:dispatch [:subscribe-jam jam]]]}
-     ))
+      :fx [[:dispatch [:subscribe-jam jam]]]}))
 
   (rf/reg-event-fx
    :on-jam-deleted
@@ -149,6 +156,36 @@
                      :message/topic topic
                      :message/body {:message/type :teleporter.msg/info
                                     :values values}})))
+
+  (rf/reg-event-db
+   :teleporter/log
+   (fn [db [_ {:keys [log/level teleporter/id] :as log-msg}]]
+     (let [log (get-in db [:teleporter/log id level] [])
+           n (dec (count log))]
+       (assoc-in db [:teleporter/log id level] (rotate-log log log-msg)))))
+
+  (rf/reg-event-db
+   :view.log/teleporter
+   (fn [db [_ teleporter-id]]
+     (assoc db :view.log/teleporter teleporter-id)))
+
+  (rf/reg-event-db
+   :view.log/level
+   (fn [db [_ level]]
+     (assoc db :view.log/level level)))
+
+  (rf/reg-event-db
+   :teleporter.log/clear!
+   (fn [db [_ ?teleporter-id ?level]]
+     (cond
+       (and ?teleporter-id ?level)
+       (assoc-in db [:teleporter/log (str ?teleporter-id) ?level] nil)
+
+       ?teleporter-id
+       (assoc-in db [:teleporter/log (str ?teleporter-id)] nil)
+
+       :else
+       (dissoc db :teleporter/log))))
 
 
   ;; testing ground

@@ -120,9 +120,7 @@
      (when (>= num-selected-teleporters 2)
        [jam-controls])
      (if (> num-selected-teleporters 0)
-       ;; (map tp-panel @selected-teleporters)
        (for [[_ tp] @selected-teleporters]
-         [tp-panel tp]
-         )
+         [tp-panel tp])
        [:p "No teleporters selected, select teleporters "
         [:a {:href (rfe/href :views/teleporters)} "here"]])]))

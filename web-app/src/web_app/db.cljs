@@ -5,4 +5,5 @@
    :selected-teleporters []
    :selected-teleporters-staging []
    :jam/started? false
-   :tp-list-selection-mode false})
+   :tp-list-selection-mode false
+   :view.log/level :info})

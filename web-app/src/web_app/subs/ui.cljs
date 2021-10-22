@@ -62,6 +62,22 @@
  (fn [db _]
    (:jam db)))
 
+(rf/reg-sub
+ :teleporter/log
+ (fn [db [_ teleporter-id level]]
+   (get-in db [:teleporter/log (str teleporter-id) level])))
+
+(rf/reg-sub
+ :view.log/teleporter
+ (fn [db _]
+   (get db :view.log/teleporter)))
+
+(rf/reg-sub
+ :view.log/level
+ (fn [db _]
+   (get db :view.log/level)))
+
+
 (comment
   @(rf/subscribe [:data/msg])
   @(rf/subscribe [:teleporters])

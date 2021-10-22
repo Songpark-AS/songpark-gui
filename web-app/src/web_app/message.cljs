@@ -16,6 +16,9 @@
 
 (defonce store (atom nil))
 
+(defn send-via-mqtt! [topic msg]
+  (protocol.mqtt.manager/publish (-> store deref :mqtt-manager) topic msg))
+
 (defn send-message!* [message-service msg]
   (let [injections (-> message-service
                        (select-keys (:injection-ks message-service))
