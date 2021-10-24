@@ -1,12 +1,14 @@
 module.exports = {
     platform: {
-        port: 3000,
-        host: "http://127.0.0.1",
+        port: 443,
+        host: "https://spp.inonit.no",
         api_base: "/api",
     },
     mqtt: {
-        port: 8000,
-        host: "127.0.0.1",
+        port: 443,
+        host: "spmqtt.inonit.no",
         client_id_prefix: "app-",
+	username: "songpark",
+	password: "fNhWktaTlfDGlH4mbmaW6esOpgExs8wKIOBapDcq",
     }
 }

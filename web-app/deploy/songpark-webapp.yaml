@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: songpark-webapp
+  namespace: internal
+  labels:
+    customer: songpark
+    purpose: production
+spec:
+  selector:
+    matchLabels:
+      app: songpark-webapp
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: songpark-webapp
+    spec:
+      containers:
+      - image: 523581807964.dkr.ecr.eu-central-1.amazonaws.com/songpark-webapp:latest
+        imagePullPolicy: Always
+        name: songpark-webapp
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: songpark-webapp
+  namespace: internal
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  selector:
+    app: songpark-webapp
+  type: LoadBalancer
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: songpark-webapp
+  namespace: internal
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: "basic"
+    nginx.ingress.kubernetes.io/auth-secret: "songpark-webapp-basic-auth"
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt"
+    kubernetes.io/tls-acme: "true"
+
+spec:
+  tls:
+  - hosts:
+    - songpark.inonit.no
+    secretName: songpark-inonit-no-tls
+  rules:
+  - host: songpark.inonit.no
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: songpark-webapp
+            port:
+              number: 80
+
