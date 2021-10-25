@@ -40,7 +40,7 @@
       (.connect client #js {:userName (:username config)
                             :password (:password config)
                             :reconnect true
-                            :useSSL true
+                            ;; :useSSL true
                             :onSuccess #(on-connect % this)})
       ))
   (connected? [this]

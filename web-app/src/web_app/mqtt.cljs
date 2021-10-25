@@ -17,22 +17,26 @@
 (def reader (transit/reader :json))
 
 (defn- ->transit [m]
-  (transit/write writer m)
-  )
+  (transit/write writer m))
+
 (defn- <-transit [s]
   (transit/read reader s))
 
 (comment
   (<-transit (->transit {:foo "bar"}))
   (transit/read reader (transit/write writer {:foo "bar"}))
-  (message-handler (transit/write writer #js {:destinationName "World" :payloadString {:message/type :some.cmd/test
-                                                                                       :message/body {:this/id 1212}}}))
+  (message-handler (transit/write writer #js {:destinationName "World"
+                                              :payloadString {:message/type :some.cmd/test
+                                                              :message/body {:this/id 1212}}}))
   )
 
 
 (defn on-message [message]
-  (let [payload (<-transit ^String(.-payloadString message))
-        topic ^String(.-destinationName message)]
+  (let [;; advanced compilation did not like this being a js interop
+        ;; manually grabbing the payload via goog.object/get to fix it
+        payload-string (gobj/get message "payloadString")
+        payload (<-transit payload-string)
+        topic ^String (.-destinationName message)]
     (->> (merge payload {:message/topic topic
                          :mqtt-manager @mqtt-manager*})
          dispatch/handler)))
