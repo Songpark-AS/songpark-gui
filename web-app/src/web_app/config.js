@@ -5,7 +5,7 @@ module.exports = {
         api_base: "/api",
     },
     mqtt: {
-        port: 443,
+        port: 8000,
         host: "spmqtt.inonit.no",
         client_id_prefix: "app-",
 	username: "songpark",
