@@ -17,3 +17,7 @@
 /.shadow-cljs/
 
 /.dir-locals.el
+
+# temp local config file
+/src/web_app/config.local.js
+
