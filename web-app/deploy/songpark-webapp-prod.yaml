@@ -17,7 +17,7 @@ spec:
         app: songpark-webapp
     spec:
       containers:
-      - image: 523581807964.dkr.ecr.eu-central-1.amazonaws.com/songpark-webapp:latest
+      - image: 523581807964.dkr.ecr.eu-central-1.amazonaws.com/songpark-webapp:prod
         imagePullPolicy: Always
         name: songpark-webapp
         ports:
