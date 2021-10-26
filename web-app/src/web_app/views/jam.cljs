@@ -5,6 +5,7 @@
             [reitit.frontend.easy :as rfe]
             [taoensso.timbre :as log]
             [web-app.api :refer [send-message!]]
+            [web-app.message :refer [send-via-mqtt!]]
             [web-app.mqtt :as mqtt]
             [web-app.utils :refer [scale-value]]))
 
@@ -60,14 +61,25 @@
                                    :teleporter/volume value}})
     (reset! last-time (system-time))))
 
+(defn on-playout-delay-change [playout-delay tp-id value]
+  (log/debug ::on-playout-delay-change {:tp-id tp-id
+                                       :value value})
+  (reset! playout-delay value)
+  (swap! times conj (system-time))
+  (when (> (- (system-time) @last-time) 50)
+    (send-via-mqtt! (str tp-id) {:message/type :teleporter.cmd/set-playout-delay
+                                 :message/body {:teleporter/id tp-id
+                                                :teleporter/playout-delay value}})))
 
-(defn- tp-status [global local network]
+
+(defn- tp-status [global local network playout-delay]
   [:<>
    [:h3 "Status"]
    [:div.tp-status
     [:div "Global volume " @global]
     [:div "Local volume" @local]
-    [:div "Network volume " @network]]])
+    [:div "Network volume " @network]
+    [:div "Delay output " @playout-delay]]])
 
 (defn tp-volume [header uuid value on-change]
   (r/with-let [started? (rf/subscribe [:jam/started?])]
@@ -81,17 +93,29 @@
                  :value @value
                  :on-change #(on-change value uuid %)}]]))
 
+(defn tp-playout-delay [header uuid value on-change]
+  [:<>
+   [:h3 header]
+   [:> Slider {:style (:slider styles)
+               :min 0
+               :max 30
+               :step 1
+               :value @value
+               :on-change #(on-change value uuid %)}]])
+
 
 (defn tp-panel [{:teleporter/keys [uuid nickname]}]
   (r/with-let [global (r/atom 50)
                network (r/atom 50)
-               local (r/atom 50)]
+               local (r/atom 50)
+               playout-delay (r/atom 20)]
     [:div.tp-panel {:key (str "tp-panel-" uuid)}
      [:h2 nickname]
-     [tp-status global local network]
+     [tp-status global local network playout-delay]
      [tp-volume "Global volume" uuid global on-global-volume-change]
      [tp-volume "Local volume" uuid local on-local-volume-change]
-     [tp-volume "Network volume" uuid network on-network-volume-change]]))
+     [tp-volume "Network volume" uuid network on-network-volume-change]
+     [tp-playout-delay "Playout delay (in ms, default is 20)" uuid playout-delay on-playout-delay-change]]))
 
 (defn start-jam []
   (let [selected-teleporters @(rf/subscribe [:selected-teleporters])]
