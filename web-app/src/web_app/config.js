@@ -11,5 +11,5 @@ module.exports = {
         username: "songpark",
         password: "fNhWktaTlfDGlH4mbmaW6esOpgExs8wKIOBapDcq",
     },
-    version: 
+    version: "DEV"
 }

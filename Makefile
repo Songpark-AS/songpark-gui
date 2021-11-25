@@ -59,19 +59,19 @@ build-production: prebuild-production docker-build docker-tag-version docker-tag
 
 prebuild-staging:
 	@echo "Prebuilding staging"
-	sh $(DEPLOYMENTDIR)/prebuild.staging.sh
+	sh $(DEPLOYMENTDIR)/prebuild.staging.sh $(VERSION)
 
 prebuild-production:
 	@echo "Prebuilding production"
-	sh $(DEPLOYMENTDIR)/prebuild.production.sh
+	sh $(DEPLOYMENTDIR)/prebuild.production.sh $(VERSION)
 
 prebuild-dev:
 	@echo "Prebuilding dev"
-	sh $(DEPLOYMENTDIR)/prebuild.dev.sh
+	sh $(DEPLOYMENTDIR)/prebuild.dev.sh $(VERSION)
 
 prebuild-debug:
 	@echo "Prebuilding debug"
-	sh $(DEPLOYMENTDIR)/prebuild.debug.sh
+	sh $(DEPLOYMENTDIR)/prebuild.debug.sh $(VERSION)
 
 # Docker tagging
 
