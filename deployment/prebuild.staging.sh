@@ -24,9 +24,11 @@ echo "Compiling $PROJECT_NAME"
 cd $PROJECT_ROOT
 rm -rf resources/public/js/compiled/
 npm i
-npx shadow-cljs release app
+npx shadow-cljs release :app
+rm -rf resources/public/js/compiled/cljs-runtime
+rm -rf resources/public/js/manifest.edn
 cd ..
 
-echo "Restoring backup of config.js"
+echo "Restoring backup of $CONFIG_JS_FILE"
 
 mv $PROJECT_DIR/$CONFIG_JS_BACKUP_FILE $PROJECT_DIR/$CONFIG_JS_FILE
