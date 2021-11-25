@@ -10,5 +10,6 @@ module.exports = {
         client_id_prefix: "app-",
 	      username: "songpark",
 	      password: "testmctestson",
-    }
+    },
+    version: "DEV"
 }

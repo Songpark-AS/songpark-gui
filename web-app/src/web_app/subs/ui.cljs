@@ -22,6 +22,11 @@
 ;;    (get-in db [:studio :audio/balance-slider] 0)))
 
 (rf/reg-sub
+ :platform-version
+ (fn [db _]
+   (:platform/version db)))
+
+(rf/reg-sub
  :tp-list-selection-mode
  (fn [db _]
    (:tp-list-selection-mode db)))
@@ -68,14 +73,19 @@
    (get-in db [:teleporter/log (str teleporter-id) level])))
 
 (rf/reg-sub
- :view.log/teleporter
+ :view.telemetry.log/teleporter
  (fn [db _]
-   (get db :view.log/teleporter)))
+   (get db :view.telemetry.log/teleporter)))
 
 (rf/reg-sub
- :view.log/level
+ :view.telemetry.log/level
  (fn [db _]
-   (get db :view.log/level)))
+   (get db :view.telemetry.log/level)))
+
+(rf/reg-sub
+ :view.telemetry/tab
+ (fn [db _]
+   (get db :view.telemetry/tab "VERSIONS")))
 
 
 (comment

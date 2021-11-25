@@ -1,15 +1,15 @@
 (ns web-app.core
   (:require
+   [re-frame.core :as re-frame]
    [reagent.dom :as rdom]
    [reagent.core :as r]
-   [re-frame.core :as re-frame]
    [reitit.frontend.easy :as rfe]
+   [taoensso.timbre :as log]
    [web-app.events :as events]
-   [web-app.views :as views]
    [web-app.config :as config]
    [web-app.init :as init]
    [web-app.routes :refer [routes router]]
-   ))
+   [web-app.views :as views]))
 
 
 
@@ -17,7 +17,7 @@
 
 (defn dev-setup []
   (when config/debug?
-    (println "dev mode")))
+    (log/info "DEV MODE")))
 
 (defn init-router! []
   (rfe/start!

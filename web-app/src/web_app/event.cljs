@@ -23,8 +23,8 @@
       this
       (do (log/info "Starting EventManager")
           (rf/dispatch-sync [::initialize-db])
-          ;; (rf/dispatch [:set-teleporters (get-random-teleporters 7)])
           (rf/dispatch [:fetch-teleporters])
+          (rf/dispatch [:fetch-platform-version])
           ;; (rf/dispatch [:auth/whoami]) ;; check if we are logged in
           (assoc this
                  :started? true))))

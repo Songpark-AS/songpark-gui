@@ -1,12 +1,12 @@
 (ns web-app.views
   (:require
+   ["antd" :refer [Layout Layout.Sider Layout.Content Layout.Footer Menu Menu.Item]]
+   ["@ant-design/icons" :refer [ControlOutlined ControlFilled UnorderedListOutlined CopyOutlined]]
    [re-frame.core :as rf]
    [reagent.core :as r]
-   [taoensso.timbre :as log]
    [reitit.frontend.easy :as rfe]
-   [web-app.components.mobile-navbar :refer [mobile-navbar]]
-   ["antd" :refer [Layout Layout.Sider Layout.Content Layout.Footer Menu Menu.Item]]
-   ["@ant-design/icons" :refer [ControlOutlined ControlFilled UnorderedListOutlined CopyOutlined]]))
+   [taoensso.timbre :as log]
+   [web-app.components.mobile-navbar :refer [mobile-navbar]]))
 
 (defonce match (r/atom nil))
 
@@ -14,7 +14,7 @@
   [:> ControlOutlined])
 (defn TeleportersIcon []
   [:> UnorderedListOutlined])
-(defn LogsIcon []
+(defn TelemetryIcon []
   [:> CopyOutlined])
 
 (defn menu []
@@ -23,7 +23,7 @@
    [:> Menu {:theme "dark" :mode "inline" :selected-keys (:name (:data @match))}
     [:> Menu.Item {:key :views/jam :icon (r/as-element [JamIcon]) :on-click #(rfe/push-state :views/jam)} "Jam"]
     [:> Menu.Item {:key :views/teleporters :icon (r/as-element [TeleportersIcon]) :on-click #(rfe/push-state :views/teleporters)} "Teleporters"]
-    [:> Menu.Item {:key :views/logs :icon (r/as-element [LogsIcon]) :on-click #(rfe/push-state :views/logs)} "Logs"]]])
+    [:> Menu.Item {:key :views/telemetry :icon (r/as-element [TelemetryIcon]) :on-click #(rfe/push-state :views/telemetry)} "Telemetry"]]])
 
 (defn main []
   [:> Layout
@@ -44,10 +44,10 @@
                                        :icon-component UnorderedListOutlined
                                        :on-click #(rfe/push-state :views/teleporters)
                                        :active? (= name :views/teleporters)}
-                                      {:title "Logs"
+                                      {:title "Telemetry"
                                        :icon-component CopyOutlined
-                                       :on-click #(rfe/push-state :views/logs)
-                                       :active? (= name :views/logs)}]}]))])
+                                       :on-click #(rfe/push-state :views/telemetry)
+                                       :active? (= name :views/telemetry)}]}]))])
 
 (defn main-panel []
   [:div.main-panel
