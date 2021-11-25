@@ -61,6 +61,8 @@
  (fn [{:keys [db] :as cofx} [_ teleporters]]
    (send-message! {:message/type :teleporters/listen
                    :message/body teleporters})
+   (send-message! {:message/type :teleporters/listen-net-config-report
+                   :message/body teleporters})
    {:db (assoc db :teleporters teleporters)}))
 
 (rf/reg-event-db
@@ -179,6 +181,11 @@
    (let [log (get-in db [:teleporter/log id level] [])
          n (dec (count log))]
      (assoc-in db [:teleporter/log id level] (rotate-log log log-msg)))))
+
+(rf/reg-event-db
+ :teleporter/net-config
+ (fn [db [_ {:keys [teleporter/id teleporter/network-config]}]]
+   (assoc-in db [:teleporter/net-config id] network-config)))
 
 (rf/reg-event-db
  :view.telemetry.log/teleporter

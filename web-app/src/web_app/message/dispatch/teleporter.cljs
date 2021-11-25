@@ -42,6 +42,16 @@
       (log/info "Subscribing to " topic)
       (protocol.mqtt.manager/subscribe mqtt-manager [topic]))))
 
-
 (defmethod message/dispatch :teleporter/log [{:message/keys [body id]}]
   (rf/dispatch [:teleporter/log (assoc body :message/id id)]))
+
+(defmethod message/dispatch :teleporters/listen-net-config-report [{:keys [mqtt-manager]
+                                                                    :message/keys [body]}]
+  (doseq [id (map :teleporter/uuid body)]
+    (let [topic (str id "/net-config-report")]
+      (log/info "Subscribing to " topic)
+      (protocol.mqtt.manager/subscribe mqtt-manager [topic]))))
+
+(defmethod message/dispatch :teleporter/net-config-report [{:message/keys [body id]}]
+  (log/debug :net-config-report body)
+  (rf/dispatch [:teleporter/net-config body]))
