@@ -21,3 +21,6 @@ web-app/.shadow-cljs/
 # temp local config file
 web-app/src/web_app/config.local.js
 
+VERSION.git
+deployment/songpark-webapp.yaml
+

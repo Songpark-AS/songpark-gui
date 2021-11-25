@@ -5,7 +5,8 @@ metadata:
   namespace: internal
   labels:
     customer: songpark
-    purpose: production
+    purpose: VAR__TAG
+    version: VAR__VERSION
 spec:
   selector:
     matchLabels:
@@ -15,9 +16,10 @@ spec:
     metadata:
       labels:
         app: songpark-webapp
+        version: VAR__VERSION
     spec:
       containers:
-      - image: 523581807964.dkr.ecr.eu-central-1.amazonaws.com/songpark-webapp:prod
+      - image: 523581807964.dkr.ecr.eu-central-1.amazonaws.com/songpark-webapp:VAR__TAG
         imagePullPolicy: Always
         name: songpark-webapp
         ports:
@@ -65,4 +67,3 @@ spec:
             name: songpark-webapp
             port:
               number: 80
-
