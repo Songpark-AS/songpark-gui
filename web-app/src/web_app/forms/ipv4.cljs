@@ -84,12 +84,17 @@
     :name :ip/dhcp?}])
 
 (defn ipv4-config [uuid]
-  (let [form (form-ipv4 {} nil)
+  (let [network-config (rf/subscribe [:teleporter/net-config uuid])
+        form (form-ipv4 {} {:ip/address (:teleporter/local-ip @network-config)
+                            :ip/subnet (:teleporter/netmask-ip @network-config)
+                            :ip/gateway (:teleporter/gateway-ip @network-config)
+                            :ip/dhcp? (:teleporter/DHCP? @network-config)})
         data-form (rf/subscribe [:ez-wire.form/on-valid (:id form)])]
     (fn [tp-id]
       [:div.ipv4-form
        ;; [:pre (pr-str @data-form)]
        ;; [:pre (pr-str @(:data form))]
+       ;; [:pre (pr-str @network-config)]
        [form/as-table {} form]
        [:> Button {:type "primary" :disabled (not (or (:ip/dhcp? @(:data form))
                                                       (valid? data-form)))
