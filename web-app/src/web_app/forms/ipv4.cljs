@@ -85,10 +85,7 @@
 
 (defn ipv4-config [uuid]
   (let [network-config (rf/subscribe [:teleporter/net-config uuid])
-        form (form-ipv4 {} {:ip/address (:teleporter/local-ip @network-config)
-                            :ip/subnet (:teleporter/netmask-ip @network-config)
-                            :ip/gateway (:teleporter/gateway-ip @network-config)
-                            :ip/dhcp? (:teleporter/DHCP? @network-config)})
+        form (form-ipv4 {} @network-config)
         data-form (rf/subscribe [:ez-wire.form/on-valid (:id form)])]
     (fn [tp-id]
       [:div.ipv4-form
