@@ -1,3 +1,71 @@
 = Architecture
 
-Nothing yet
+== Web-app
+
+=== Software stack
+
+.What we use
+* https://github.com/day8/re-frame[re-frame]: State management library
+* https://github.com/reagent-project/reagent[Reagent]: Make React components with Clojure
+* https://github.com/facebook/react/[React]: Frontend library
+* https://github.com/sass/sass[SCSS]: Makes it easier to write and manage CSS
+* https://github.com/metosin/reitit[reitit]: Route management
+* https://github.com/emil0r/ez-wire[ez-wire]: Form managment
+* https://github.com/ptaoussanis/timbre[Timbre]: Logging library
+* https://github.com/stuartsierra/component[Component]: Framework for managing the lifecycle and dependencies of software components which have runtime state
+
+=== File structure
+
+[source]
+----
+.
+├── dev - Contains files to be used when running a development REPL
+├── karma.conf.js - Karma configuration, used for tests
+├── package.json - NPM packages
+├── package-lock.json - NPM packages
+├── post-install.js - Post installation script, copies neccessary css files
+├── resources
+│   ├── public - Contains files ready to be served by a web-server
+│   │   ├── css
+│   └── songpark.scss - Main style file
+├── shadow-cljs.edn - shadow-cljs config file + clojure(/script) packages
+└── src
+    └── web_app
+        ├── api.cljs - ApiManager
+        ├── communication.cljs - CommunicationManager
+        ├── components - Contains reagent components
+        ├── config.cljs - ConfigManager
+        ├── config.js - Contains configuration values
+        ├── core.cljs - App entrypoint
+        ├── data.cljs
+        ├── db.cljs - Contains initial re-frame app-db
+        ├── event - Contains re-frame event/effect handlers
+        ├── event.cljs - EventManager
+        ├── events.cljs - re-frame events
+        ├── forms - Contains the forms of the app
+        ├── init.cljs - System components init file
+        ├── logging.cljs - LoggingManager
+        ├── message
+        │   └── dispatch - Contains mqtt message handlers
+        │   │   ├── app.cljs
+        │   │   ├── interface.cljs
+        │   │   ├── jam.cljs
+        │   │   ├── platform.cljs
+        │   │   └── teleporter.cljs
+        │   └── dispatch.cljs
+        ├── message.cljs
+        ├── mqtt - Contains the mqtt client
+        │   └── client.cljs
+        ├── mqtt.cljs - MQTTManager
+        ├── routes.cljs - reitit routes
+        ├── subs - Contains re-frame subscription handlers
+        ├── subs.cljs - re-frame subscription handlers
+        ├── utils.cljs - Misc. utilities
+        └── views - contains the views of the app
+        │   ├── jam.cljs
+        │   ├── telemetry.cljs
+        │   └── teleporter
+        │       ├── detail.cljs
+        │       └── list.cljs
+        └── views.cljs - Main entrypoint for the views
+----
