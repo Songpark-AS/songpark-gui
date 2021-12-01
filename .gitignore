@@ -25,6 +25,3 @@ web-app/src/web_app/config.local.js
 
 VERSION.git
 deployment/songpark-webapp.yaml
-
-
-
