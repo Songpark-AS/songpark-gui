@@ -1,3 +1,9 @@
 == Deployment
 
-Nothing yet.
+We have a Makefile that we use to build Docker images of the application and deploy them to different namespaces on Kubernetes.
+
+When you run a build command for instance: `make build-staging` it will replace the `config.js` file with `config.staging.js` and it will insert the version number (derived from the current git commit hash) into the config file available as a variable within the application.
+
+Then it will build the image with docker and tag it appropriately.
+
+If you run `make deploy-staging` it will do everything as the build command but it will also push the docker image and deploy it to the kubernetes cluster.

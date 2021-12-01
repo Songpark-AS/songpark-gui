@@ -1,3 +1,18 @@
 = Logging
 
-Log to sentry.
+We use https://github.com/ptaoussanis/timbre[Timbre] as a logging tool. It gives us a flexible way to log with multiple log-levels and the ability to filter the messages by level, namespace and appender.
+
+It is simple to use and it handles stuff like automatic concatenation of strings so you don't need to do that yourself.
+
+.Example
+[source,clojure]
+----
+(log/debug ::my-module "Value of foo:" foo "Value of bar:" bar)
+----
+
+This gives us the following line in the javascript console log:
+
+[source]
+----
+2021-12-01T13:20:34.605Z DEBUG [cljs.user:1] - :cljs.user/my-module Value of foo: I am the value of foo Value of bar: I am the value of bar
+----

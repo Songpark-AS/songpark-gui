@@ -1,3 +1,22 @@
 == Configuration
+=== config.js
 
-Nothing yet.
+We use the `config.js` file to set environment specific variables.
+
+Since we want different values for different environments, there are multiple versions of this file corresponding to the environment it is configured for.
+
+When we build the application the file will be replaced with the version that is correct for the environment you are building for.
+
+.Variables
+[options="header"]
+|======
+|Variable |Description
+|platform.port |Port of platform
+|platform.host |Host of platform
+|platform.api_base |Base of platform API urls
+|mqtt.port |Port of MQTT broker
+|mqtt.host |Host of MQTT broker
+|mqtt.client_id_prefix |Prefix of the MQTT client id
+|mqtt.username |MQTT username
+|mqtt.password |MQTT password
+|version |The version of the application

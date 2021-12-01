@@ -2,6 +2,18 @@
 
 == Web-app
 
+=== The application
+
+When you open the app you will see the jam view with no teleporters selected.
+
+There is navigation bar that lets you navigate to the three main views: Jam, Teleporters, Telemetry.
+
+In the teleporters view you see a list of teleporters. Here you could select the teleporters you want to add to the jam and you can also go to a detail view of a specific teleporter where you can set network settings and send direct commands to the teleporter.
+
+After selecting two teleporters you are taken back to the jam view where you now have the option to start and stop the jam and change the volume of each teleporter.
+
+In the telemetry view you can see the logs from each teleporter, filter on the different log levels and see the versions of all of the components in the system.
+
 === Software stack
 
 .What we use
@@ -69,3 +81,20 @@
         │       └── list.cljs
         └── views.cljs - Main entrypoint for the views
 ----
+
+=== re-frame
+
+image::songpark-architecture-app.png[App]
+
+.App DB
+Source of truth in the app. It's a big map that holds all state for the app.
+
+.Subscriptions
+A subscription listens for changes in the database, in specific places in the database. When a change occurs, anything that references (uses) the subscription for getting that data, will automatically update. This is what is primarily used to trigger updates in views.
+
+.Events
+Events handles events (ie, something happened, a user clicked, a message arrived over MQTT, etc) and updates the App DB accordingly.
+
+.FX
+FX are almost like events, with one very important difference: They can cause side effects. Side effects can mean things like loading data from Platform, or communicate with a Teleporter.
+
