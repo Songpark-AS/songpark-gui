@@ -20,3 +20,4 @@ When we build the application the file will be replaced with the version that is
 |mqtt.username |MQTT username
 |mqtt.password |MQTT password
 |version |The version of the application
+|======
