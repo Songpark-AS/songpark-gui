@@ -14,6 +14,10 @@
   (send-via-mqtt! tp-id {:message/type :teleporter.cmd/hangup-all
                          :message/body {:teleporter/id tp-id}}))
 
+(defn- path-reset [tp-id]
+  (send-via-mqtt! tp-id {:message/type :teleporter.cmd/path-reset
+                         :message/body {:teleporter/id tp-id}}))
+
 (defn index [match]
   (let [uuid (:id (:path-params match))
         teleporters @(rf/subscribe [:teleporters])
@@ -24,8 +28,11 @@
 
      [:hr]
      [:h3 "Direct commands to the Teleporter"]
-     [:> Button {:type "danger"
-                 :on-click #(stop-all-streams uuid)} "Stop all streams"]
+     [:div.command-buttons
+      [:> Button {:type "danger"
+                  :on-click #(stop-all-streams uuid)} "Stop all streams"]
+      [:> Button {:type "danger"
+                  :on-click #(path-reset uuid)} "Path reset"]]
 
      [:hr]
      [:h3 "Network settings"]
