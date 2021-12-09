@@ -14,6 +14,10 @@ After selecting two teleporters you are taken back to the jam view where you now
 
 In the telemetry view you can see the logs from each teleporter, filter on the different log levels and see the versions of all of the components in the system.
 
+=== How is it connected to the other systems
+
+You can find an overview over the full system architecture and see how the app is connected to the other systems xref:master@songpark-docs::architecture/overview.adoc#_full_system_architecture[here]
+
 === Software stack
 
 .What we use
@@ -97,4 +101,3 @@ Events handles events (ie, something happened, a user clicked, a message arrived
 
 .FX
 FX are almost like events, with one very important difference: They can cause side effects. Side effects can mean things like loading data from Platform, or communicate with a Teleporter.
-

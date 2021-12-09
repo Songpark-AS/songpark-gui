@@ -6,4 +6,4 @@ When you run a build command for instance: `make build-staging` it will replace 
 
 Then it will build the image with docker and tag it appropriately.
 
-If you run `make deploy-staging` it will do everything as the build command but it will also push the docker image and deploy it to the kubernetes cluster.
+If you run `make deploy-staging` it will do everything the build command did but it will also push the docker image and deploy it to the kubernetes cluster.
