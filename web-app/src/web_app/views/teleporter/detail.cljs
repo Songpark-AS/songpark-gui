@@ -24,8 +24,9 @@
 
      [:hr]
      [:h3 "Direct commands to the Teleporter"]
-     [:> Button {:type "danger"
-                 :on-click #(stop-all-streams uuid)} "Stop all streams"]
+     [:div.command-buttons
+      [:> Button {:type "danger"
+                  :on-click #(stop-all-streams uuid)} "Stop all streams"]]
 
      [:hr]
      [:h3 "Network settings"]

@@ -104,6 +104,14 @@
                :on-change #(on-change value uuid %)}]])
 
 
+(defn tp-path-reset [tp-id]
+  (r/with-let [started? (rf/subscribe [:jam/started?])]
+    [:<>
+     [:> Button {:type "danger"
+                 :disabled (not @started?)
+                 :on-click #(send-via-mqtt! (str tp-id) {:message/type :teleporter.cmd/path-reset
+                                                         :message/body {:teleporter/id tp-id}})} "Path reset"]]))
+
 (defn tp-panel [{:teleporter/keys [uuid nickname]}]
   (r/with-let [global (r/atom 50)
                network (r/atom 50)
@@ -115,7 +123,8 @@
      [tp-volume "Global volume" uuid global on-global-volume-change]
      [tp-volume "Local volume" uuid local on-local-volume-change]
      [tp-volume "Network volume" uuid network on-network-volume-change]
-     [tp-playout-delay "Playout delay (in ms, default is 20)" uuid playout-delay on-playout-delay-change]]))
+     [tp-playout-delay "Playout delay (in ms, default is 20)" uuid playout-delay on-playout-delay-change]
+     [tp-path-reset uuid]]))
 
 (defn start-jam []
   (let [selected-teleporters @(rf/subscribe [:selected-teleporters])]

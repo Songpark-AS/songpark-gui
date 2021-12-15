@@ -112,5 +112,8 @@
 .teleporter-detail-view .ipv4-form table .error, .teleporter-detail-view .ipv6-form table .error {
   margin-top: 0.2rem;
 }
+.teleporter-detail-view .command-buttons button:not(:first-child) {
+  margin-left: 0.4rem;
+}
 
 /*# sourceMappingURL=songpark.css.map */
