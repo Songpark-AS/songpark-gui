@@ -5,7 +5,7 @@
             [cljs.core.async :as async :refer [go chan <! >!]]
             [reitit.frontend.easy :as rfe]
             ["antd" :refer [List List.Item List.Item.Meta Checkbox Button]]
-            ["@ant-design/icons" :refer [SettingFilled]]
+            ["@ant-design/icons" :refer [SettingFilled GlobalOutlined ApiOutlined]]
             [web-app.subs]
             [web-app.utils :refer [is-touch?]]))
 
@@ -127,6 +127,7 @@
         tp-list-selection-mode @(rf/subscribe [:tp-list-selection-mode])
         selected-teleporters-staging @(rf/subscribe [:selected-teleporters-staging])
         uuid (:teleporter/uuid teleporter)
+        online? @(rf/subscribe [:teleporter/online? (str uuid)])
         props (if touch?
                 {:on-touch-start #(long-tap teleporter handle-long-tap)
                  :on-touch-end #(short-tap teleporter handle-short-tap)
@@ -140,7 +141,11 @@
                      :disabled (and (empty? (filter #(= (str (:teleporter/uuid %)) (str uuid)) selected-teleporters-staging))
                                     (>= (count selected-teleporters-staging) max-num-selected-teleporters))
                      }])
-     [:> List.Item.Meta {:title (:teleporter/nickname teleporter) :description (r/as-element [:span (:teleporter/mac teleporter)])}]
+       [:> List.Item.Meta {:title (r/as-element [:span
+                                                 (if online? [:> GlobalOutlined {:className "tp-online-icon"}] [:> ApiOutlined {:className "tp-offline-icon"}])
+                                                 (:teleporter/nickname teleporter)
+                                                 ])
+                           :description (r/as-element [:span (:teleporter/mac teleporter) ])}]
      ]))
 
 (defn list-component []

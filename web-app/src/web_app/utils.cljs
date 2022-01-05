@@ -1,4 +1,6 @@
-(ns web-app.utils)
+(ns web-app.utils
+  (:require [re-frame.core :as rf]
+            [taoensso.timbre :as log]))
 
 (defn generate_nickname []
   (let [nouns ["Hope" "Dream" "Party" "Jam"]
@@ -42,3 +44,16 @@
      (-> (- x a)
          (/ (- b a))
          (* d)))))
+
+(defn register-tp-heartbeat [tp-id timeout-ms]
+  (log/debug ::register-tp-heartbeat "heartbeat from" tp-id)
+  ;; cancel existing offline-timeout if it exists
+  (let [offline-timeout (rf/subscribe [:teleporter/offline-timeout tp-id])]
+    (when-not (nil? @offline-timeout)
+        (js/clearTimeout @offline-timeout)))
+
+  ;; set status to online on this tp
+  (rf/dispatch [:teleporter/online? tp-id true])
+
+  ;; register a timeout function to set the status to offline
+  (rf/dispatch [:teleporter/offline-timeout tp-id (js/setTimeout #(rf/dispatch [:teleporter/online? tp-id false]) timeout-ms)]))

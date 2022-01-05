@@ -82,6 +82,9 @@ $breakpoints: (phone: 320px, tablet: 768px, desktop: 1024px);
         .ant-checkbox-wrapper {
             margin: 0 1rem;
         }
+        .tp-online-icon, .tp-offline-icon {
+            margin-right: 0.2rem;
+        }
     }
     .selection-action-bar {
         display: flex;
@@ -115,4 +118,11 @@ $breakpoints: (phone: 320px, tablet: 768px, desktop: 1024px);
     .command-buttons button:not(:first-child) {
         margin-left: .4rem;
     }
+}
+
+.tp-online-icon {
+    color: #1890ff;
+}
+.tp-offline-icon {
+    color: #f5222d;
 }

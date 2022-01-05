@@ -180,6 +180,7 @@
          n (dec (count log))]
      (assoc-in db [:teleporter/log id level] (rotate-log log log-msg)))))
 
+
 (rf/reg-event-db
  :view.telemetry.log/teleporter
  (fn [db [_ teleporter-id]]
@@ -208,6 +209,15 @@
      :else
      (dissoc db :teleporter/log))))
 
+(rf/reg-event-db
+ :teleporter/offline-timeout
+ (fn [db [_ tp-id timeout-obj]]
+   (assoc-in db [:teleporter/offline-timeout tp-id] timeout-obj)))
+
+(rf/reg-event-db
+ :teleporter/online?
+ (fn [db [_ tp-id online?]]
+   (assoc-in db [:teleporter/online? tp-id] online?)))
 
 ;; testing ground
 (comment

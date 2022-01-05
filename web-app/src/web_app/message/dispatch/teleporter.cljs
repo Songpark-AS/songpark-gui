@@ -3,6 +3,7 @@
             [songpark.common.protocol.mqtt.manager :as protocol.mqtt.manager]
             [taoensso.timbre :as log]
             [web-app.data :as data]
+            [web-app.utils :as utils]
             [web-app.message.dispatch.interface :as message]))
 
 
@@ -38,10 +39,16 @@
 (defmethod message/dispatch :teleporters/listen [{:keys [mqtt-manager]
                                                   :message/keys [body]}]
   (doseq [id (map :teleporter/uuid body)]
-    (let [topic (str id "/log")]
-      (log/info "Subscribing to " topic)
-      (protocol.mqtt.manager/subscribe mqtt-manager [topic]))))
+    (let [log-topic (str id "/log")
+          heartbeat-topic (str id "/heartbeat")]
+      (log/info "Subscribing to " log-topic)
+      (log/info "Subscribing to " heartbeat-topic)
+      (protocol.mqtt.manager/subscribe mqtt-manager [log-topic heartbeat-topic]))))
 
 
 (defmethod message/dispatch :teleporter/log [{:message/keys [body id]}]
   (rf/dispatch [:teleporter/log (assoc body :message/id id)]))
+
+(defmethod message/dispatch :teleporter/heartbeat [{:message/keys [body]}]
+  (let [tp-id (:teleporter/id body)]
+    (utils/register-tp-heartbeat tp-id 6000)))

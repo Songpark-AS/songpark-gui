@@ -87,6 +87,15 @@
  (fn [db _]
    (get db :view.telemetry/tab "VERSIONS")))
 
+(rf/reg-sub
+ :teleporter/offline-timeout
+ (fn [db [_ tp-id]]
+   (get-in db [:teleporter/offline-timeout (str tp-id)])))
+
+(rf/reg-sub
+ :teleporter/online?
+ (fn [db [_ tp-id]]
+   (get-in db [:teleporter/online? tp-id])))
 
 (comment
   @(rf/subscribe [:data/msg])
