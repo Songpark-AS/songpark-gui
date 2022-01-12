@@ -1,0 +1,48 @@
+{:nrepl {:port 8777}
+
+ :jvm-opts ["-Xmx1G"]
+
+ :source-paths ["src" "test"]
+
+ :dependencies
+ [[reagent "1.1.0"]
+  [re-frame "1.2.0"]
+  [day8.re-frame/tracing "0.6.2"]
+  [cljs-ajax "0.8.3"]
+  [day8.re-frame/http-fx "0.2.3"]
+  [binaryage/devtools "1.0.3"]
+  [day8.re-frame/re-frame-10x "1.1.11"]
+  [com.stuartsierra/component "1.0.0"]
+  [cider/cider-nrepl "0.27.2"]
+  [com.taoensso/timbre "5.1.2"]
+  [songpark/common "0.1.1-SNAPSHOT"]
+  [metosin/reitit "0.5.15"]
+  [com.cognitect/transit-cljs "0.8.269"]
+  [com.google.guava/guava "31.0.1-jre"]
+  [nano-id "1.0.0"]
+  [ez-wire "0.5.0"]]
+
+ :dev-http
+ {8280 "resources/public"
+  8290 "target/browser-test"}
+
+ :builds
+ {:app
+  {:target     :browser
+   :output-dir "resources/public/js/compiled"
+   :asset-path "/js/compiled"
+   :modules
+   {:app {:init-fn web-app.core/init}}
+   :devtools
+   {:preloads [day8.re-frame-10x.preload]}
+   :dev
+   {:compiler-options
+    {:closure-defines
+     { re-frame.trace.trace-enabled? true
+      day8.re-frame.tracing.trace-enabled? true}}}
+   :release
+   {;; uncomment for a simple optimization
+    ;; :compiler-options {:optimizations :simple}
+    :build-options
+    {:ns-aliases
+     {day8.re-frame.tracing day8.re-frame.tracing-stubs}}}}}}

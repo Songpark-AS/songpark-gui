@@ -1,0 +1,319 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/* User generated  */
+
+.user-content ul {
+  list-style: disc;
+  margin-left: 24px;
+}
+
+.user-content ul ul {
+  margin-left: 20px;
+  margin-bottom: 0;
+}
+
+.user-content ul li {
+  margin-bottom: 0;
+}
+
+.user-content ol {
+  margin-left: 24px;
+  list-style: decimal;
+}
+
+.user-content ol ol {
+  list-style: lower-latin;
+  margin-bottom: 0;
+}
+
+.user-content ul ul,
+.view ol ol {
+  margin-bottom: 0;
+}
+
+.user-content li li {
+  font-size: 1em;
+}
+
+/* Table */
+
+table {
+  width: 100%;
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+table td,
+table th {
+  vertical-align: middle;
+}
+
+/* Normal form */
+
+.normal-form input[type='text'],
+.normal-form input[type='password'],
+.normal-form input[type='datetime'],
+.normal-form input[type='datetime-local'],
+.normal-form input[type='date'],
+.normal-form input[type='month'],
+.normal-form input[type='time'],
+.normal-form input[type='week'],
+.normal-form input[type='number'],
+.normal-form input[type='email'],
+.normal-form input[type='url'],
+.normal-form input[type='search'],
+.normal-form input[type='tel'],
+.normal-form input[type='color'],
+.normal-form textarea,
+.normal-form select {
+  -webkit-appearance: none; // removes styling on iOS devices
+}
+
+.normal-form textarea {
+  overflow: auto;
+}
+
+.normal-form input[type='text']:focus,
+.normal-form input[type='password']:focus,
+.normal-form input[type='datetime']:focus,
+.normal-form input[type='datetime-local']:focus,
+.normal-form input[type='date']:focus,
+.normal-form input[type='month']:focus,
+.normal-form input[type='time']:focus,
+.normal-form input[type='week']:focus,
+.normal-form input[type='number']:focus,
+.normal-form input[type='email']:focus,
+.normal-form input[type='url']:focus,
+.normal-form input[type='search']:focus,
+.normal-form input[type='tel']:focus,
+.normal-form input[type='color']:focus,
+.normal-form textarea:focus,
+.normal-form select:focus {
+  outline: none;
+}
+
+/* Styling */
+
+strong,
+b {
+  font-weight: bold;
+}
+
+em {
+  font-style: italic;
+}
+
+sup {
+  vertical-align: text-top;
+  font-size: 75%;
+}
+
+sub {
+  vertical-align: bottom;
+  font-size: 75%;
+}
+
+blockquote {
+  font-style: italic;
+}
+
+/* User generated  */
+
+.user-content ul {
+  list-style: disc;
+  margin-left: 24px;
+}
+
+.user-content ul ul {
+  margin-left: 20px;
+  margin-bottom: 0;
+}
+
+.user-content ul li {
+  margin-bottom: 0;
+}
+
+.user-content ol {
+  margin-left: 24px;
+  list-style: decimal;
+}
+
+.user-content ol ol {
+  list-style: lower-latin;
+  margin-bottom: 0;
+}
+
+.user-content ul ul,
+.view ol ol {
+  margin-bottom: 0;
+}
+
+.user-content li li {
+  font-size: 1em;
+}
+
+/* Table */
+
+table {
+  width: 100%;
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+table td,
+table th {
+  vertical-align: middle;
+}
+
+a:not([href]):not([tabindex]):hover,
+a:not([href]):not([tabindex]):focus {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:not([href]):not([tabindex]):focus {
+  outline: 0;
+}

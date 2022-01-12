@@ -1,0 +1,25 @@
+{;:deps {:aliases [:dev]} ; In a real app consider using `deps.edn` instead.
+ ;; If you use deps, remove `:source-paths` and `:dependencies` from this file
+ :source-paths ["src/main"
+                "src/test"]
+ 
+ :dependencies [[reagent "1.1.0"]
+                [re-frame "1.2.0"]
+                [cljs-ajax "0.8.3"]
+                [com.stuartsierra/component "1.0.0"]
+                [tick "0.4.24-alpha"]
+                [com.cognitect/transit-cljs "0.8.269"]
+                [day8.re-frame/http-fx "0.2.3"]
+                [com.taoensso/timbre "5.1.2"]
+                [tongue "0.3.0"]
+                [funcool/promesa "6.0.2"]
+                [songpark/common "0.1.1-SNAPSHOT"]]
+
+ :builds
+ {:app {:target :react-native
+        :init-fn app.core/init
+        :output-dir "target"
+        :compiler-options {:infer-externs :auto}
+        :devtools {:autoload true
+                   :devtools-url "http://192.168.11.123:9630"
+                   :preloads [shadow.expo.keep-awake]}}}}

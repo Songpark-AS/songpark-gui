@@ -1,0 +1,27 @@
+.DS_Store
+
+web-app/out/
+web-app/resources/public/js/compiled/
+web-app/resources/public/css/vendor/
+web-app/resources/vendor/
+web-app/target/
+web-app/*-init.clj
+web-app/*.log
+
+# Leiningen
+web-app/.lein-*
+web-app/.nrepl-port
+
+# Node.js dependencies
+web-app/node_modules/
+
+# shadow-cljs cache, port files
+web-app/.shadow-cljs/
+
+/.dir-locals.el
+
+# temp local config file
+web-app/src/web_app/config.local.js
+
+VERSION.git
+deployment/songpark-webapp.yaml

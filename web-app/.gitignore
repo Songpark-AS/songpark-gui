@@ -1,0 +1,23 @@
+/out/
+/resources/public/js/compiled/
+/resources/public/css/vendor/
+/resources/vendor/
+/target/
+/*-init.clj
+/*.log
+
+# Leiningen
+/.lein-*
+/.nrepl-port
+
+# Node.js dependencies
+/node_modules/
+
+# shadow-cljs cache, port files
+/.shadow-cljs/
+
+/.dir-locals.el
+
+# temp local config file
+/src/web_app/config.local.js
+

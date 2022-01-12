@@ -1,0 +1,119 @@
+.main-panel {
+  min-height: 100vh;
+}
+@media (min-width: 320px) and (max-width: 768px) {
+  .main-panel .ant-layout-sider-zero-width-trigger, .main-panel .ant-layout-sider {
+    display: none;
+  }
+}
+.main-panel .main-layout {
+  min-height: 100vh;
+}
+.main-panel .content-wrapper {
+  background: #fff;
+  height: 100%;
+}
+@media (min-width: 768px) {
+  .main-panel .content-wrapper {
+    padding: 2.6rem;
+  }
+}
+@media (max-width: 767px) {
+  .main-panel .content-wrapper {
+    padding: 1rem;
+  }
+}
+.main-panel .mobile-navbar {
+  display: none;
+  background-color: #EEE;
+  color: #666;
+  justify-content: space-around;
+  user-select: none;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 4rem;
+}
+@media (max-width: 767px) {
+  .main-panel .mobile-navbar {
+    display: flex;
+  }
+}
+.main-panel .mobile-navbar .item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+.main-panel .mobile-navbar .item.active {
+  color: #1890ff;
+  font-weight: 800;
+}
+
+.jam-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: 1rem;
+}
+.jam-view h1 {
+  user-select: none;
+}
+.jam-view .tp-panel {
+  width: 100%;
+  margin: 1rem 0;
+}
+.jam-view .jam-controls {
+  margin: 1rem 0;
+}
+.jam-view .jam-controls .ant-btn:not(:last-child) {
+  margin-right: 0.4rem;
+}
+
+.teleporter-list-view {
+  user-select: none;
+  padding: 1rem;
+}
+@media (min-width: 320px) and (max-width: 767px) {
+  .teleporter-list-view {
+    margin-bottom: 3rem;
+  }
+}
+.teleporter-list-view .teleporter-row {
+  cursor: pointer;
+}
+.teleporter-list-view .teleporter-row .ant-checkbox-wrapper {
+  margin: 0 1rem;
+}
+.teleporter-list-view .selection-action-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+@media (min-width: 320px) and (max-width: 767px) {
+  .teleporter-list-view .selection-action-bar span {
+    flex: 0.5;
+  }
+}
+.teleporter-list-view .selection-action-bar .actions .ant-btn:not(:last-child) {
+  margin-right: 0.4rem;
+}
+
+.teleporter-detail-view .ipv4-form table, .teleporter-detail-view .ipv6-form table {
+  margin-bottom: 1rem;
+}
+.teleporter-detail-view .ipv4-form table td, .teleporter-detail-view .ipv6-form table td {
+  padding: 0.3rem;
+}
+.teleporter-detail-view .ipv4-form table .error, .teleporter-detail-view .ipv6-form table .error {
+  margin-top: 0.2rem;
+}
+.teleporter-detail-view .command-buttons button:not(:first-child) {
+  margin-left: 0.4rem;
+}
+
+/*# sourceMappingURL=songpark.css.map */

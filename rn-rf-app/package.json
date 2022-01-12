@@ -1,0 +1,36 @@
+{
+  "main": "app/index.js",
+  "scripts": {
+    "server": "npx shadow-cljs server",
+    "start": "npx expo start",
+    "android": "npx expo start --android",
+    "ios": "npx expo start --ios",
+    "web": "npx expo start --web",
+    "web-only": "npx expo start --web-only",
+    "release": "npx shadow-cljs release app",
+    "eject": "npx expo eject"
+  },
+  "dependencies": {
+    "@draftbit/ui": "^42.1.5",
+    "@js-joda/core": "1.12.0",
+    "@react-native-community/datetimepicker": "3.0.0",
+    "@react-native-picker/picker": "^2.1.0",
+    "expo": "39.0.5",
+    "expo-cli": "4.0.2",
+    "expo-linear-gradient": "~8.3.0",
+    "expo-status-bar": "~1.0.2",
+    "paho-mqtt": "^1.1.0",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-native": "0.63.3",
+    "react-native-paho-mqtt": "^0.1.1",
+    "react-native-safe-area-context": "3.1.4",
+    "react-native-svg": "12.1.0",
+    "react-native-web": "0.13.7"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^8.3.0",
+    "shadow-cljs": "^2.11.8"
+  },
+  "private": true
+}
