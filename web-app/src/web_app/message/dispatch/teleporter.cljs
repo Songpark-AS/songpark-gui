@@ -31,6 +31,12 @@
   (log/debug ::save-ipv4 "body: " body)
   (protocol.mqtt.manager/publish mqtt-manager (str topic) body))
 
+
+(defmethod message/dispatch :teleporter.cmd/report-network-config [{:message/keys [topic]
+                                                                    :keys [mqtt-manager]}]
+  (log/debug ::report-network-config "Requesting network config from TP: " topic)
+  (protocol.mqtt.manager/publish mqtt-manager topic {:message/type :teleporter.cmd/report-network-config}))
+
 (defmethod message/dispatch :teleporter.msg/info [{:message/keys [topic body]
                                                    :keys [mqtt-manager]}]
   (protocol.mqtt.manager/publish mqtt-manager (str topic) body))
@@ -45,10 +51,20 @@
       (log/info "Subscribing to " heartbeat-topic)
       (protocol.mqtt.manager/subscribe mqtt-manager [log-topic heartbeat-topic]))))
 
-
 (defmethod message/dispatch :teleporter/log [{:message/keys [body id]}]
   (rf/dispatch [:teleporter/log (assoc body :message/id id)]))
 
 (defmethod message/dispatch :teleporter/heartbeat [{:message/keys [body]}]
   (let [tp-id (:teleporter/id body)]
     (utils/register-tp-heartbeat tp-id 6000)))
+
+(defmethod message/dispatch :teleporters/listen-net-config-report [{:keys [mqtt-manager]
+                                                                    :message/keys [body]}]
+  (doseq [id (map :teleporter/uuid body)]
+    (let [topic (str id "/net-config-report")]
+      (log/info "Subscribing to " topic)
+      (protocol.mqtt.manager/subscribe mqtt-manager [topic]))))
+
+(defmethod message/dispatch :teleporter/net-config-report [{:message/keys [body id]}]
+  (log/debug :net-config-report body)
+  (rf/dispatch [:teleporter/net-config body]))
