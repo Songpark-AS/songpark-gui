@@ -2,6 +2,7 @@
   (:require [re-frame.core :as rf]
             [songpark.common.protocol.mqtt.manager :as protocol.mqtt.manager]
             [taoensso.timbre :as log]
+            [songpark.common.config :refer [config]]
             [web-app.data :as data]
             [web-app.utils :as utils]
             [web-app.message.dispatch.interface :as message]))
@@ -56,7 +57,7 @@
 
 (defmethod message/dispatch :teleporter/heartbeat [{:message/keys [body]}]
   (let [tp-id (:teleporter/id body)]
-    (utils/register-tp-heartbeat tp-id 6000)))
+    (utils/register-tp-heartbeat tp-id (get-in @config [:heartbeat :timer]))))
 
 (defmethod message/dispatch :teleporters/listen-net-config-report [{:keys [mqtt-manager]
                                                                     :message/keys [body]}]
