@@ -16,7 +16,14 @@
 (defn on-connect [invocation-context mqtt-client]
   (log/debug ::MqttClient.on-connect "Connected to broker, " invocation-context)
   (.success message "Connected to MQTT")
-  (let [topic-handlers (:topic-handlers mqtt-client)]
+  (let [topic-handlers (:topic-handlers mqtt-client)
+        topic-subscription-queue (:topic-subscription-queue mqtt-client)
+        client (:client mqtt-client)]
+    (when (not (empty? @topic-subscription-queue))
+      (log/debug ::MqttClient.on-connect "Subscribing to topics queued up")
+      (doseq [topic @topic-subscription-queue]
+        (.subscribe client topic))
+      (reset! topic-subscription-queue []))
     (when (not (empty? @topic-handlers))
       (log/debug ::MqttClient.on-connect "Resubscribing to topics")
 
@@ -37,12 +44,11 @@
   (connect [this]
     (let [client ^Paho/Client(:client this)]
       (log/debug ::MqttClient.connect (js->clj client :keywordize-keys true))
-      (.connect client #js {:userName (:username config)
-                            :password (:password config)
-                            :reconnect true
-                            ;; :useSSL true
-                            :onSuccess #(on-connect % this)})
-      ))
+       (.connect client #js {:userName (:username config)
+                                   :password (:password config)
+                                   :reconnect true
+                                   ;; :useSSL true
+                                   :onSuccess #(on-connect % this)})))
   (connected? [this]
     (.isConnected (:client this)))
   (publish [this topic message]
@@ -56,13 +62,17 @@
     (.disconnect (:client this)))
   (subscribe [this topics on-message]
     (let [client (:client this)
-          topic-handlers (:topic-handlers this)]
-      (when (protocol.mqtt.client/connected? this)
+          topic-handlers (:topic-handlers this)
+          topic-subscription-queue (:topic-subscription-queue this)]
+      (if (protocol.mqtt.client/connected? this)
         (doseq [topic topics]
           (log/debug ::MqttClient.subscribe "Subscribing to topic: " topic)
           (.subscribe client topic)
           (swap! topic-handlers assoc (topic-to-keyword topic) on-message))
-        )))
+        ;; We are not connected, add the topics to subscription queue
+        (do (swap! topic-subscription-queue (fn[a b] (vec (concat a b))) topics)
+          (doseq [topic topics]
+            (swap! topic-handlers assoc (topic-to-keyword topic) on-message))))))
   (unsubscribe [this topic]
     (let [client (:client this)
           topic-handlers (:topic-handlers this)]
@@ -73,9 +83,11 @@
 
 (defn mqtt-client [config]
   (map->MqttClient
-   (let [topic-handlers (atom {})]
+   (let [topic-handlers (atom {})
+         topic-subscription-queue (atom [])]
      {:config config
       :topic-handlers topic-handlers
+      :topic-subscription-queue topic-subscription-queue
       :client (let [{:keys [host port client-id on-message username password]} config
                     client (Paho/Client. host port client-id)]
                 (set! (.-onConnectionLost client) (fn [& args] (on-connection-lost args)))

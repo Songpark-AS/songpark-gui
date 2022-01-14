@@ -87,8 +87,25 @@
  (fn [db _]
    (get db :view.telemetry/tab "VERSIONS")))
 
+(rf/reg-sub
+ :teleporter/offline-timeout
+ (fn [db [_ tp-id]]
+   (get-in db [:teleporter/offline-timeout (str tp-id)])))
+
+(rf/reg-sub
+ :teleporter/online?
+ (fn [db [_ tp-id]]
+   (get-in db [:teleporter/online? tp-id])))
+(rf/reg-sub
+ :teleporter/net-config
+ (fn [db [_ teleporter-id]]
+   (get-in db [:teleporter/net-config (str teleporter-id)])))
 
 (comment
   @(rf/subscribe [:data/msg])
   @(rf/subscribe [:teleporters])
+  @(rf/subscribe [:teleporter/net-config #uuid "ad6fc5b7-c52c-5941-bfb7-cf4fb4189775"])
+
+  
+
   )

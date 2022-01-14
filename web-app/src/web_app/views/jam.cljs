@@ -7,6 +7,7 @@
             [web-app.api :refer [send-message!]]
             [web-app.message :refer [send-via-mqtt!]]
             [web-app.mqtt :as mqtt]
+            ["@ant-design/icons" :refer [GlobalOutlined ApiOutlined]]
             [web-app.utils :refer [scale-value]]))
 
 ;; Here be jam view
@@ -72,12 +73,15 @@
                                                 :teleporter/playout-delay value}})))
 
 
-(defn- tp-status [global local network playout-delay]
+(defn- tp-status [global local network playout-delay online?]
   [:<>
    [:h3 "Status"]
    [:div.tp-status
+    (if @online?
+      [:div (str "Online ") [:> GlobalOutlined {:className "tp-online-icon"}]]
+      [:div (str "Offline ") [:> ApiOutlined {:className "tp-offline-icon"}]])
     [:div "Global volume " @global]
-    [:div "Local volume" @local]
+    [:div "Local volume " @local]
     [:div "Network volume " @network]
     [:div "Delay output " @playout-delay]]])
 
@@ -116,10 +120,11 @@
   (r/with-let [global (r/atom 50)
                network (r/atom 50)
                local (r/atom 50)
-               playout-delay (r/atom 20)]
+               playout-delay (r/atom 20)
+               online? (rf/subscribe [:teleporter/online? (str uuid)])]
     [:div.tp-panel {:key (str "tp-panel-" uuid)}
      [:h2 nickname]
-     [tp-status global local network playout-delay]
+     [tp-status global local network playout-delay online?]
      [tp-volume "Global volume" uuid global on-global-volume-change]
      [tp-volume "Local volume" uuid local on-local-volume-change]
      [tp-volume "Network volume" uuid network on-network-volume-change]
