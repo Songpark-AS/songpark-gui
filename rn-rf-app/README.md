@@ -7,7 +7,7 @@
 
 Install the node packages by running `npm i`
 
-Setup your emulator for [iOS](https://docs.expo.dev/workflow/ios-simulator/) or [android](https://docs.expo.dev/workflow/android-studio-emulator/) and boot it up.
+Setup your emulator for [iOS](https://docs.expo.dev/workflow/ios-simulator/) or [android](docs/android-emulator-setup.adoc) and boot it up.
 
 Follow the instructions from the original repo below on how to setup your IDE.
 
