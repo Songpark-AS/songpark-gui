@@ -11,5 +11,8 @@ module.exports = {
         username: "songpark",
         password: "fNhWktaTlfDGlH4mbmaW6esOpgExs8wKIOBapDcq",
     },
+    heartbeat: {
+        timer: 8000
+    },
     version: "VAR__VERSION"
 }
