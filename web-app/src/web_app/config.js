@@ -14,5 +14,6 @@ module.exports = {
     heartbeat: {
         timer: 8000
     },
-    version: "DEV"
+    version: "DEV",
+    sha: "DEV"
 }
