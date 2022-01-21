@@ -14,5 +14,6 @@ module.exports = {
     heartbeat: {
         timer: 8000
     },
-    version: "VAR__VERSION"
+    version: "VAR__VERSION",
+    sha: "VAR__SHA"
 }

@@ -24,4 +24,5 @@ web-app/.shadow-cljs/
 web-app/src/web_app/config.local.js
 
 VERSION.git
+VERSION
 deployment/songpark-webapp.yaml
