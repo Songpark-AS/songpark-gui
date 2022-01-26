@@ -73,7 +73,7 @@
                                                 :teleporter/playout-delay value}})))
 
 
-(defn- tp-status [global local network playout-delay online?]
+(defn- tp-status [global local network playout-delay online? coredump-data]
   [:<>
    [:h3 "Status"]
    [:div.tp-status
@@ -83,7 +83,16 @@
     [:div "Global volume " @global]
     [:div "Local volume " @local]
     [:div "Network volume " @network]
-    [:div "Delay output " @playout-delay]]])
+    [:div "Delay output " @playout-delay]
+    (when-not nil? (@coredump-data)
+              [:div "Latency " (:Latency @coredump-data)]
+              [:div "LTC " (:LTC @coredump-data)]
+              [:div "RTC " (:RTC @coredump-data)]
+              [:div "StreamStatus " (:StreamStatus @coredump-data)]
+              [:div "RX Packets-per-second " (:RX_Packets-per-second @coredump-data)]
+              [:div "TX Packets-per-second " (:TX_Packets-per-second @coredump-data)]
+              [:div "DDiffMS " (:DDiffMS @coredump-data)]
+              [:div "DDiffCC " (:DDiffCC @coredump-data)])]])
 
 (defn tp-volume [header uuid value on-change]
   (r/with-let [started? (rf/subscribe [:jam/started?])]
@@ -121,10 +130,11 @@
                network (r/atom 50)
                local (r/atom 50)
                playout-delay (r/atom 20)
-               online? (rf/subscribe [:teleporter/online? (str uuid)])]
+               online? (rf/subscribe [:teleporter/online? (str uuid)])
+               coredump-data (rf/subscribe [:teleporter/coredump (str uuid)])]
     [:div.tp-panel {:key (str "tp-panel-" uuid)}
      [:h2 nickname]
-     [tp-status global local network playout-delay online?]
+     [tp-status global local network playout-delay online? coredump-data]
      [tp-volume "Global volume" uuid global on-global-volume-change]
      [tp-volume "Local volume" uuid local on-local-volume-change]
      [tp-volume "Network volume" uuid network on-network-volume-change]

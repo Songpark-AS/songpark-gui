@@ -96,10 +96,16 @@
  :teleporter/online?
  (fn [db [_ tp-id]]
    (get-in db [:teleporter/online? tp-id])))
+
 (rf/reg-sub
  :teleporter/net-config
  (fn [db [_ teleporter-id]]
    (get-in db [:teleporter/net-config (str teleporter-id)])))
+
+(rf/reg-sub
+ :teleporter/coredump
+ (fn [db [_ teleporter-id]]
+   (get-in db [:teleporter/coredump (str teleporter-id)])))
 
 (comment
   @(rf/subscribe [:data/msg])

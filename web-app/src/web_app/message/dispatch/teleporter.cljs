@@ -47,10 +47,12 @@
                                                   :message/keys [body]}]
   (doseq [id (map :teleporter/uuid body)]
     (let [log-topic (str id "/log")
-          heartbeat-topic (str id "/heartbeat")]
+          heartbeat-topic (str id "/heartbeat")
+          coredump-topic (str id "/coredump")]
       (log/info "Subscribing to " log-topic)
       (log/info "Subscribing to " heartbeat-topic)
-      (protocol.mqtt.manager/subscribe mqtt-manager [log-topic heartbeat-topic]))))
+      (log/info "Subscribing to " coredump-topic)
+      (protocol.mqtt.manager/subscribe mqtt-manager [log-topic heartbeat-topic coredump-topic]))))
 
 (defmethod message/dispatch :teleporter/log [{:message/keys [body id]}]
   (rf/dispatch [:teleporter/log (assoc body :message/id id)]))
@@ -69,3 +71,6 @@
 (defmethod message/dispatch :teleporter/net-config-report [{:message/keys [body id]}]
   (log/debug :net-config-report body)
   (rf/dispatch [:teleporter/net-config body]))
+
+(defmethod message/dispatch :teleporter/coredump [{:message/keys [body id]}]
+  (rf/dispatch [:teleporter/coredump body]))
