@@ -84,15 +84,16 @@
     [:div "Local volume " @local]
     [:div "Network volume " @network]
     [:div "Delay output " @playout-delay]
-    (when-not nil? (@coredump-data)
-              [:div "Latency " (:Latency @coredump-data)]
-              [:div "LTC " (:LTC @coredump-data)]
-              [:div "RTC " (:RTC @coredump-data)]
-              [:div "StreamStatus " (:StreamStatus @coredump-data)]
-              [:div "RX Packets-per-second " (:RX_Packets-per-second @coredump-data)]
-              [:div "TX Packets-per-second " (:TX_Packets-per-second @coredump-data)]
-              [:div "DDiffMS " (:DDiffMS @coredump-data)]
-              [:div "DDiffCC " (:DDiffCC @coredump-data)])]])
+    (when-let [data @coredump-data]
+      [:<>
+       [:div "Latency " (:Latency data)]
+       [:div "LTC " (:LTC data)]
+       [:div "RTC " (:RTC data)]
+       [:div "StreamStatus " (:StreamStatus data)]
+       [:div "RX Packets-per-second " (:RX_Packets-per-second data)]
+       [:div "TX Packets-per-second " (:TX_Packets-per-second data)]
+       [:div "DDiffMS " (:DDiffMS data)]
+       [:div "DDiffCC " (:DDiffCC data)]])]])
 
 (defn tp-volume [header uuid value on-change]
   (r/with-let [started? (rf/subscribe [:jam/started?])]
