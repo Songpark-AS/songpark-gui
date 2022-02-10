@@ -97,9 +97,29 @@
  (fn [db [_ tp-id]]
    (get-in db [:teleporter/online? tp-id])))
 (rf/reg-sub
+ :teleporter/upgrading?
+ (fn [db [_ tp-id]]
+   (get-in db [:teleporter/upgrading? tp-id])))
+
+(rf/reg-sub
  :teleporter/net-config
  (fn [db [_ teleporter-id]]
    (get-in db [:teleporter/net-config (str teleporter-id)])))
+
+(rf/reg-sub
+ :teleporter/apt-version
+ (fn [db [_ teleporter-id]]
+   (get-in db [:teleporter/apt-version (str teleporter-id)])))
+
+(rf/reg-sub
+ :teleporter/latest-available-apt-version
+ (fn [db _]
+   (get db :teleporter/latest-available-apt-version)))
+
+(rf/reg-sub
+ :teleporter/upgrade-status
+ (fn [db [_ teleporter-id]]
+   (get-in db [:teleporter/upgrade-status (str teleporter-id)])))
 
 (comment
   @(rf/subscribe [:data/msg])

@@ -104,10 +104,20 @@
  (fn [_ _]
    {:dispatch [:http/get (get-platform-url "/version") nil :set-platform-version]}))
 
+(rf/reg-event-fx
+ :fetch-latest-available-apt-version
+ (fn [_ _]
+   {:dispatch [:http/get (get-platform-url "/latest-available-version") nil :set-latest-available-apt-version]}))
+
 (rf/reg-event-db
  :set-platform-version
  (fn [db [_ {:keys [version]}]]
    (assoc db :platform/version version)))
+
+(rf/reg-event-db
+ :set-latest-available-apt-version
+ (fn [db [_ {:keys [version]}]]
+   (assoc db :teleporter/latest-available-apt-version version)))
 
 (rf/reg-event-fx
  :subscribe-jam
@@ -180,6 +190,13 @@
    (send-message! {:message/type :teleporter.cmd/report-network-config
                    :message/topic uuid})))
 
+(rf/reg-event-fx
+ :req-tp-upgrade
+ (fn [_ [_ uuid]]
+   (send-message! {:message/type :teleporter.cmd/upgrade
+                   :message/topic uuid
+                   :message/body {:teleporter/id uuid}})))
+
 (rf/reg-event-db
  :teleporter/log
  (fn [db [_ {:keys [log/level teleporter/id] :as log-msg}]]
@@ -192,6 +209,16 @@
  :teleporter/net-config
  (fn [db [_ {:keys [teleporter/id teleporter/network-config]}]]
    (assoc-in db [:teleporter/net-config id] network-config)))
+
+(rf/reg-event-db
+ :teleporter/apt-version
+ (fn [db [_ {:keys [teleporter/id teleporter/apt-version]}]]
+   (assoc-in db [:teleporter/apt-version id] apt-version)))
+
+(rf/reg-event-db
+ :teleporter/upgrade-status
+ (fn [db [_ {:keys [teleporter/id teleporter/upgrade-status]}]]
+   (assoc-in db [:teleporter/upgrade-status id] upgrade-status)))
 
 (rf/reg-event-db
  :view.telemetry.log/teleporter
@@ -230,6 +257,11 @@
  :teleporter/online?
  (fn [db [_ tp-id online?]]
    (assoc-in db [:teleporter/online? tp-id] online?)))
+
+(rf/reg-event-db
+ :teleporter/upgrading?
+ (fn [db [_ tp-id upgrading?]]
+   (assoc-in db [:teleporter/upgrading? tp-id] upgrading?)))
 
 ;; testing ground
 (comment

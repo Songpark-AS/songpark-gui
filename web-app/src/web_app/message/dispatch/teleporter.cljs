@@ -38,6 +38,11 @@
   (log/debug ::report-network-config "Requesting network config from TP: " topic)
   (protocol.mqtt.manager/publish mqtt-manager topic {:message/type :teleporter.cmd/report-network-config}))
 
+(defmethod message/dispatch :teleporter.cmd/upgrade [{:message/keys [topic body]
+                                                      :keys [mqtt-manager]}]
+  (protocol.mqtt.manager/publish mqtt-manager topic {:message/type :teleporter.cmd/upgrade
+                                                     :message/body body}))
+
 (defmethod message/dispatch :teleporter.msg/info [{:message/keys [topic body]
                                                    :keys [mqtt-manager]}]
   (protocol.mqtt.manager/publish mqtt-manager (str topic) body))
@@ -47,10 +52,12 @@
                                                   :message/keys [body]}]
   (doseq [id (map :teleporter/uuid body)]
     (let [log-topic (str id "/log")
-          heartbeat-topic (str id "/heartbeat")]
+          heartbeat-topic (str id "/heartbeat")
+          upgrade-status-topic (str id "/upgrade-status")]
       (log/info "Subscribing to " log-topic)
       (log/info "Subscribing to " heartbeat-topic)
-      (protocol.mqtt.manager/subscribe mqtt-manager [log-topic heartbeat-topic]))))
+      (log/info "Subscribing to " upgrade-status-topic)
+      (protocol.mqtt.manager/subscribe mqtt-manager [log-topic heartbeat-topic upgrade-status-topic]))))
 
 (defmethod message/dispatch :teleporter/log [{:message/keys [body id]}]
   (rf/dispatch [:teleporter/log (assoc body :message/id id)]))
@@ -69,3 +76,6 @@
 (defmethod message/dispatch :teleporter/net-config-report [{:message/keys [body id]}]
   (log/debug :net-config-report body)
   (rf/dispatch [:teleporter/net-config body]))
+
+(defmethod message/dispatch :teleporter/upgrade-status [{:message/keys [body]}]
+  (rf/dispatch [:teleporter/upgrade-status body]))
