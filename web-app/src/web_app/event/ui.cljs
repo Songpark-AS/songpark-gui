@@ -194,6 +194,11 @@
    (assoc-in db [:teleporter/net-config id] network-config)))
 
 (rf/reg-event-db
+ :teleporter/coredump
+ (fn [db [_ {:keys [teleporter/id teleporter/coredump-data]}]]
+   (assoc-in db [:teleporter/coredump id] coredump-data)))
+
+(rf/reg-event-db
  :view.telemetry.log/teleporter
  (fn [db [_ teleporter-id]]
    (assoc db :view.telemetry.log/teleporter teleporter-id)))
