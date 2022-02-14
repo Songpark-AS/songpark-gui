@@ -12,7 +12,6 @@ $breakpoints: (phone: 320px, tablet: 768px, desktop: 1024px);
         min-height: 100vh;
     }
     .content-wrapper {
-        background: #fff;
         @include media(">=tablet") {
             padding: 2.6rem;
         }
