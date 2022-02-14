@@ -4,6 +4,7 @@
             [taoensso.timbre :as log]
             [web-app.api :refer [send-message!]]
             [web-app.data :as data]
+            ["antd" :refer [message notification]]
             [web-app.mqtt :as mqtt]))
 
 
@@ -141,6 +142,23 @@
            [:dispatch [:mqtt/unsubscribe [(str (:jam/uuid @jam))]]]
            [:dispatch [:jam/started? false]]]})))
 
+
+(rf/reg-event-fx
+ :teleporter/upgrade-status
+ (fn [cofx [_ {:keys [teleporter/id teleporter/upgrade-status]}]]
+   (let [upgrade-timeout (rf/subscribe [:teleporter/upgrade-timeout id])]
+     (when (= upgrade-status "complete")
+       (do
+         (js/clearTimeout @upgrade-timeout)
+         (.success message "Teleporter upgraded successfully!")))
+     (when (= upgrade-status "failed")
+       (.error notification #js {:message "Error upgrading firmware"
+                                 :description "Oops, something went wrong upgrading the firmware of the teleporter!"
+                                 :duration 0})))
+   {:db (assoc-in (:db cofx) [:teleporter/upgrade-status id] upgrade-status)
+    :fx [[:dispatch [:teleporter/upgrade-timeout id nil]]
+         [:dispatch [:teleporter/upgrading? id false]]]}))
+
 (rf/reg-event-fx
  :fetch-teleporters
  (fn [_ _]
@@ -215,10 +233,6 @@
  (fn [db [_ {:keys [teleporter/id teleporter/apt-version]}]]
    (assoc-in db [:teleporter/apt-version id] apt-version)))
 
-(rf/reg-event-db
- :teleporter/upgrade-status
- (fn [db [_ {:keys [teleporter/id teleporter/upgrade-status]}]]
-   (assoc-in db [:teleporter/upgrade-status id] upgrade-status)))
 
 (rf/reg-event-db
  :view.telemetry.log/teleporter
@@ -252,6 +266,11 @@
  :teleporter/offline-timeout
  (fn [db [_ tp-id timeout-obj]]
    (assoc-in db [:teleporter/offline-timeout tp-id] timeout-obj)))
+
+(rf/reg-event-db
+ :teleporter/upgrade-timeout
+ (fn [db [_ tp-id timeout-obj]]
+   (assoc-in db [:teleporter/upgrade-timeout tp-id] timeout-obj)))
 
 (rf/reg-event-db
  :teleporter/online?

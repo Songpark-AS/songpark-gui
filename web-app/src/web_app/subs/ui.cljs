@@ -93,6 +93,11 @@
    (get-in db [:teleporter/offline-timeout (str tp-id)])))
 
 (rf/reg-sub
+ :teleporter/upgrade-timeout
+ (fn [db [_ tp-id]]
+   (get-in db [:teleporter/upgrade-timeout (str tp-id)])))
+
+(rf/reg-sub
  :teleporter/online?
  (fn [db [_ tp-id]]
    (get-in db [:teleporter/online? tp-id])))
