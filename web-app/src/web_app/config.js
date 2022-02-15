@@ -12,7 +12,7 @@ module.exports = {
         password: "testmctestson",
     },
     heartbeat: {
-        timer: 8000
+        timer: 61000
     },
     version: "DEV",
     sha: "DEV"

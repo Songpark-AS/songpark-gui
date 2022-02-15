@@ -93,9 +93,19 @@
    (get-in db [:teleporter/offline-timeout (str tp-id)])))
 
 (rf/reg-sub
+ :teleporter/upgrade-timeout
+ (fn [db [_ tp-id]]
+   (get-in db [:teleporter/upgrade-timeout (str tp-id)])))
+
+(rf/reg-sub
  :teleporter/online?
  (fn [db [_ tp-id]]
    (get-in db [:teleporter/online? tp-id])))
+
+(rf/reg-sub
+ :teleporter/upgrading?
+ (fn [db [_ tp-id]]
+   (get-in db [:teleporter/upgrading? tp-id])))
 
 (rf/reg-sub
  :teleporter/net-config
@@ -106,6 +116,21 @@
  :teleporter/coredump
  (fn [db [_ teleporter-id]]
    (get-in db [:teleporter/coredump (str teleporter-id)])))
+
+(rf/reg-sub
+:teleporter/apt-version
+ (fn [db [_ teleporter-id]]
+   (get-in db [:teleporter/apt-version (str teleporter-id)])))
+
+(rf/reg-sub
+ :teleporter/latest-available-apt-version
+ (fn [db _]
+   (get db :teleporter/latest-available-apt-version)))
+
+(rf/reg-sub
+ :teleporter/upgrade-status
+ (fn [db [_ teleporter-id]]
+   (get-in db [:teleporter/upgrade-status (str teleporter-id)])))
 
 (comment
   @(rf/subscribe [:data/msg])

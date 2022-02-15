@@ -3,7 +3,9 @@
 	"scripts": {
 		"ancient": "clojure -Sdeps '{:deps {com.github.liquidz/antq {:mvn/version \"RELEASE\"}}}' -m antq.core",
 		"watch": "npx shadow-cljs watch app browser-test karma-test",
-		"release": "npx shadow-cljs release app",
+		"watch-less": "npx less-watch-compiler",
+		"watch-scss": "npx sass --watch ./resources/songpark.scss ./resources/public/css/songpark.css",
+		"release": "npx less-watch-compiler --run-once && npx sass ./resources/songpark.scss ./resources/public/css/songpark.css && npx shadow-cljs release app",
 		"build-report": "npx shadow-cljs run shadow.cljs.build-report app target/build-report.html",
 		"postinstall": "node ./post-install.js"
 	},
@@ -24,6 +26,9 @@
 		"react-dom": "17.0.2"
 	},
 	"devDependencies": {
+		"less": "^4.1.2",
+		"less-watch-compiler": "^1.16.3",
+		"sass": "^1.45.1",
 		"shadow-cljs": "2.15.2"
 	}
 }
