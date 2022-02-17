@@ -133,7 +133,7 @@
                playout-delay (r/atom 20)
                online? (rf/subscribe [:teleporter/online? (str uuid)])
                coredump-data (rf/subscribe [:teleporter/coredump (str uuid)])]
-    [:div.tp-panel {:key (str "tp-panel-" uuid)}
+    [:div.tp-panel
      [:h2 nickname]
      [tp-status global local network playout-delay online? coredump-data]
      [tp-volume "Global volume" uuid global on-global-volume-change]
@@ -169,7 +169,8 @@
      (when (>= num-selected-teleporters 2)
        [jam-controls])
      (if (> num-selected-teleporters 0)
-       (for [[_ tp] @selected-teleporters]
+       (for [[_ {:keys [teleporter/uuid] :as tp}] @selected-teleporters]
+         ^{:key (str "tp-panel-" uuid)}
          [tp-panel tp])
        [:p "No teleporters selected, select teleporters "
         [:a {:href (rfe/href :views/teleporters)} "here"]])]))
