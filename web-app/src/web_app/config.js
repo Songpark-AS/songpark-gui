@@ -14,6 +14,7 @@ module.exports = {
     heartbeat: {
         timer: 61000
     },
+    upgrade_timeout: 600000,
     version: "DEV",
     sha: "DEV"
 }

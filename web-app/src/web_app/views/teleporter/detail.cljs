@@ -7,6 +7,7 @@
    [web-app.message :refer [send-via-mqtt!]]
    [web-app.forms.ipv4 :as ipv4-form]
    [version-clj.core :as v]
+   [songpark.common.config :refer [config]]
    #_[web-app.forms.ipv6 :as ipv6-form]
    [web-app.event.ui]))
 
@@ -18,7 +19,7 @@
 
 (defn- on-upgrade-click [tp-id]
   ;; start upgrade timeout
-  (rf/dispatch [:teleporter/upgrade-timeout tp-id (js/setTimeout #(handle-upgrade-failed tp-id) (* 10 60 1000))])
+  (rf/dispatch [:teleporter/upgrade-timeout tp-id (js/setTimeout #(handle-upgrade-failed tp-id) (get @config :upgrade_timeout))])
 
   ;; Send upgrade request to teleporter
   (rf/dispatch [:req-tp-upgrade tp-id])
@@ -67,9 +68,3 @@
              [:p "Fetching network configuration"])]
           #_[:> Tabs.TabPane {:tab "IPv6" :key "2"}
        [ipv6-form/ipv6-config uuid]]]]))))
-(comment
-
-  (.success message "Teleporter was successfully upgraded!")
-  (.error notification #js {:message "Error upgrading firmware" :description "Oops, something went wrong upgrading the firmware of the teleporter!" :duration 0})
-  (.error message "Oops, something went wrong upgrading the firmware!" 0)
-  )
