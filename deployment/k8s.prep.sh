@@ -6,7 +6,7 @@ YAML_FILE=songpark-webapp.yaml
 TAG=$1
 VERSION=$2
 ## TODO: come up with a scheme for namespaces and hostnames that work for different types of deployments
-NAMESPACE=internal
+NAMESPACE=songpark
 HOSTNAME=songpark.inonit.no
 
 echo "Copying template file"
