@@ -14,7 +14,12 @@
 ;; Here be detailview of a teleporter
 ;; This view will contain configuration options for a teleporter
 (defn wrap-semver-lt [^js semver x y]
-  (.lt semver x y))
+  (if-not (or (or (nil? x) (nil? y))
+              (or (= x "") (= x "Unknown"))
+              (or (= y "") (= y "Unknown")))
+    (.lt semver x y)
+    false))
+
 (defn- handle-upgrade-failed [tp-id]
   (rf/dispatch [:teleporter/upgrade-status {:teleporter/id tp-id :teleporter/upgrade-status "failed"}]))
 
