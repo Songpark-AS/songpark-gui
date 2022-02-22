@@ -103,12 +103,12 @@
 (rf/reg-event-fx
  :fetch-platform-version
  (fn [_ _]
-   {:dispatch [:http/get (get-platform-url "/version") nil :set-platform-version]}))
+   {:dispatch [:http/get (get-platform-url "/version?entity=platform") nil :set-platform-version]}))
 
 (rf/reg-event-fx
  :fetch-latest-available-apt-version
  (fn [_ _]
-   {:dispatch [:http/get (get-platform-url "/latest-available-version") nil :set-latest-available-apt-version]}))
+   {:dispatch [:http/get (get-platform-url "/version?entity=teleporter") nil :set-latest-available-apt-version]}))
 
 (rf/reg-event-db
  :set-platform-version
