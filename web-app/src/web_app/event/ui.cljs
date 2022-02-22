@@ -7,34 +7,6 @@
             ["antd" :refer [message notification]]
             [web-app.mqtt :as mqtt]))
 
-
-;; (rf/reg-event-db
-;;  :inc-counter
-;;  (fn [db [_ _]]
-;;    (update db :counter inc)))
-
-;; (rf/reg-event-db
-;;  :set-view
-;;  (fn [db [_ view-name]]
-;;    (assoc db :view view-name)))
-
-;; (rf/reg-event-db
-;;  :set-balance
-;;  (fn [db [_ balance]]
-;;    (assoc-in db [:studio :balance] balance)))
-
-;; (rf/reg-event-db
-;;  :set-balance-slider
-;;  (fn [db [_ balance]]
-;;    (prn (str "set-balance-slider event: " balance))
-;;    (assoc-in db [:studio :balance-slider] balance)))
-
-;; (rf/reg-event-db
-;;  :set-balance-sliding
-;;  (fn [db [_ is-sliding]]
-;;    (assoc-in db [:studio :balance-sliding] is-sliding)))
-
-
 (defn rotate-log [log log-msg]
   (let [n (max 999 (dec (count log)))]
     (conj (take n log) log-msg)))
@@ -61,9 +33,9 @@
  :set-teleporters
  (fn [{:keys [db] :as cofx} [_ teleporters]]
    (send-message! {:message/type :teleporters/listen
-                   :message/body teleporters})
+                   :message/body (into [] (vals teleporters))})
    (send-message! {:message/type :teleporters/listen-net-config-report
-                   :message/body teleporters})
+                   :message/body (into [] (vals teleporters))})
    {:db (assoc db :teleporters teleporters)}))
 
 (rf/reg-event-db
@@ -236,7 +208,7 @@
 (rf/reg-event-db
  :teleporter/apt-version
  (fn [db [_ {:keys [teleporter/id teleporter/apt-version]}]]
-   (assoc-in db [:teleporter/apt-version id] apt-version)))
+   (assoc-in db [:teleporters (uuid id) :teleporter/apt-version] apt-version)))
 
 
 (rf/reg-event-db

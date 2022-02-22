@@ -43,12 +43,10 @@
     (rf/dispatch [:fetch-latest-available-apt-version])
 
     (fn [match]
-      (let [teleporters @(rf/subscribe [:teleporters])
+      (let [teleporters (into [] (vals @(rf/subscribe [:teleporters])))
             network-config (rf/subscribe [:teleporter/net-config uuid])
-            apt-version-from-mqtt @(rf/subscribe [:teleporter/apt-version uuid])
             upgrading? (true? @(rf/subscribe [:teleporter/upgrading? uuid]))
             {:teleporter/keys [nickname apt-version]} (->> teleporters (filter #(= (str (:teleporter/uuid %)) uuid)) first)
-            latest-reported-apt-version (or apt-version-from-mqtt apt-version)
             latest-available-apt-version @(rf/subscribe [:teleporter/latest-available-apt-version])]
 
         [:div.teleporter-detail-view
@@ -62,8 +60,8 @@
 
          [:hr]
          [:h3 "Firmware version"]
-         [:p (str "Current version: " latest-reported-apt-version)]
-         (when (wrap-semver-lt semver latest-reported-apt-version latest-available-apt-version)
+         [:p (str "Current version: " apt-version)]
+         (when (wrap-semver-lt semver apt-version latest-available-apt-version)
            [:p (str "Newer version found: " latest-available-apt-version " ") [:> Button {:type "primary" :loading upgrading? :on-click #(on-upgrade-click uuid)} "Upgrade firmware"]])
          [:hr]
          [:h3 "Network settings"]

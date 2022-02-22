@@ -77,7 +77,7 @@
      [:div
       [:> Radio.Group {:value (str @selected-teleporter)}
        [:<>
-        (for [{:teleporter/keys [uuid nickname]} (sort-by :teleporter/nickname @teleporters)]
+        (for [{:teleporter/keys [uuid nickname]} (sort-by :teleporter/nickname teleporters)]
           [:> Radio {:value (str uuid)
                      :key [:teleporter uuid]
                      :on-click #(rf/dispatch [:view.telemetry.log/teleporter uuid])}
@@ -120,16 +120,14 @@
      [:table {:style (:table styles)}
       [:tbody
        [:tr
-        (for [name ["Name" "TPX" "Bridge" "FPGA"]]
+        (for [name ["Name" "Version"]]
           ^{:key name}
           [:th {:style (:table/th styles)} name])]
-       (for [{:teleporter/keys [nickname id tpx-version bp-version fpga-version]} @teleporters]
+       (for [{:teleporter/keys [nickname id apt-version]} (into [] (vals @teleporters))]
          ^{:key [:teleporter id]}
          [:tr
           [:th {:style (:table/th styles)} nickname]
-          [:td {:style (:table/td styles)} tpx-version]
-          [:td {:style (:table/td styles)} bp-version]
-          [:td {:style (:table/td styles)} fpga-version]])]]]))
+          [:td {:style (:table/td styles)} apt-version]])]]]))
 
 
 (defn index []
