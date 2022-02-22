@@ -10,6 +10,7 @@ module.exports = {
         client_id_prefix: "app-",
         username: "songpark",
         password: "testmctestson",
+        useSSL: false,
     },
     heartbeat: {
         timer: 61000

@@ -47,7 +47,7 @@
        (.connect client #js {:userName (:username config)
                                    :password (:password config)
                                    :reconnect true
-                                   :useSSL true
+                                   :useSSL (:useSSL config)
                                    :onSuccess #(on-connect % this)})))
   (connected? [this]
     (.isConnected (:client this)))
