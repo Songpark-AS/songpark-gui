@@ -3,6 +3,7 @@
             [reitit.coercion.spec :as coercion.spec]
             [web-app.views.jam :as views.jam]
             [web-app.views.telemetry :as views.telemetry]
+            [web-app.views.dev :as views.dev]
             [web-app.views.teleporter.list :as views.teleporter.list]
             [web-app.views.teleporter.detail :as views.teleporter.detail]))
 
@@ -14,6 +15,9 @@
    ["/telemetry"
     {:name :views/telemetry
      :view views.telemetry/index}]
+   ["/dev"
+    {:name :views/dev
+     :view views.dev/index}]
    ["/teleporters"
     ["" 
      {:name :views/teleporters

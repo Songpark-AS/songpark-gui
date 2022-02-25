@@ -1,2 +1,92 @@
 @import 'antd/dist/antd.less';
 @import './theme.less';
+
+.dev {
+    display: grid;
+    grid-row-gap: 2rem;
+    .tp-scroller {
+        width: 100%;
+        overflow: auto;
+        .tps {
+            display: flex;
+            overflow: auto;
+            scroll-snap-type: y mandatory;
+            .ant-btn {
+                scroll-snap-align: center;
+                margin-right: .6rem;
+                font-weight: bold;
+                background-color: @component-background;
+                border-color: @component-background;
+            }
+        }
+        .status {
+            text-align: center;
+            margin: .6rem 0 0 0;
+        }
+    }
+    .ant-card {
+        border-radius: 1.2rem;
+    }
+
+    .ant-slider {
+        @asih: 3rem;
+        height: 2.85rem;
+        .ant-slider-step {
+            height: @asih;
+        }
+        .ant-slider-rail {
+            height: @asih;
+            border-radius: 0.4rem;
+        }
+        .ant-slider-track {
+            height: @asih;
+            background-color: #fff;
+            border-radius: 0.4rem 0 0 0.4rem;
+        }
+        .ant-slider-handle {
+            display: none;
+        }
+    }
+
+    .ant-radio-group-solid {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        .ant-radio-button-wrapper {
+            background: #111;
+            color: #555;
+            border: unset;
+            text-align: center;
+            flex: 1;
+        }
+        .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+            background: @radio-btn-solid-checked-background;
+            border-color: @radio-btn-solid-checked-border-color;
+            color: @radio-btn-solid-checked-color;
+            &::before {
+                background-color: unset;
+            }
+        }
+    }
+    .sp-slider {
+        .label {
+            font-weight: bold;
+            position: relative;
+            top: 10px;
+            left: 0.6rem;
+            font-size: 0.8rem;
+        }
+    }
+    .v-switch {
+        float: right;
+        margin-top: 0.8rem;
+        .label {
+            font-weight: bold;
+            font-size: 0.7rem;
+            margin-right: 0.2rem;
+        }
+    }
+    .ant-switch-checked .ant-switch-inner {
+        color: #444;
+    }
+}
