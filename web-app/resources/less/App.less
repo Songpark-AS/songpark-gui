@@ -4,15 +4,28 @@
 .dev {
     display: grid;
     grid-row-gap: 2rem;
+
+    .tps {
+        display: flex;
+        overflow: hidden;
+        // scroll-snap-type: y mandatory;
+        .ant-btn {
+            scroll-snap-align: center;
+            margin-right: .6rem;
+            font-weight: bold;
+            background-color: @component-background;
+            border-color: @component-background;
+        }
+    }
     .tp-scroller {
         width: 100%;
         overflow: auto;
         .tps {
             display: flex;
             overflow: auto;
-            scroll-snap-type: y mandatory;
+            // scroll-snap-type: y mandatory;
             .ant-btn {
-                scroll-snap-align: center;
+                // scroll-snap-align: center;
                 margin-right: .6rem;
                 font-weight: bold;
                 background-color: @component-background;
@@ -26,34 +39,30 @@
     }
     .ant-card {
         border-radius: 1.2rem;
+        .ant-card-body {
+            &::before,&::after {
+                content: none;
+            }
+            display: grid;
+            grid-row-gap: 1.2rem;
+            .ant-divider-horizontal {
+                margin: 0;
+                &.ant-divider-with-text {
+                    &::before, &::after {
+                        position: static;
+                    }
+                }
+            }
+        }
     }
 
-    .ant-slider {
-        @asih: 3rem;
-        height: 2.85rem;
-        .ant-slider-step {
-            height: @asih;
-        }
-        .ant-slider-rail {
-            height: @asih;
-            border-radius: 0.4rem;
-        }
-        .ant-slider-track {
-            height: @asih;
-            background-color: #fff;
-            border-radius: 0.4rem 0 0 0.4rem;
-        }
-        .ant-slider-handle {
-            display: none;
-        }
-    }
 
     .ant-radio-group-solid {
         display: flex;
         flex-direction: row;
         justify-content: center;
         .ant-radio-button-wrapper {
-            background: #111;
+            background: #171717;
             color: #555;
             border: unset;
             text-align: center;
@@ -69,24 +78,96 @@
         }
     }
     .sp-slider {
+        @height: 2.85rem;
+        @border-radius: 0.4rem;
+        @label-top: -0.2rem;
+        &.overload {
+            .ant-slider .ant-slider-track {
+                background-color: @sp-overload-bg-color;
+            }
+        }
         .label {
             font-weight: bold;
             position: relative;
-            top: 10px;
             left: 0.6rem;
+            top: @label-top;
             font-size: 0.8rem;
+        }
+        .pd-value {
+            color: #CCC;
+            font-size: 1rem;
+            position: relative;
+            top: calc(@height/1.3 * -1);
+            left: 1rem;
+            z-index: 2;
+            pointer-events: none;
+            mix-blend-mode: difference;
+        }
+
+        .sp-slider-clip {
+            height: 2.85rem;
+            width: 100%;
+            border-radius: @border-radius;
+            overflow: hidden;
+        }
+
+        .ant-slider {
+            height: @height;
+            margin: 0;
+            padding: 0;
+            .ant-slider-step {
+                height: @height;
+            }
+            .ant-slider-rail {
+                height: @height;
+                border-radius: 0;
+            }
+            .ant-slider-track {
+                height: @height;
+                background-color: @sp-slider-track-color;
+                border-radius: 0;
+            }
+            .ant-slider-handle {
+                display: none;
+            }
         }
     }
     .v-switch {
-        float: right;
-        margin-top: 0.8rem;
+        justify-self: end;
+        display: grid;
+        align-items: center;
+        grid-template-columns: auto 1fr;
+        grid-column-gap: 0.4rem;
         .label {
             font-weight: bold;
             font-size: 0.7rem;
-            margin-right: 0.2rem;
         }
     }
     .ant-switch-checked .ant-switch-inner {
         color: #444;
+    }
+
+    .pd-display{
+        position: relative;
+        .pd-measured-text {
+            display: block;
+        }
+        .pd-measured-triangle {
+            position: absolute;
+            left: 26%;
+            &::after {
+                position: relative;
+                left: -50%;
+            }
+        }
+    }
+
+
+    .triangle-up::after {
+        content: '\25b2';
+    }
+
+    .triangle-down::after {
+        content: '\25bc';
     }
 }
