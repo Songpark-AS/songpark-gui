@@ -22,9 +22,9 @@
   (reset! global value)
   (swap! times conj (system-time))
   (when (> (- (system-time) @last-time) 50)
-    #_(send-message! {:message/type :teleporter.cmd/global-volume
-                    :message/body {:teleporter/id tp-id
-                                   :teleporter/volume value}})
+    (rf/dispatch [:mqtt/send-message-to-teleporter tp-id {:message/type :teleporter.cmd/global-volume
+                                                          :teleporter/id tp-id
+                                                          :teleporter/volume value}])
     (reset! last-time (system-time))))
 
 (defn on-local-volume-change [local tp-id value]
@@ -34,9 +34,9 @@
   (reset! local value)
   (swap! times conj (system-time))
   (when (> (- (system-time) @last-time) 50)
-    #_(send-message! {:message/type :teleporter.cmd/local-volume
-                    :message/body {:teleporter/id tp-id
-                                   :teleporter/volume value}})
+    (rf/dispatch [:mqtt/send-message-to-teleporter tp-id {:message/type :teleporter.cmd/local-volume
+                                                          :teleporter/id tp-id
+                                                          :teleporter/volume value}])
     (reset! last-time (system-time))))
 
 (defn on-network-volume-change [network tp-id value]
@@ -46,9 +46,9 @@
   (reset! network value)
   (swap! times conj (system-time))
   (when (> (- (system-time) @last-time) 50)
-    #_(send-message! {:message/type :teleporter.cmd/network-volume
-                    :message/body {:teleporter/id tp-id
-                                   :teleporter/volume value}})
+    (rf/dispatch [:mqtt/send-message-to-teleporter tp-id {:message/type :teleporter.cmd/network-volume
+                                                          :teleporter/id tp-id
+                                                          :teleporter/volume value}])
     (reset! last-time (system-time))))
 
 (defn on-playout-delay-change [playout-delay tp-id value]
@@ -57,9 +57,9 @@
   (reset! playout-delay value)
   (swap! times conj (system-time))
   (when (> (- (system-time) @last-time) 50)
-    #_(send-via-mqtt! (str tp-id) {:message/type :teleporter.cmd/set-playout-delay
-                                 :message/body {:teleporter/id tp-id
-                                                :teleporter/playout-delay value}})))
+    (rf/dispatch [:mqtt/send-message-to-teleporter tp-id {:message/type :teleporter.cmd/set-playout-delay
+                                                          :teleporter/id tp-id
+                                                          :teleporter/playout-delay value}])))
 
 
 (defn- tp-status [global local network playout-delay online? coredump-data]
@@ -112,9 +112,9 @@
     [:<>
      [:> Button {:type "danger"
                  :disabled (not @started?)
-                 :on-click #(do
-                              #_(send-via-mqtt! (str tp-id) {:message/type :teleporter.cmd/path-reset
-                                                          :message/body {:teleporter/id tp-id}}))} "Path reset"]]))
+                 :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter tp-id {:message/type :teleporter.cmd/path-reset
+                                                                                  :teleporter/id tp-id}])}
+      "Path reset"]]))
 
 (defn tp-panel [{:teleporter/keys [id nickname]}]
   (r/with-let [global (r/atom 50)

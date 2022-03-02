@@ -3,7 +3,8 @@
             [re-frame.core :as rf]
             [songpark.mqtt :as mqtt]
             [songpark.mqtt.util :refer [broadcast-topic
-                                        heartbeat-topic]]
+                                        heartbeat-topic
+                                        teleporter-topic]]
             [web-app.mqtt.interceptor :refer [mqtt-client]]
             [web-app.utils :refer [get-api-url get-platform-url]]))
 
@@ -99,3 +100,23 @@
  :teleporter/jam-status
  (fn [db [_ tp-id jam-status]]
    (assoc-in db [:teleporters tp-id :jam/status] jam-status)))
+
+
+(rf/reg-event-fx
+ :teleporter/request-network-config
+ [mqtt-client]
+ (fn [{:keys [mqtt-client]} [_ tp-id]]
+   (mqtt/publish mqtt-client
+                 (teleporter-topic tp-id)
+                 {:message/type :teleporter.cmd/report-network-config
+                  :teleporter/id tp-id})
+   nil))
+
+(rf/reg-event-fx
+ :teleporter/request-upgrade
+ [mqtt-client]
+ (fn [{:keys [mqtt-client]} [_ tp-id]]
+   (mqtt/publish mqtt-client
+                 (teleporter-topic tp-id)
+                 {:message/type :teleporter.cmd/upgrade
+                  :teleporter/id tp-id})))

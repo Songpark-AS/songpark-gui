@@ -27,12 +27,12 @@
   (rf/dispatch [:teleporter/upgrading? tp-id true]))
 
 (defn- stop-all-streams [tp-id]
-  #_(send-via-mqtt! tp-id {:message/type :teleporter.cmd/hangup-all
-                         :message/body {:teleporter/id tp-id}}))
+  (rf/dispatch [:mqtt/send-message-to-teleporter tp-id {:message/type :teleporter.cmd/hangup-all
+                                                        :teleporter/id tp-id}]))
 
 (defn index [match]
-  (let [id (:id (:path-params match))]
-    (rf/dispatch [:req-tp-network-config id])
+  (let [id (uuid (:id (:path-params match)))]
+    (rf/dispatch [:teleporter/request-network-config id])
     (rf/dispatch [:fetch-latest-available-apt-version])
 
     (fn [match]
@@ -57,13 +57,15 @@
          [:h3 "Firmware version"]
          [:p (str "Current version: " latest-reported-apt-version)]
          (when (v/older? latest-reported-apt-version latest-available-apt-version)
-           [:p (str "Newer version found: " latest-available-apt-version " ") [:> Button {:type "primary" :loading upgrading? :on-click #(on-upgrade-click id)} "Upgrade firmware"]])
+           [:p (str "Newer version found: " latest-available-apt-version " ")
+            [:> Button {:type "primary"
+                        :loading upgrading?
+                        :on-click #(on-upgrade-click id)}
+             "Upgrade firmware"]])
          [:hr]
          [:h3 "Network settings"]
          [:> Tabs {:default-active-key "1"}
           [:> Tabs.TabPane {:tab "IPv4" :key "1"}
            (if (not (nil? @network-config))
              [ipv4-form/ipv4-config id]
-             [:p "Fetching network configuration"])]
-          #_[:> Tabs.TabPane {:tab "IPv6" :key "2"}
-       [ipv6-form/ipv6-config id]]]]))))
+             [:p "Fetching network configuration"])]]]))))

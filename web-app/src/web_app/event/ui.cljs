@@ -30,18 +30,6 @@
                    :message/topic topic
                    :message/body {:message/type :teleporter.msg/info
                                   :values values}})))
-(rf/reg-event-fx
- :req-tp-network-config
- (fn [_ [_ uuid]]
-   (send-message! {:message/type :teleporter.cmd/report-network-config
-                   :message/topic uuid})))
-
-(rf/reg-event-fx
- :req-tp-upgrade
- (fn [_ [_ uuid]]
-   (send-message! {:message/type :teleporter.cmd/upgrade
-                   :message/topic uuid
-                   :message/body {:teleporter/id uuid}})))
 
 ;; testing ground
 (comment

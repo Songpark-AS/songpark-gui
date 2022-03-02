@@ -173,5 +173,3 @@
      (when (true? tp-list-selection-mode)
        [selection-action-bar])
      [list-component]]))
-
-
