@@ -14,16 +14,13 @@
   [:> ControlOutlined])
 (defn TeleportersIcon []
   [:> UnorderedListOutlined])
-(defn TelemetryIcon []
-  [:> CopyOutlined])
 
 (defn menu []
   [:> Layout.Sider {:breakpoint "lg"
                     :collapsed-width "0"}
    [:> Menu {:theme "dark" :mode "inline" :selected-keys (:name (:data @match))}
     [:> Menu.Item {:key :views/jam :icon (r/as-element [JamIcon]) :on-click #(rfe/push-state :views/jam)} "Jam"]
-    [:> Menu.Item {:key :views/teleporters :icon (r/as-element [TeleportersIcon]) :on-click #(rfe/push-state :views/teleporters)} "Teleporters"]
-    [:> Menu.Item {:key :views/telemetry :icon (r/as-element [TelemetryIcon]) :on-click #(rfe/push-state :views/telemetry)} "Telemetry"]]])
+    [:> Menu.Item {:key :views/teleporters :icon (r/as-element [TeleportersIcon]) :on-click #(rfe/push-state :views/teleporters)} "Teleporters"]]])
 
 (defn main []
   [:> Layout
@@ -43,11 +40,7 @@
                                       {:title "Teleporters"
                                        :icon-component UnorderedListOutlined
                                        :on-click #(rfe/push-state :views/teleporters)
-                                       :active? (= name :views/teleporters)}
-                                      {:title "Telemetry"
-                                       :icon-component CopyOutlined
-                                       :on-click #(rfe/push-state :views/telemetry)
-                                       :active? (= name :views/telemetry)}]}]))])
+                                       :active? (= name :views/teleporters)}]}]))])
 
 (defn main-panel []
   [:div.main-panel

@@ -4,7 +4,6 @@
    [re-frame.core :as rf]
    [reagent.core :as r]
    [taoensso.timbre :as log]
-   [web-app.message :refer [send-via-mqtt!]]
    [web-app.forms.ipv4 :as ipv4-form]
    [version-clj.core :as v]
    [songpark.common.config :refer [config]]
@@ -28,20 +27,20 @@
   (rf/dispatch [:teleporter/upgrading? tp-id true]))
 
 (defn- stop-all-streams [tp-id]
-  (send-via-mqtt! tp-id {:message/type :teleporter.cmd/hangup-all
+  #_(send-via-mqtt! tp-id {:message/type :teleporter.cmd/hangup-all
                          :message/body {:teleporter/id tp-id}}))
 
 (defn index [match]
-  (let [uuid (:id (:path-params match))]
-    (rf/dispatch [:req-tp-network-config uuid])
+  (let [id (:id (:path-params match))]
+    (rf/dispatch [:req-tp-network-config id])
     (rf/dispatch [:fetch-latest-available-apt-version])
 
     (fn [match]
       (let [teleporters @(rf/subscribe [:teleporters])
-            network-config (rf/subscribe [:teleporter/net-config uuid])
-            apt-version-from-mqtt @(rf/subscribe [:teleporter/apt-version uuid])
-            upgrading? (true? @(rf/subscribe [:teleporter/upgrading? uuid]))
-            {:teleporter/keys [nickname apt-version]} (->> teleporters (filter #(= (str (:teleporter/uuid %)) uuid)) first)
+            network-config (rf/subscribe [:teleporter/net-config id])
+            apt-version-from-mqtt @(rf/subscribe [:teleporter/apt-version id])
+            upgrading? (true? @(rf/subscribe [:teleporter/upgrading? id]))
+            {:teleporter/keys [nickname apt-version]} (->> teleporters (filter #(= (str (:teleporter/id %)) id)) first)
             latest-reported-apt-version (or apt-version-from-mqtt apt-version)
             latest-available-apt-version @(rf/subscribe [:teleporter/latest-available-apt-version])]
 
@@ -52,19 +51,19 @@
          [:h3 "Direct commands to the Teleporter"]
          [:div.command-buttons
           [:> Button {:type "danger"
-                      :on-click #(stop-all-streams uuid)} "Stop all streams"]]
+                      :on-click #(stop-all-streams id)} "Stop all streams"]]
 
          [:hr]
          [:h3 "Firmware version"]
          [:p (str "Current version: " latest-reported-apt-version)]
          (when (v/older? latest-reported-apt-version latest-available-apt-version)
-           [:p (str "Newer version found: " latest-available-apt-version " ") [:> Button {:type "primary" :loading upgrading? :on-click #(on-upgrade-click uuid)} "Upgrade firmware"]])
+           [:p (str "Newer version found: " latest-available-apt-version " ") [:> Button {:type "primary" :loading upgrading? :on-click #(on-upgrade-click id)} "Upgrade firmware"]])
          [:hr]
          [:h3 "Network settings"]
          [:> Tabs {:default-active-key "1"}
           [:> Tabs.TabPane {:tab "IPv4" :key "1"}
            (if (not (nil? @network-config))
-             [ipv4-form/ipv4-config uuid]
+             [ipv4-form/ipv4-config id]
              [:p "Fetching network configuration"])]
           #_[:> Tabs.TabPane {:tab "IPv6" :key "2"}
-       [ipv6-form/ipv6-config uuid]]]]))))
+       [ipv6-form/ipv6-config id]]]]))))

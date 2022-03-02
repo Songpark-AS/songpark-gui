@@ -1,21 +1,11 @@
 (ns web-app.views.jam
   (:require ["antd" :refer [Button Slider]]
+            ["@ant-design/icons" :refer [GlobalOutlined ApiOutlined]]
             [re-frame.core :as rf]
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
             [taoensso.timbre :as log]
-            [web-app.api :refer [send-message!]]
-            [web-app.message :refer [send-via-mqtt!]]
-            [web-app.mqtt :as mqtt]
-            ["@ant-design/icons" :refer [GlobalOutlined ApiOutlined]]
             [web-app.utils :refer [scale-value]]))
-
-;; Here be jam view
-;; Select two teleporters with views.teleporter.list
-
-;; This view will contain
-;; View controls of both teleporters
-;; Start/stop jam buttons
 
 
 (def styles {:teleporters-container {:display :flex
@@ -25,7 +15,6 @@
 
 (def times (atom ()))
 (def last-time (atom 0))
-;;(def topic "d7d52eea-c597-4a90-bd4d-abfad567075d")
 
 (defn on-global-volume-change [global tp-id value]
   (log/debug ::on-global-volume-change {:tp-id tp-id
@@ -33,7 +22,7 @@
   (reset! global value)
   (swap! times conj (system-time))
   (when (> (- (system-time) @last-time) 50)
-    (send-message! {:message/type :teleporter.cmd/global-volume
+    #_(send-message! {:message/type :teleporter.cmd/global-volume
                     :message/body {:teleporter/id tp-id
                                    :teleporter/volume value}})
     (reset! last-time (system-time))))
@@ -45,7 +34,7 @@
   (reset! local value)
   (swap! times conj (system-time))
   (when (> (- (system-time) @last-time) 50)
-    (send-message! {:message/type :teleporter.cmd/local-volume
+    #_(send-message! {:message/type :teleporter.cmd/local-volume
                     :message/body {:teleporter/id tp-id
                                    :teleporter/volume value}})
     (reset! last-time (system-time))))
@@ -57,7 +46,7 @@
   (reset! network value)
   (swap! times conj (system-time))
   (when (> (- (system-time) @last-time) 50)
-    (send-message! {:message/type :teleporter.cmd/network-volume
+    #_(send-message! {:message/type :teleporter.cmd/network-volume
                     :message/body {:teleporter/id tp-id
                                    :teleporter/volume value}})
     (reset! last-time (system-time))))
@@ -68,7 +57,7 @@
   (reset! playout-delay value)
   (swap! times conj (system-time))
   (when (> (- (system-time) @last-time) 50)
-    (send-via-mqtt! (str tp-id) {:message/type :teleporter.cmd/set-playout-delay
+    #_(send-via-mqtt! (str tp-id) {:message/type :teleporter.cmd/set-playout-delay
                                  :message/body {:teleporter/id tp-id
                                                 :teleporter/playout-delay value}})))
 
@@ -95,7 +84,7 @@
        [:div "DDiffMS " (:DDiffMS data)]
        [:div "DDiffCC " (:DDiffCC data)]])]])
 
-(defn tp-volume [header uuid value on-change]
+(defn tp-volume [header id value on-change]
   (r/with-let [started? (rf/subscribe [:jam/started?])]
     [:<>
      [:h3 header]
@@ -105,9 +94,9 @@
                  :step 1
                  :disabled (not @started?)
                  :value @value
-                 :on-change #(on-change value uuid %)}]]))
+                 :on-change #(on-change value id %)}]]))
 
-(defn tp-playout-delay [header uuid value on-change]
+(defn tp-playout-delay [header id value on-change]
   [:<>
    [:h3 header]
    [:> Slider {:style (:slider styles)
@@ -115,7 +104,7 @@
                :max 30
                :step 1
                :value @value
-               :on-change #(on-change value uuid %)}]])
+               :on-change #(on-change value id %)}]])
 
 
 (defn tp-path-reset [tp-id]
@@ -123,32 +112,33 @@
     [:<>
      [:> Button {:type "danger"
                  :disabled (not @started?)
-                 :on-click #(send-via-mqtt! (str tp-id) {:message/type :teleporter.cmd/path-reset
-                                                         :message/body {:teleporter/id tp-id}})} "Path reset"]]))
+                 :on-click #(do
+                              #_(send-via-mqtt! (str tp-id) {:message/type :teleporter.cmd/path-reset
+                                                          :message/body {:teleporter/id tp-id}}))} "Path reset"]]))
 
-(defn tp-panel [{:teleporter/keys [uuid nickname]}]
+(defn tp-panel [{:teleporter/keys [id nickname]}]
   (r/with-let [global (r/atom 50)
                network (r/atom 50)
                local (r/atom 50)
                playout-delay (r/atom 20)
-               online? (rf/subscribe [:teleporter/online? (str uuid)])
-               coredump-data (rf/subscribe [:teleporter/coredump (str uuid)])]
+               online? (rf/subscribe [:teleporter/online? id])
+               coredump-data (rf/subscribe [:teleporter/coredump id])]
     [:div.tp-panel
      [:h2 nickname]
      [tp-status global local network playout-delay online? coredump-data]
-     [tp-volume "Global volume" uuid global on-global-volume-change]
-     [tp-volume "Local volume" uuid local on-local-volume-change]
-     [tp-volume "Network volume" uuid network on-network-volume-change]
-     [tp-playout-delay "Playout delay (in ms, default is 20)" uuid playout-delay on-playout-delay-change]
-     [tp-path-reset uuid]]))
+     [tp-volume "Global volume" id global on-global-volume-change]
+     [tp-volume "Local volume" id local on-local-volume-change]
+     [tp-volume "Network volume" id network on-network-volume-change]
+     [tp-playout-delay "Playout delay (in ms, default is 20)" id playout-delay on-playout-delay-change]
+     [tp-path-reset id]]))
 
 (defn start-jam []
   (let [selected-teleporters @(rf/subscribe [:selected-teleporters])]
-    (rf/dispatch [:start-jam (mapv #(select-keys % [:teleporter/uuid]) (vals selected-teleporters))])))
+    (rf/dispatch [:start-jam (mapv #(select-keys % [:teleporter/id]) (vals selected-teleporters))])))
 
 (defn stop-jam [jam]
   (log/debug ::stop-jam jam)
-  (rf/dispatch [:stop-jam (:jam/uuid jam)]))
+  (rf/dispatch [:stop-jam (:jam/id jam)]))
 
 (defn jam-controls []
   (let [jam (rf/subscribe [:jam])
@@ -169,8 +159,8 @@
      (when (>= num-selected-teleporters 2)
        [jam-controls])
      (if (> num-selected-teleporters 0)
-       (for [[_ {:keys [teleporter/uuid] :as tp}] @selected-teleporters]
-         ^{:key (str "tp-panel-" uuid)}
+       (for [[_ {:keys [teleporter/id] :as tp}] @selected-teleporters]
+         ^{:key (str "tp-panel-" id)}
          [tp-panel tp])
        [:p "No teleporters selected, select teleporters "
         [:a {:href (rfe/href :views/teleporters)} "here"]])]))
