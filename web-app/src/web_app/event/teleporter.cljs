@@ -120,3 +120,8 @@
                  (teleporter-topic tp-id)
                  {:message/type :teleporter.cmd/upgrade
                   :teleporter/id tp-id})))
+
+(rf/reg-event-db
+ :teleporter/values
+ (fn [db [_ {:teleporter/keys [id values]}]]
+   (update-in db [:teleporters id] merge values)))

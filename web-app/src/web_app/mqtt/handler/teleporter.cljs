@@ -9,7 +9,6 @@
 (defmethod handle-message :teleporter/heartbeat [{:keys [teleporter/id]}]
   (utils/register-tp-heartbeat id (get-in @config [:heartbeat :timer])))
 
-
 (defmethod handle-message :teleporter/apt-version [msg]
   (rf/dispatch [:teleporter/apt-version msg]))
 
@@ -24,3 +23,6 @@
 
 (defmethod handle-message :sip/register [msg]
   (rf/dispatch [:teleporter/sip-register msg]))
+
+(defmethod handle-message :teleporter/values [msg]
+  (rf/dispatch [:teleporter/values msg]))
