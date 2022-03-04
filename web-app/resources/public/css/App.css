@@ -25323,16 +25323,23 @@ div.ant-typography-edit-content.ant-typography-rtl {
   display: grid;
   grid-row-gap: 2rem;
 }
-.dev .tps {
-  display: flex;
+.dev .tps-container {
+  position: relative;
   overflow: hidden;
+  width: 100%;
+  height: 40px;
 }
-.dev .tps .ant-btn {
-  scroll-snap-align: center;
-  margin-right: 0.6rem;
+.dev .tps-container .tps {
+  position: absolute;
+  display: flex;
+  gap: 0.8rem;
+  left: calc(50% - (10rem / 2));
+}
+.dev .tps-container .tps .ant-btn {
   font-weight: bold;
   background-color: #2a2e31;
-  border-color: #2a2e31;
+  border: 0;
+  width: 10rem;
 }
 .dev .tp-scroller {
   width: 100%;
