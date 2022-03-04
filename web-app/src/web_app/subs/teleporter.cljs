@@ -60,7 +60,9 @@
  (fn [db [_ tp-id]]
    (let [status (get-in db [:teleporters tp-id :jam/status] :idle)
          sip (get-in db [:teleporters tp-id :jam/sip])
-         stream (get-in db [:teleporters tp-id :jam/stream])]
+         stream (get-in db [:teleporters tp-id :jam/stream])
+         sync (get-in db [:teleporters tp-id :jam/sync])]
      {:jam/status status
       :jam/sip sip
-      :jam/stream stream})))
+      :jam/stream stream
+      :jam/sync sync})))

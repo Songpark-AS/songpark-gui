@@ -17,12 +17,17 @@
 (rf/reg-event-fx
  :jam/stop-by-teleporter-id
  (fn [{:keys [db]} [_ teleporter-id]]
-   (when-let [[jam-id _] (->> db
-                              :jams
-                              (filter (fn [[k {:keys [jam/members]}]]
-                                        ((set members) teleporter-id)))
-                              first)]
-     {:dispatch [:http/delete (get-api-url "/jam") {:jam/id jam-id}]})))
+   (when-let [[jam-id {:keys [jam/members]}] (->> db
+                                                  :jams
+                                                  (filter (fn [[k {:keys [jam/members]}]]
+                                                            ((set members) teleporter-id)))
+                                                  first)]
+     (let [updated-db (reduce (fn [out tp-id]
+                                (assoc-in out [:teleporters tp-id :jam/status] :stopping))
+                              db members)]
+       {:db updated-db
+        :dispatch [:http/delete (get-api-url "/jam") {:jam/id jam-id}]}))))
+
 (rf/reg-event-fx
  :jam/ask
  (fn [_ [_ tp-id]]
@@ -56,13 +61,14 @@
                       (-> db
                           (assoc-in [:teleporters tp-id :jam/status] :idle)
                           (assoc-in [:teleporters tp-id :jam/sip] nil)
-                          (assoc-in [:teleporters tp-id :jam/stream] nil)))
+                          (assoc-in [:teleporters tp-id :jam/stream] nil)
+                          (assoc-in [:teleporters tp-id :jam/sync] nil)))
                     (update-in db [:jams] dissoc id) members)]
      {:db db})))
 
 (defn jam-teleporter-status [db [_ {:keys [teleporter/id jam/teleporters]}]]
-  (reduce (fn [db [tp-id {:keys [sip stream]}]]
-            (update-in db [:teleporters id] merge {:jam/sip sip :jam/stream stream}))
+  (reduce (fn [db [tp-id {:keys [sip stream sync]}]]
+            (update-in db [:teleporters id] merge {:jam/sip sip :jam/stream stream :jam/sync sync}))
           db teleporters))
 
 (rf/reg-event-db

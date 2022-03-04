@@ -26,3 +26,13 @@
 
 (defmethod handle-message :teleporter/values [msg]
   (rf/dispatch [:teleporter/values msg]))
+
+(defmethod handle-message :teleporter/hangup-all [msg]
+  ;; do nothing at the moment
+  )
+
+(defmethod handle-message :teleporter/gain [msg]
+  (rf/dispatch [:teleporter/gain msg]))
+
+(defmethod handle-message :teleporter/relay [msg]
+  (rf/dispatch [:teleporter/relay msg]))

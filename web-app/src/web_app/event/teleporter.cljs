@@ -125,3 +125,14 @@
  :teleporter/values
  (fn [db [_ {:teleporter/keys [id values]}]]
    (update-in db [:teleporters id] merge values)))
+
+
+(rf/reg-event-db
+ :teleporter/gain
+ (fn [db [_ {:teleporter/keys [id gain value]}]]
+   (assoc-in db [:teleporters id gain] value)))
+
+(rf/reg-event-db
+ :teleporter/relay
+ (fn [db [_ {:teleporter/keys [id relay value]}]]
+   (assoc-in db [:teleporters id relay] value)))
