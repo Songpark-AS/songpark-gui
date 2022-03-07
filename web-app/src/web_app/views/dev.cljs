@@ -6,10 +6,12 @@
             [taoensso.timbre :as log]))
 
 (defn scroll-tps-to-pos [pos]
-  (let [tps-element (first (js/document.getElementsByClassName "tps"))]
+  (let [tps-element (first (js/document.getElementsByClassName "tps"))
+        tp-btn-width "10rem"
+        tp-btn-gap "0.8rem"]
     (set!
      (.. tps-element -style -left)
-     (str "calc(50% - (10rem / 2 + 0.8rem * " pos " + 10rem * " pos "))"))))
+     (str "calc(50% - (" tp-btn-width " / 2 + " tp-btn-gap " * " pos " + " tp-btn-width " * " pos "))"))))
 
 (defn slider [props]
   (let [{:keys [label overloading? mode pd-measured]} props]
@@ -27,7 +29,7 @@
              [:span.pd-measured-text (str "Measured: " pd-measured "ms")]])])])))
 
 (defn teleporter-switcher [tps]
-  (let [swipe-state (r/atom {:width 0 :start-x 0 :end-x 0 :direction nil})
+  (r/with-let [swipe-state (r/atom {:width 0 :start-x 0 :end-x 0 :direction nil})
         state (r/atom {:pos 0})]
     [:div.tps-container
      {:on-touch-start (fn [e]
@@ -38,9 +40,7 @@
       :on-touch-move (fn [e] (swap! swipe-state assoc :end-x (aget e "touches" 0 "pageX"))
                       (let [{:keys [width start-x end-x]} @swipe-state
                             direction (if (> end-x start-x) "right" "left")]
-                        (swap! swipe-state assoc :direction direction)
-                        (log/debug :on-touch-end "start" start-x "end" end-x)
-                        ))
+                        (swap! swipe-state assoc :direction direction)))
       :on-touch-end (fn [_]
                       (let [direction (:direction @swipe-state)
                             pos (:pos @state)]
@@ -51,13 +51,19 @@
                         (when (and (= direction "right") (> pos 0))
                           (do
                             (scroll-tps-to-pos (dec pos))
-                            (swap! state assoc :pos (dec pos))))
-                        (log/debug :on-touch-end direction)))}
+                            (swap! state assoc :pos (dec pos))))))}
      [:div.tps
-      (for [tp tps]
-        [:> Button {:key (:teleporter/uuid tp) :type "primary" :shape "round" :size "large"} (:teleporter/nickname tp)])]
-     ])
-  )
+      (doall
+       (for [tp tps]
+         [:> Button {:key (:teleporter/uuid tp)
+                     :class (when (=
+                                   (:teleporter/uuid tp)
+                                   (:teleporter/uuid (nth tps (:pos @state))))
+                              "active")
+                     :type "primary"
+                     :shape "round"
+                     :size "large"}
+          (:teleporter/nickname tp)]))]]))
 
 (defn index []
   [:div.dev
@@ -94,3 +100,13 @@
              [slider {:label "GAIN" :tooltipVisible false :defaultValue 80 :overloading? true}]
              ]]
    ])
+
+(comment
+  (def tps
+    [{:teleporter/uuid "tid1" :teleporter/nickname "Adele"}
+     {:teleporter/uuid "tid2" :teleporter/nickname "Jimi Hendrix"}
+     {:teleporter/uuid "tid3" :teleporter/nickname "Elvis Presley"}
+     {:teleporter/uuid "tid4" :teleporter/nickname "Madonna"}
+     {:teleporter/uuid "tid5" :teleporter/nickname "Beatles"}])
+  (doseq [tp tps] (prn (nth tps 1)))
+  )
