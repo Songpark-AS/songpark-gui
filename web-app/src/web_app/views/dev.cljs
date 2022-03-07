@@ -47,10 +47,12 @@
                         (when (and (= direction "left") (< pos (- (count tps) 1)))
                           (do
                             (scroll-tps-to-pos (inc pos))
+                            (rf/dispatch [:selected-teleporter (nth tps (inc pos))])
                             (swap! state assoc :pos (inc pos))))
                         (when (and (= direction "right") (> pos 0))
                           (do
                             (scroll-tps-to-pos (dec pos))
+                            (rf/dispatch [:selected-teleporter (nth tps (dec pos))])
                             (swap! state assoc :pos (dec pos))))))}
      [:div.tps
       (doall
@@ -62,16 +64,27 @@
                               "active")
                      :type "primary"
                      :shape "round"
-                     :size "large"}
+                     :size "large"
+                     :on-click (fn [_]
+                                 ;; what is my pos?
+                                 
+                                 ;; scroll to pos
+                                 (swap! state assoc :pos 1)
+                                 (scroll-tps-to-pos 1)
+
+                                 ;; select teleporter
+                                 (rf/dispatch [:selected-teleporter tp]))}
           (:teleporter/nickname tp)]))]]))
 
 (defn index []
   [:div.dev
-   [teleporter-switcher [{:teleporter/uuid "tid1" :teleporter/nickname "Adele"}
-                         {:teleporter/uuid "tid2" :teleporter/nickname "Jimi Hendrix"}
-                         {:teleporter/uuid "tid3" :teleporter/nickname "Elvis Presley"}
-                         {:teleporter/uuid "tid4" :teleporter/nickname "Madonna"}
-                         {:teleporter/uuid "tid5" :teleporter/nickname "Beatles"}]]
+   [:div.topbar 
+    [teleporter-switcher [{:teleporter/uuid "tid1" :teleporter/nickname "Adele"}
+                          {:teleporter/uuid "tid2" :teleporter/nickname "Jimi Hendrix"}
+                          {:teleporter/uuid "tid3" :teleporter/nickname "Elvis Presley"}
+                          {:teleporter/uuid "tid4" :teleporter/nickname "Madonna"}
+                          {:teleporter/uuid "tid5" :teleporter/nickname "Beatles"}]]
+    [:div.status "In jam - Jimi Hendrix"]]
    ;; [teleporter-switcher (into [] (vals @(rf/subscribe [:teleporters])))]
    ;; [:div.tp-scroller
    ;;  [:p.status "Not in jam"]]

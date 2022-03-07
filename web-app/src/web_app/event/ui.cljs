@@ -44,6 +44,11 @@
    (assoc db :selected-teleporters teleporters)))
 
 (rf/reg-event-db
+ :selected-teleporter
+ (fn [db [_ teleporter]]
+   (assoc db :selected-teleporter teleporter)))
+
+(rf/reg-event-db
  :set-selected-teleporters-staging
  (fn [db [_ teleporters]]
    (assoc db :selected-teleporters-staging teleporters)))

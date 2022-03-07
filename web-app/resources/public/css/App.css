@@ -25320,44 +25320,37 @@ div.ant-typography-edit-content.ant-typography-rtl {
 /* antd variables */
 /* Custom variables */
 .dev {
+  width: min(100%, 48rem);
+  margin-inline: auto;
   display: grid;
   grid-row-gap: 2rem;
 }
-.dev .tps-container {
+.dev .topbar .tps-container {
   position: relative;
   overflow: hidden;
   width: 100%;
   height: 40px;
 }
-.dev .tps-container .tps {
+.dev .topbar .tps-container .tps {
   position: absolute;
   display: flex;
   gap: 0.8rem;
   left: calc(50% - (10rem / 2));
 }
-.dev .tps-container .tps .ant-btn {
+.dev .topbar .tps-container .tps .ant-btn {
   font-weight: bold;
-  background-color: #2a2e31;
+  background-color: #2d2e2e;
   border: 0;
+  color: #777;
   width: 10rem;
 }
-.dev .tp-scroller {
-  width: 100%;
-  overflow: auto;
-}
-.dev .tp-scroller .tps {
-  display: flex;
-  overflow: auto;
-}
-.dev .tp-scroller .tps .ant-btn {
-  margin-right: 0.6rem;
-  font-weight: bold;
+.dev .topbar .tps-container .tps .ant-btn.active {
   background-color: #2a2e31;
-  border-color: #2a2e31;
+  color: #FFF;
 }
-.dev .tp-scroller .status {
+.dev .topbar .status {
+  margin-top: 0.6rem;
   text-align: center;
-  margin: 0.6rem 0 0 0;
 }
 .dev .ant-card {
   border-radius: 1.2rem;
