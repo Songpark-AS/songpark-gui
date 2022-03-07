@@ -88,15 +88,13 @@
                tp-scroller-styling (r/atom default-scroll-area-position)]
     (let [base-bottom -20
           scroll-area-props
-          {:on-click (fn [e]
-                       (.preventDefault e)
-                       (.stopPropagation e))
-           :on-touch-start (fn [e]
+          {:on-touch-start (fn [e]
                              (.stopPropagation e)
-                             (log/debug @swipe-state)
-                             (swap! swipe-state assoc
-                                    :start-y (aget e "touches" 0 "pageY")
-                                    :end-y (aget e "touches" 0 "pageY")))
+                             (log/debug :on-touch-start @swipe-state)
+                             (let [y (aget e "touches" 0 "pageY")]
+                               (swap! swipe-state assoc
+                                      :start-y y
+                                      :end-y y)))
            :on-touch-move (fn [e]
                             (.stopPropagation e)
                             (swap! swipe-state assoc :end-y (aget e "touches" 0 "pageY"))
@@ -161,7 +159,8 @@
 
         "Donec at erat non lectus rutrum tincidunt in a risus. Donec bibendum commodo diam, eu imperdiet diam placerat in. Nullam imperdiet non erat in faucibus. Cras in tristique metus, sed volutpat tellus. Maecenas semper dictum erat, et pretium diam hendrerit eget. Aenean id turpis auctor libero sodales vulputate. Donec sit amet sem augue. Etiam consequat vestibulum euismod. Pellentesque vulputate, diam id cursus convallis, nulla lorem tincidunt ex, vel ullamcorper leo eros quis tortor. Nullam dapibus lectus in justo tincidunt rutrum. Curabitur ac fringilla diam, eget lobortis urna."]
        [:div.bottom-border {:style {:margin-top (str @tp-scroller-styling "px")}}
-        [:img.logo {:src "/favicon.ico"}]]
+        [:img.logo {:on-click #(js/alert "I work!")
+                    :src "/favicon.ico"}]]
        [:div.scroll-area scroll-area-props]])))
 
 (defn index []
