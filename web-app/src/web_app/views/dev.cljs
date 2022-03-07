@@ -33,7 +33,6 @@
         state (r/atom {:pos 0})]
     [:div.tps-container
      {:on-touch-start (fn [e]
-                        (log/debug @swipe-state)
                         (reset! swipe-state {:width (.. e -target -offsetWidth)
                                                   :start-x (aget e "touches" 0 "pageX")
                                                   :end-x (aget e "touches" 0 "pageX")}))
@@ -56,7 +55,7 @@
                             (swap! state assoc :pos (dec pos))))))}
      [:div.tps
       (doall
-       (for [tp tps]
+       (for [[idx tp] (map-indexed vector tps)]
          [:> Button {:key (:teleporter/uuid tp)
                      :class (when (=
                                    (:teleporter/uuid tp)
@@ -69,8 +68,8 @@
                                  ;; what is my pos?
                                  
                                  ;; scroll to pos
-                                 (swap! state assoc :pos 1)
-                                 (scroll-tps-to-pos 1)
+                                 (swap! state assoc :pos idx)
+                                 (scroll-tps-to-pos idx)
 
                                  ;; select teleporter
                                  (rf/dispatch [:selected-teleporter tp]))}
@@ -121,5 +120,16 @@
      {:teleporter/uuid "tid3" :teleporter/nickname "Elvis Presley"}
      {:teleporter/uuid "tid4" :teleporter/nickname "Madonna"}
      {:teleporter/uuid "tid5" :teleporter/nickname "Beatles"}])
-  (doseq [tp tps] (prn (nth tps 1)))
+
+  (log/debug tps)
+  (map-indexed (fn [idx tp]
+                 (prn idx)
+                 (prn tp)
+                 ) tps)
+  (for [[idx tp] (map-indexed identity tps)]
+    (log/debug idx)
+    (log/debug tp)
+    (log/debug tps)
+    )
+
   )
