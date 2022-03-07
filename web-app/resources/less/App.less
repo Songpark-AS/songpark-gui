@@ -26,24 +26,16 @@
             }
         }
     }
-    .tp-scroller {
-        width: 100%;
+    .tps {
+        display: flex;
         overflow: auto;
-        .tps {
-            display: flex;
-            overflow: auto;
-            // scroll-snap-type: y mandatory;
-            .ant-btn {
-                // scroll-snap-align: center;
-                margin-right: .6rem;
-                font-weight: bold;
-                background-color: @component-background;
-                border-color: @component-background;
-            }
-        }
-        .status {
-            text-align: center;
-            margin: .6rem 0 0 0;
+        // scroll-snap-type: y mandatory;
+        .ant-btn {
+            // scroll-snap-align: center;
+            margin-right: .6rem;
+            font-weight: bold;
+            background-color: @component-background;
+            border-color: @component-background;
         }
     }
     .ant-card {
@@ -130,7 +122,7 @@
             .ant-slider-rail {
                 height: @height;
                 border-radius: 0;
-                background-color: @layout-body-background;
+                background-color: @slider-rail-background-color;
             }
             .ant-slider-track {
                 height: @height;
@@ -180,4 +172,50 @@
     .triangle-down::after {
         content: '\25bc';
     }
+    .tp-scroller {
+        padding-bottom: 20px;
+        .status {
+            text-align: center;
+            margin: .6rem 0 0 0;
+        }
+        position: relative;
+        margin-bottom: 50px;
+        .bottom-border {
+            border-bottom: 3px @sp-scroller-color solid;
+            position: relative;
+            bottom: 0px;
+            bottom: -20px;
+            height: 40px;
+            width: 200%;
+            left: -50%;
+            
+        }
+        .scroll-area {
+            position: absolute;
+            //background-color: green;
+            bottom: -10px;
+            height: 40px;
+            width: 200%;
+            left: -25%;
+            touch-action: none;
+        }
+        .board {
+            display: none;
+            &.show {
+                display: block;
+            }
+        }
+        .logo {
+            touch-action: none;
+            position: absolute;
+            bottom: -40px;
+            left: 25%;
+            height: 80px;
+            background-color: @layout-body-background;
+            border-radius: 20em;
+            border: 3px @sp-scroller-color solid;
+            z-index: 1;
+        }
+    }
+    
 }
