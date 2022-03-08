@@ -25339,14 +25339,9 @@ div.ant-typography-edit-content.ant-typography-rtl {
 }
 .dev .topbar .tps-container .tps .ant-btn {
   font-weight: bold;
-  background-color: #2d2e2e;
-  border: 0;
-  color: #777;
-  width: 10rem;
-}
-.dev .topbar .tps-container .tps .ant-btn.active {
   background-color: #2a2e31;
-  color: #FFF;
+  border: 0;
+  width: 10rem;
 }
 .dev .topbar .status {
   margin-top: 0.6rem;
@@ -25427,6 +25422,7 @@ div.ant-typography-edit-content.ant-typography-rtl {
 .dev .sp-slider .ant-slider .ant-slider-rail {
   height: 2.85rem;
   border-radius: 0;
+  background-color: #232323;
 }
 .dev .sp-slider .ant-slider .ant-slider-track {
   height: 2.85rem;
@@ -25469,4 +25465,47 @@ div.ant-typography-edit-content.ant-typography-rtl {
 }
 .dev .triangle-down::after {
   content: '\25bc';
+}
+.dev .tp-scroller {
+  padding-bottom: 20px;
+  position: relative;
+  margin-bottom: 50px;
+}
+.dev .tp-scroller .status {
+  text-align: center;
+  margin: 0.6rem 0 0 0;
+}
+.dev .tp-scroller .bottom-border {
+  border-bottom: 3px #d4fffc solid;
+  position: relative;
+  bottom: 0px;
+  bottom: -20px;
+  height: 40px;
+  width: 200%;
+  left: -50%;
+}
+.dev .tp-scroller .scroll-area {
+  position: absolute;
+  bottom: -20px;
+  height: 40px;
+  width: 200%;
+  left: -25%;
+  touch-action: none;
+}
+.dev .tp-scroller .board {
+  display: none;
+}
+.dev .tp-scroller .board.show {
+  display: block;
+}
+.dev .tp-scroller .logo {
+  touch-action: none;
+  position: absolute;
+  bottom: -40px;
+  left: 25%;
+  height: 80px;
+  background-color: #232323;
+  border-radius: 20em;
+  border: 3px #d4fffc solid;
+  z-index: 1;
 }
