@@ -52,12 +52,12 @@
   (let [transit-formatted-message (->transit message)]
     (protocol.mqtt.client/publish client topic transit-formatted-message)))
 
-(defrecord MQTTManager [started? host port client-id-prefix username password]
+(defrecord MQTTManager [started? host port client-id-prefix username password useSSL]
   component/Lifecycle
   (start [this]
     (if started?
       this
-      (let [client (mqtt-client {:host host :port port :client-id (str client-id-prefix "-" (nano-id 10)) :username username :password password :on-message on-message})]
+      (let [client (mqtt-client {:host host :port port :client-id (str client-id-prefix "-" (nano-id 10)) :username username :password password :on-message on-message :useSSL useSSL})]
         (log/info "Starting MQTTManager")
         (log/info "Connecting to broker")
         (protocol.mqtt.client/connect client)

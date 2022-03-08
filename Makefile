@@ -2,6 +2,7 @@
 
 export AWS=523581807964.dkr.ecr.eu-central-1.amazonaws.com
 export VERSION ?=$(shell git rev-parse HEAD)
+export VERSION_DATE ?=$(shell date '+%Y-%m-%d')
 export COMPANY_NAME=inonit
 export PROJECT_NAME=songpark-webapp
 export LOCAL_BUILD_NAME=$(COMPANY_NAME)/$(PROJECT_NAME)
@@ -11,6 +12,7 @@ DEPLOYMENTDIR=deployment
 
 
 $(shell git rev-parse HEAD > VERSION.git)
+$(shell date '+%Y-%m-%d' > VERSION)
 
 default:
 	@echo "Check commands"
@@ -59,19 +61,19 @@ build-production: prebuild-production docker-build docker-tag-version docker-tag
 
 prebuild-staging:
 	@echo "Prebuilding staging"
-	sh $(DEPLOYMENTDIR)/prebuild.staging.sh $(VERSION)
+	sh $(DEPLOYMENTDIR)/prebuild.staging.sh $(VERSION) $(VERSION_DATE)
 
 prebuild-production:
 	@echo "Prebuilding production"
-	sh $(DEPLOYMENTDIR)/prebuild.production.sh $(VERSION)
+	sh $(DEPLOYMENTDIR)/prebuild.production.sh $(VERSION) $(VERSION_DATE)
 
 prebuild-dev:
 	@echo "Prebuilding dev"
-	sh $(DEPLOYMENTDIR)/prebuild.dev.sh $(VERSION)
+	sh $(DEPLOYMENTDIR)/prebuild.dev.sh $(VERSION) $(VERSION_DATE)
 
 prebuild-debug:
 	@echo "Prebuilding debug"
-	sh $(DEPLOYMENTDIR)/prebuild.debug.sh $(VERSION)
+	sh $(DEPLOYMENTDIR)/prebuild.debug.sh $(VERSION) $(VERSION_DATE)
 
 # Docker tagging
 

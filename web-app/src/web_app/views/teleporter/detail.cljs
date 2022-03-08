@@ -2,41 +2,73 @@
   (:require
    ["antd" :refer [Button Tabs Tabs.TabPane]]
    [re-frame.core :as rf]
+   [reagent.core :as r]
    [taoensso.timbre :as log]
    [web-app.message :refer [send-via-mqtt!]]
    [web-app.forms.ipv4 :as ipv4-form]
+   [songpark.common.config :refer [config]]
+   ["semver" :as semver]
    #_[web-app.forms.ipv6 :as ipv6-form]
    [web-app.event.ui]))
 
 ;; Here be detailview of a teleporter
 ;; This view will contain configuration options for a teleporter
+(defn wrap-semver-lt [^js semver x y]
+  (if-not (or (or (nil? x) (nil? y))
+              (or (= x "") (= x "Unknown"))
+              (or (= y "") (= y "Unknown")))
+    (.lt semver x y)
+    false))
+
+(defn- handle-upgrade-failed [tp-id]
+  (rf/dispatch [:teleporter/upgrade-status {:teleporter/id tp-id :teleporter/upgrade-status "failed"}]))
+
+(defn- on-upgrade-click [tp-id]
+  ;; start upgrade timeout
+  (rf/dispatch [:teleporter/upgrade-timeout tp-id (js/setTimeout #(handle-upgrade-failed tp-id) (get @config :upgrade_timeout))])
+
+  ;; Send upgrade request to teleporter
+  (rf/dispatch [:req-tp-upgrade tp-id])
+
+  ;; We are now upgrading the teleporter
+  (rf/dispatch [:teleporter/upgrading? tp-id true]))
 
 (defn- stop-all-streams [tp-id]
   (send-via-mqtt! tp-id {:message/type :teleporter.cmd/hangup-all
                          :message/body {:teleporter/id tp-id}}))
 
 (defn index [match]
-  (let [uuid (:id (:path-params match))
-        teleporters @(rf/subscribe [:teleporters])
-        network-config (rf/subscribe [:teleporter/net-config uuid])
-        {:teleporter/keys [nickname]} (->> teleporters (filter #(= (str (:teleporter/uuid %)) uuid)) first)]
+  (let [uuid (:id (:path-params match))]
     (rf/dispatch [:req-tp-network-config uuid])
-    [:div.teleporter-detail-view
-     [:h1 "Teleporter settings"]
-     [:h2 nickname]
+    (rf/dispatch [:fetch-latest-available-apt-version])
 
-     [:hr]
-     [:h3 "Direct commands to the Teleporter"]
-     [:div.command-buttons
-      [:> Button {:type "danger"
-                  :on-click #(stop-all-streams uuid)} "Stop all streams"]]
+    (fn [match]
+      (let [teleporters (into [] (vals @(rf/subscribe [:teleporters])))
+            network-config (rf/subscribe [:teleporter/net-config uuid])
+            upgrading? (true? @(rf/subscribe [:teleporter/upgrading? uuid]))
+            {:teleporter/keys [nickname apt-version]} (->> teleporters (filter #(= (str (:teleporter/uuid %)) uuid)) first)
+            latest-available-apt-version @(rf/subscribe [:teleporter/latest-available-apt-version])]
 
-     [:hr]
-     [:h3 "Network settings"]
-     [:> Tabs {:default-active-key "1"}
-      [:> Tabs.TabPane {:tab "IPv4" :key "1"}
-       (if (not (nil? @network-config))
-         [ipv4-form/ipv4-config uuid]
-         [:p "Fetching network configuration"])]
-      #_[:> Tabs.TabPane {:tab "IPv6" :key "2"}
-       [ipv6-form/ipv6-config uuid]]]]))
+        [:div.teleporter-detail-view
+         [:h1 "Teleporter settings"]
+         [:h2 nickname]
+         [:hr]
+         [:h3 "Direct commands to the Teleporter"]
+         [:div.command-buttons
+          [:> Button {:type "danger"
+                      :on-click #(stop-all-streams uuid)} "Stop all streams"]]
+
+         [:hr]
+         [:h3 "Firmware version"]
+         [:p (str "Current version: " apt-version)]
+         (when (wrap-semver-lt semver apt-version latest-available-apt-version)
+           [:p (str "Newer version found: " latest-available-apt-version " ") [:> Button {:type "primary" :loading upgrading? :on-click #(on-upgrade-click uuid)} "Upgrade firmware"]])
+         [:hr]
+         [:h3 "Network settings"]
+         [:> Tabs {:default-active-key "1"}
+          [:> Tabs.TabPane {:tab "IPv4" :key "1"}
+           (if (not (nil? @network-config))
+             [ipv4-form/ipv4-config uuid]
+             [:p "Fetching network configuration"])]
+          #_[:> Tabs.TabPane {:tab "IPv6" :key "2"}
+       [ipv6-form/ipv6-config uuid]]]]))))

@@ -1,0 +1,7 @@
+{
+    "watchFolder":  "./resources/less",
+    "outputFolder": "./resources/public/css",
+    "mainFile":     "App.less",
+    "enableJs":     true,
+    "lessArgs":     "include-path=./node_modules"
+}

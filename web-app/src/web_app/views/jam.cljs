@@ -73,7 +73,7 @@
                                                 :teleporter/playout-delay value}})))
 
 
-(defn- tp-status [global local network playout-delay online?]
+(defn- tp-status [global local network playout-delay online? coredump-data]
   [:<>
    [:h3 "Status"]
    [:div.tp-status
@@ -83,7 +83,17 @@
     [:div "Global volume " @global]
     [:div "Local volume " @local]
     [:div "Network volume " @network]
-    [:div "Delay output " @playout-delay]]])
+    [:div "Delay output " @playout-delay]
+    (when-let [data @coredump-data]
+      [:<>
+       [:div "Latency " (:Latency data)]
+       [:div "LTC " (:LTC data)]
+       [:div "RTC " (:RTC data)]
+       [:div "StreamStatus " (:StreamStatus data)]
+       [:div "RX Packets-per-second " (:RX_Packets-per-second data)]
+       [:div "TX Packets-per-second " (:TX_Packets-per-second data)]
+       [:div "DDiffMS " (:DDiffMS data)]
+       [:div "DDiffCC " (:DDiffCC data)]])]])
 
 (defn tp-volume [header uuid value on-change]
   (r/with-let [started? (rf/subscribe [:jam/started?])]
@@ -121,10 +131,11 @@
                network (r/atom 50)
                local (r/atom 50)
                playout-delay (r/atom 20)
-               online? (rf/subscribe [:teleporter/online? (str uuid)])]
-    [:div.tp-panel {:key (str "tp-panel-" uuid)}
+               online? (rf/subscribe [:teleporter/online? (str uuid)])
+               coredump-data (rf/subscribe [:teleporter/coredump (str uuid)])]
+    [:div.tp-panel
      [:h2 nickname]
-     [tp-status global local network playout-delay online?]
+     [tp-status global local network playout-delay online? coredump-data]
      [tp-volume "Global volume" uuid global on-global-volume-change]
      [tp-volume "Local volume" uuid local on-local-volume-change]
      [tp-volume "Network volume" uuid network on-network-volume-change]
@@ -158,7 +169,8 @@
      (when (>= num-selected-teleporters 2)
        [jam-controls])
      (if (> num-selected-teleporters 0)
-       (for [[_ tp] @selected-teleporters]
+       (for [[_ {:keys [teleporter/uuid] :as tp}] @selected-teleporters]
+         ^{:key (str "tp-panel-" uuid)}
          [tp-panel tp])
        [:p "No teleporters selected, select teleporters "
         [:a {:href (rfe/href :views/teleporters)} "here"]])]))

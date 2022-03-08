@@ -152,7 +152,7 @@
 	(let [items (rf/subscribe [:teleporters])]
 		(fn []
 			[:> List
-			 (for [item @items]
+			 (for [item (into [] (vals @items))]
 				 (r/as-element ^{:key (:teleporter/uuid item)} [teleporter-row item]))])))
 
 

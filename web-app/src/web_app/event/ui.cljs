@@ -4,35 +4,8 @@
             [taoensso.timbre :as log]
             [web-app.api :refer [send-message!]]
             [web-app.data :as data]
+            ["antd" :refer [message notification]]
             [web-app.mqtt :as mqtt]))
-
-
-;; (rf/reg-event-db
-;;  :inc-counter
-;;  (fn [db [_ _]]
-;;    (update db :counter inc)))
-
-;; (rf/reg-event-db
-;;  :set-view
-;;  (fn [db [_ view-name]]
-;;    (assoc db :view view-name)))
-
-;; (rf/reg-event-db
-;;  :set-balance
-;;  (fn [db [_ balance]]
-;;    (assoc-in db [:studio :balance] balance)))
-
-;; (rf/reg-event-db
-;;  :set-balance-slider
-;;  (fn [db [_ balance]]
-;;    (prn (str "set-balance-slider event: " balance))
-;;    (assoc-in db [:studio :balance-slider] balance)))
-
-;; (rf/reg-event-db
-;;  :set-balance-sliding
-;;  (fn [db [_ is-sliding]]
-;;    (assoc-in db [:studio :balance-sliding] is-sliding)))
-
 
 (defn rotate-log [log log-msg]
   (let [n (max 999 (dec (count log)))]
@@ -60,9 +33,9 @@
  :set-teleporters
  (fn [{:keys [db] :as cofx} [_ teleporters]]
    (send-message! {:message/type :teleporters/listen
-                   :message/body teleporters})
+                   :message/body (into [] (vals teleporters))})
    (send-message! {:message/type :teleporters/listen-net-config-report
-                   :message/body teleporters})
+                   :message/body (into [] (vals teleporters))})
    {:db (assoc db :teleporters teleporters)}))
 
 (rf/reg-event-db
@@ -102,12 +75,22 @@
 (rf/reg-event-fx
  :fetch-platform-version
  (fn [_ _]
-   {:dispatch [:http/get (get-platform-url "/version") nil :set-platform-version]}))
+   {:dispatch [:http/get (get-platform-url "/version?entity=platform") nil :set-platform-version]}))
+
+(rf/reg-event-fx
+ :fetch-latest-available-apt-version
+ (fn [_ _]
+   {:dispatch [:http/get (get-platform-url "/version?entity=teleporter") nil :set-latest-available-apt-version]}))
 
 (rf/reg-event-db
  :set-platform-version
  (fn [db [_ {:keys [version]}]]
    (assoc db :platform/version version)))
+
+(rf/reg-event-db
+ :set-latest-available-apt-version
+ (fn [db [_ {:keys [version]}]]
+   (assoc db :teleporter/latest-available-apt-version version)))
 
 (rf/reg-event-fx
  :subscribe-jam
@@ -130,6 +113,23 @@
      {:fx [
            [:dispatch [:mqtt/unsubscribe [(str (:jam/uuid @jam))]]]
            [:dispatch [:jam/started? false]]]})))
+
+
+(rf/reg-event-fx
+ :teleporter/upgrade-status
+ (fn [cofx [_ {:keys [teleporter/id teleporter/upgrade-status]}]]
+   (let [upgrade-timeout (rf/subscribe [:teleporter/upgrade-timeout id])]
+     (when (= upgrade-status "complete")
+       (do
+         (js/clearTimeout @upgrade-timeout)
+         (.success message "Teleporter upgraded successfully!")))
+     (when (= upgrade-status "failed")
+       (.error notification #js {:message "Error upgrading firmware"
+                                 :description "Oops, something went wrong upgrading the firmware of the teleporter!"
+                                 :duration 0})))
+   {:db (assoc-in (:db cofx) [:teleporter/upgrade-status id] upgrade-status)
+    :fx [[:dispatch [:teleporter/upgrade-timeout id nil]]
+         [:dispatch [:teleporter/upgrading? id false]]]}))
 
 (rf/reg-event-fx
  :fetch-teleporters
@@ -180,6 +180,13 @@
    (send-message! {:message/type :teleporter.cmd/report-network-config
                    :message/topic uuid})))
 
+(rf/reg-event-fx
+ :req-tp-upgrade
+ (fn [_ [_ uuid]]
+   (send-message! {:message/type :teleporter.cmd/upgrade
+                   :message/topic uuid
+                   :message/body {:teleporter/id uuid}})))
+
 (rf/reg-event-db
  :teleporter/log
  (fn [db [_ {:keys [log/level teleporter/id] :as log-msg}]]
@@ -192,6 +199,17 @@
  :teleporter/net-config
  (fn [db [_ {:keys [teleporter/id teleporter/network-config]}]]
    (assoc-in db [:teleporter/net-config id] network-config)))
+
+(rf/reg-event-db
+ :teleporter/coredump
+ (fn [db [_ {:keys [teleporter/id teleporter/coredump-data]}]]
+   (assoc-in db [:teleporter/coredump id] coredump-data)))
+
+(rf/reg-event-db
+ :teleporter/apt-version
+ (fn [db [_ {:keys [teleporter/id teleporter/apt-version]}]]
+   (assoc-in db [:teleporters (uuid id) :teleporter/apt-version] apt-version)))
+
 
 (rf/reg-event-db
  :view.telemetry.log/teleporter
@@ -227,9 +245,19 @@
    (assoc-in db [:teleporter/offline-timeout tp-id] timeout-obj)))
 
 (rf/reg-event-db
+ :teleporter/upgrade-timeout
+ (fn [db [_ tp-id timeout-obj]]
+   (assoc-in db [:teleporter/upgrade-timeout tp-id] timeout-obj)))
+
+(rf/reg-event-db
  :teleporter/online?
  (fn [db [_ tp-id online?]]
    (assoc-in db [:teleporter/online? tp-id] online?)))
+
+(rf/reg-event-db
+ :teleporter/upgrading?
+ (fn [db [_ tp-id upgrading?]]
+   (assoc-in db [:teleporter/upgrading? tp-id] upgrading?)))
 
 ;; testing ground
 (comment

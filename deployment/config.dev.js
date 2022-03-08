@@ -10,9 +10,11 @@ module.exports = {
         client_id_prefix: "app-",
         username: "songpark",
         password: "fNhWktaTlfDGlH4mbmaW6esOpgExs8wKIOBapDcq",
+        useSSL: true,
     },
     heartbeat: {
         timer: 8000
     },
-    version: "VAR__VERSION"
+    version: "VAR__VERSION",
+    sha: "VAR__SHA"
 }
