@@ -10,14 +10,11 @@
 
 (def routes
   [["/"
-    {:name :views/jam
-     :view views.jam/index}]
+    {:name :views/dev
+     :view views.dev/index}]
    ["/telemetry"
     {:name :views/telemetry
      :view views.telemetry/index}]
-   ["/dev"
-    {:name :views/dev
-     :view views.dev/index}]
    ["/teleporters"
     ["" 
      {:name :views/teleporters

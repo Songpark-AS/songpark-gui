@@ -65,8 +65,6 @@
                      :shape "round"
                      :size "large"
                      :on-click (fn [_]
-                                 ;; what is my pos?
-                                 
                                  ;; scroll to pos
                                  (swap! state assoc :pos idx)
                                  (scroll-tps-to-pos idx)
