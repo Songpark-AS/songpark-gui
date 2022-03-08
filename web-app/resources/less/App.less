@@ -1,6 +1,10 @@
 @import 'antd/dist/antd.less';
 @import './theme.less';
 
+.ant-layout-content {
+    overflow: hidden;
+}
+
 .dev {
     width: min(100%, 48rem);
     margin-inline: auto;
@@ -23,24 +27,17 @@
                 .ant-btn {
                     // scroll-snap-align: center;
                     font-weight: bold;
-                    background-color: @component-background;
+                    background-color: desaturate(@component-background, 6%);
                     border: 0;
+                    color: #777;
                     width: @tp-btn-width;
+                    &.active {
+                        background-color: @component-background;
+                        color: #FFF;
+                    }
                 }
             }
         }
-        // .tps {
-        //     display: flex;
-        //     overflow: auto;
-        //     // scroll-snap-type: y mandatory;
-        //     .ant-btn {
-        //         // scroll-snap-align: center;
-        //         margin-right: .6rem;
-        //         font-weight: bold;
-        //         background-color: @component-background;
-        //         border-color: @component-background;
-        //     }
-        // }
         .status {
             margin-top: 0.6rem;
             text-align: center;

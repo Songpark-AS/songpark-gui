@@ -154,7 +154,6 @@
                                                              :down false
                                                              closed?)})))}]
       [:div.tp-scroller
-       [:p.status "Not in jam"]
        [:p.board {:class @css-class}
         
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ultrices nibh maximus maximus consequat. Donec non ultricies justo, quis viverra dolor. Nullam non dui dapibus, congue lorem in, semper dolor. Sed et consectetur erat. Pellentesque malesuada pellentesque semper. Vestibulum elit massa, finibus sit amet scelerisque nec, eleifend sed lorem. Aenean justo lacus, lacinia dapibus nisi ut, pulvinar faucibus diam. Aliquam volutpat ex sed enim vehicula, at feugiat dui mollis. Praesent iaculis bibendum diam pellentesque vestibulum. In magna odio, scelerisque sit amet ex sit amet, imperdiet elementum mi. Vestibulum id libero eu erat ultricies dignissim id eget dui."

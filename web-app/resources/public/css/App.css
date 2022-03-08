@@ -25319,6 +25319,9 @@ div.ant-typography-edit-content.ant-typography-rtl {
 */
 /* antd variables */
 /* Custom variables */
+.ant-layout-content {
+  overflow: hidden;
+}
 .dev {
   width: min(100%, 48rem);
   margin-inline: auto;
@@ -25339,9 +25342,14 @@ div.ant-typography-edit-content.ant-typography-rtl {
 }
 .dev .topbar .tps-container .tps .ant-btn {
   font-weight: bold;
-  background-color: #2a2e31;
+  background-color: #2d2e2e;
   border: 0;
+  color: #777;
   width: 10rem;
+}
+.dev .topbar .tps-container .tps .ant-btn.active {
+  background-color: #2a2e31;
+  color: #FFF;
 }
 .dev .topbar .status {
   margin-top: 0.6rem;
