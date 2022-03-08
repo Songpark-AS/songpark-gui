@@ -18,6 +18,14 @@
                        (log/error ::nil-event args)
                        nil))
 
+(defn set-no-contextmenu! []
+  (js/document.addEventListener "contextmenu"
+                                (fn [e]
+                                  (.preventDefault e)
+                                  (.stopPropagation e)
+                                  false)))
+
+
 (defrecord EventManager [started?]
   component/Lifecycle
   (start [this]
@@ -27,7 +35,8 @@
           (rf/dispatch-sync [::initialize-db])
           (rf/dispatch [:init-app])
           (rf/dispatch [:fetch-platform-version])
-          ;; (rf/dispatch [:auth/whoami]) ;; check if we are logged in
+          (log/info "Setting no contextmenu")
+          (set-no-contextmenu!)
           (assoc this
                  :started? true))))
   (stop [this]

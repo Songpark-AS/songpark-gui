@@ -9,6 +9,7 @@ module.exports = {
         host: "127.0.0.1",
         username: "songpark",
         password: "testmctestson",
+        useSSL: false,
     },
     heartbeat: {
         timer: 61000

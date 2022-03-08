@@ -7,6 +7,7 @@
             [web-app.data :as data]
             [web-app.utils :refer [get-api-url get-platform-url]]))
 
+
 (rf/reg-event-db
  :set-tp-list-selection-mode
  (fn [db [_ value]]
@@ -16,6 +17,11 @@
  :set-selected-teleporters
  (fn [db [_ teleporters]]
    (assoc db :selected-teleporters teleporters)))
+
+(rf/reg-event-db
+ :selected-teleporter
+ (fn [db [_ teleporter]]
+   (assoc db :selected-teleporter teleporter)))
 
 (rf/reg-event-db
  :set-selected-teleporters-staging

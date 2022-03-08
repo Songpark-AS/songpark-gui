@@ -5,13 +5,19 @@
    [reagent.core :as r]
    [taoensso.timbre :as log]
    [web-app.forms.ipv4 :as ipv4-form]
-   [version-clj.core :as v]
    [songpark.common.config :refer [config]]
+   ["semver" :as semver]
    #_[web-app.forms.ipv6 :as ipv6-form]
    [web-app.event.ui]))
 
 ;; Here be detailview of a teleporter
 ;; This view will contain configuration options for a teleporter
+(defn wrap-semver-lt [^js semver x y]
+  (if-not (or (or (nil? x) (nil? y))
+              (or (= x "") (= x "Unknown"))
+              (or (= y "") (= y "Unknown")))
+    (.lt semver x y)
+    false))
 
 (defn- handle-upgrade-failed [tp-id]
   (rf/dispatch [:teleporter/upgrade-status {:teleporter/id tp-id :teleporter/upgrade-status "failed"}]))
@@ -56,7 +62,7 @@
          [:hr]
          [:h3 "Firmware version"]
          [:p (str "Current version: " latest-reported-apt-version)]
-         (when (v/older? latest-reported-apt-version latest-available-apt-version)
+         (when (wrap-semver-lt semver latest-reported-apt-version latest-available-apt-version)
            [:p (str "Newer version found: " latest-available-apt-version " ")
             [:> Button {:type "primary"
                         :loading upgrading?

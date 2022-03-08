@@ -36,7 +36,6 @@
   [org.clojure/core.async "1.5.648"]
   
   [com.google.guava/guava "31.0.1-jre"]
-  [version-clj "2.0.2"]
   [nano-id "1.0.0"]
 
   ;; forms

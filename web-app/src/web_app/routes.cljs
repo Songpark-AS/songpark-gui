@@ -1,6 +1,7 @@
 (ns web-app.routes
   (:require [reitit.frontend :as r.frontend]
             [reitit.coercion.spec :as coercion.spec]
+            [web-app.views.dev :as views.dev]
             [web-app.views.jam :as views.jam]
             [web-app.views.teleporter.list :as views.teleporter.list]
             [web-app.views.teleporter.detail :as views.teleporter.detail]))
@@ -8,8 +9,8 @@
 
 (def routes
   [["/"
-    {:name :views/jam
-     :view views.jam/index}]
+    {:name :views/dev
+     :view views.dev/index}]
    ["/teleporters"
     ["" 
      {:name :views/teleporters

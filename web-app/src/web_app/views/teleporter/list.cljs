@@ -163,7 +163,6 @@
 	 (r/as-element ^{:key (:teleporter/id item)} [teleporter-row item]))])))
 
 
-
 (defn index []
   (let [tp-list-selection-mode @(rf/subscribe [:tp-list-selection-mode])
         touch? (is-touch?)]
