@@ -25323,14 +25323,13 @@ div.ant-typography-edit-content.ant-typography-rtl {
   overflow: hidden;
 }
 .dev {
-  width: min(100%, 48rem);
+  width: min(100%, 38rem);
   margin-inline: auto;
   display: grid;
   grid-row-gap: 2rem;
 }
 .dev .topbar .tps-container {
   position: relative;
-  overflow: hidden;
   width: 100%;
   height: 40px;
 }
@@ -25349,7 +25348,7 @@ div.ant-typography-edit-content.ant-typography-rtl {
 }
 .dev .topbar .tps-container .tps .ant-btn.active {
   background-color: #2a2e31;
-  color: #FFF;
+  color: rgba(255, 255, 255, 0.85);
 }
 .dev .topbar .status {
   margin-top: 0.6rem;
@@ -25369,11 +25368,15 @@ div.ant-typography-edit-content.ant-typography-rtl {
 .dev .ant-card .ant-card-body .ant-divider-horizontal {
   margin: 0;
 }
+.dev .ant-card .ant-card-body .ant-divider-horizontal.ant-divider-with-text {
+  user-select: none;
+}
 .dev .ant-card .ant-card-body .ant-divider-horizontal.ant-divider-with-text::before,
 .dev .ant-card .ant-card-body .ant-divider-horizontal.ant-divider-with-text::after {
   position: static;
 }
 .dev .ant-radio-group-solid {
+  user-select: none;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -25384,6 +25387,12 @@ div.ant-typography-edit-content.ant-typography-rtl {
   border: unset;
   text-align: center;
   flex: 1;
+}
+.dev .ant-radio-group-solid .ant-radio-button-wrapper:first-child {
+  border-radius: 0.2rem 0 0 0.2rem;
+}
+.dev .ant-radio-group-solid .ant-radio-button-wrapper:last-child {
+  border-radius: 0 0.2rem 0.2rem 0;
 }
 .dev .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
   background: #CCC;
@@ -25397,6 +25406,7 @@ div.ant-typography-edit-content.ant-typography-rtl {
   background-color: #ec1d43;
 }
 .dev .sp-slider .label {
+  user-select: none;
   font-weight: bold;
   position: relative;
   left: 0.6rem;
@@ -25411,6 +25421,7 @@ div.ant-typography-edit-content.ant-typography-rtl {
   left: 1rem;
   z-index: 2;
   pointer-events: none;
+  user-select: none;
   mix-blend-mode: difference;
 }
 .dev .sp-slider .sp-slider-clip {
@@ -25448,6 +25459,7 @@ div.ant-typography-edit-content.ant-typography-rtl {
   grid-column-gap: 0.4rem;
 }
 .dev .v-switch .label {
+  user-select: none;
   font-weight: bold;
   font-size: 0.7rem;
 }

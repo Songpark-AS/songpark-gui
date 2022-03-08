@@ -178,7 +178,7 @@
                           {:teleporter/uuid "tid3" :teleporter/nickname "Elvis Presley"}
                           {:teleporter/uuid "tid4" :teleporter/nickname "Madonna"}
                           {:teleporter/uuid "tid5" :teleporter/nickname "Beatles"}]]
-    [:div.status "In jam - Jimi Hendrix"]]
+    [:div.status "In jam • Jimi Hendrix"]]
    ;; [teleporter-switcher (into [] (vals @(rf/subscribe [:teleporters])))]
    [tp-scroller]
    [:> Card {:bordered false}
