@@ -1,22 +1,22 @@
 (ns web-app.utils
   (:require [re-frame.core :as rf]
-            [taoensso.timbre :as log]))
+            [songpark.common.config :refer [config]]
+            [taoensso.timbre :as log]
+            [web-app.db :as db]))
 
-(defn generate_nickname []
-  (let [nouns ["Hope" "Dream" "Party" "Jam"]
-        persons ["Mathias" "Achim" "Magnus" "Thor_Atle" "Christian" "Jan_William" "Sindre" "Ronny" "Emil" "Kenneth" "Thanks" "Alf-Gunnar" "Daniel"]
-        person (rand-nth persons)
-        person-last-letter (clojure.string/join (take-last 1 person))
-        noun (rand-nth nouns)]
-    (str person (when (not (= person-last-letter "s")) "s") "." noun)
-    ))
+(defn get-api-url [path]
+  (str (:host (:platform @config))
+       ":"
+       (:port (:platform @config))
+       (:api_base (:platform @config))
+       path))
 
-(defn teleporter-factory []
-  {:uuid (cljs.core/random-uuid)
-   :nickname (generate_nickname)})
+(defn get-platform-url [path]
+  (str (:host (:platform @config))
+       ":"
+       (:port (:platform @config))
+       path))
 
-(defn get-random-teleporters [num-teleporters]
-  (into [] (repeatedly num-teleporters teleporter-factory)))
 
 (defn is-touch?
   "Returns true if this device supports touch events"
@@ -46,14 +46,17 @@
          (* d)))))
 
 (defn register-tp-heartbeat [tp-id timeout-ms]
-  (log/debug ::register-tp-heartbeat "heartbeat from" tp-id)
+  (log/debug ::register-tp-heartbeat "heartbeat from" tp-id "with timeout-ms" timeout-ms)
   ;; cancel existing offline-timeout if it exists
-  (let [offline-timeout (rf/subscribe [:teleporter/offline-timeout tp-id])]
-    (when-not (nil? @offline-timeout)
-        (js/clearTimeout @offline-timeout)))
+  (let [offline-timeout (db/get-in [:teleporters tp-id :teleporter/offline-timeout])]
+    (when-not (nil? offline-timeout)
+      (log/debug "Clearing offline timout")
+      (js/clearTimeout offline-timeout)))
 
   ;; set status to online on this tp
   (rf/dispatch [:teleporter/online? tp-id true])
 
   ;; register a timeout function to set the status to offline
-  (rf/dispatch [:teleporter/offline-timeout tp-id (js/setTimeout #(rf/dispatch [:teleporter/online? tp-id false]) timeout-ms)]))
+  (let [timeout-obj (js/setTimeout #(rf/dispatch [:teleporter/online? tp-id false])
+                                   timeout-ms)]
+    (rf/dispatch [:teleporter/offline-timeout tp-id timeout-obj])))

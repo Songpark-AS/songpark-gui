@@ -1,10 +1,9 @@
 (ns web-app.views
-  (:require
-   ["antd" :refer [Layout Layout.Content]]
-   [re-frame.core :as rf]
-   [reagent.core :as r]
-   [reitit.frontend.easy :as rfe]
-   [taoensso.timbre :as log]))
+  (:require ["antd" :refer [Layout Layout.Content]]
+            [re-frame.core :as rf]
+            [reagent.core :as r]
+            [reitit.frontend.easy :as rfe]
+            [taoensso.timbre :as log]))
 
 (defonce match (r/atom nil))
 

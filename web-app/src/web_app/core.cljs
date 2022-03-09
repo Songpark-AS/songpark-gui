@@ -1,15 +1,13 @@
 (ns web-app.core
-  (:require
-   [re-frame.core :as re-frame]
-   [reagent.dom :as rdom]
-   [reagent.core :as r]
-   [reitit.frontend.easy :as rfe]
-   [taoensso.timbre :as log]
-   [web-app.events :as events]
-   [web-app.config :as config]
-   [web-app.init :as init]
-   [web-app.routes :refer [routes router]]
-   [web-app.views :as views]))
+  (:require [re-frame.core :as rf]
+            [reagent.dom :as rdom]
+            [reagent.core :as r]
+            [reitit.frontend.easy :as rfe]
+            [taoensso.timbre :as log]
+            [web-app.config :as config]
+            [web-app.init :as init]
+            [web-app.routes :refer [routes router]]
+            [web-app.views :as views]))
 
 
 
@@ -27,7 +25,7 @@
 
 (defn ^:dev/after-load mount-root []
   (init-router!)
-  (re-frame/clear-subscription-cache!)
+  (rf/clear-subscription-cache!)
   (let [root-el (.getElementById js/document "app")]
     (rdom/unmount-component-at-node root-el)
     (rdom/render [views/main-panel] root-el)))

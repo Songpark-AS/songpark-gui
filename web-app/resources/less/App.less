@@ -59,7 +59,6 @@
             }
         }
     }
-
     .ant-radio-group-solid {
         @border-radius: 0.2rem;
         // width: min(100%, 36rem);
@@ -144,7 +143,12 @@
                 border-radius: 0;
             }
             .ant-slider-handle {
-                display: none;
+                margin-top: 0;
+                border-radius: 0;
+                height: 100%;
+                border: 0;
+                background-color: transparent;
+                box-shadow: none;
             }
         }
     }
@@ -187,14 +191,18 @@
     .triangle-down::after {
         content: '\25bc';
     }
-    .tp-scroller {
+    .tp-details {
         padding-bottom: 20px;
+        position: relative;
+        margin-bottom: 50px;
+
+        .ant-card {
+            background-color: transparent;
+        }
         .status {
             text-align: center;
             margin: .6rem 0 0 0;
-        }
-        position: relative;
-        margin-bottom: 50px;
+        }        
         .bottom-border {
             border-bottom: 3px @sp-scroller-color solid;
             position: relative;
@@ -229,6 +237,25 @@
             border-radius: 20em;
             border: 3px @sp-scroller-color solid;
             z-index: 1;
+        }
+        .versions {
+            margin-bottom: 30px;
+            span {
+                font-weight: bold;
+                color: white;
+                margin-bottom: 0.5rem;
+                display: block;
+            }
+        }
+        .commands {
+            div {
+                font-weight: bold;
+                border-radius: 3px;
+                text-align: center;
+                border: 1px white solid;
+                margin-bottom: 1rem;
+                padding: 4px 0;
+            }
         }
     }
 }

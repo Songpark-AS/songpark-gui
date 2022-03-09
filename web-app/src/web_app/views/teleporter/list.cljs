@@ -38,7 +38,7 @@
       (= type :tap/short)
       (do (js/clearTimeout @timer-id)
           (if (and (false? @hit?)
-                (false? @moved?))
+                   (false? @moved?))
             (do                                             ;;(log/debug "Short tap")
               (when f
                 (f event))
@@ -55,7 +55,7 @@
             (reset! moved-id (js/setTimeout (fn []
                                               ;;(log/debug "Clear tap")
                                               (reset! moved? false))
-                               300))
+                                            300))
             ;;(log/debug "Cancel tap")
             ))
 
@@ -66,23 +66,23 @@
 
 (defn- short-tap [event f]
   (async/put! event-chan (assoc event
-                           :event/type :tap/short
-                           :f f)))
+                                :event/type :tap/short
+                                :f f)))
 
 (defn- long-tap [event f]
   (async/put! event-chan (assoc event
-                           :event/type :tap/long
-                           :f f)))
+                                :event/type :tap/long
+                                :f f)))
 
 (defn- cancel-tap [event]
   (async/put! event-chan (assoc event
-                           :event/type :tap/cancel)))
+                                :event/type :tap/cancel)))
 
 
-(defn- handle-short-tap [{:teleporter/keys [uuid] :as teleporter}]
+(defn- handle-short-tap [{:teleporter/keys [id] :as teleporter}]
   (let [tp-list-selection-mode @(rf/subscribe [:tp-list-selection-mode])
         selected-teleporters-staging @(rf/subscribe [:selected-teleporters-staging])
-        teleporter-selected? (not (empty? (filter #(= (str (:teleporter/uuid %)) (str uuid)) selected-teleporters-staging)))]
+        teleporter-selected? (not (empty? (filter #(= (:teleporter/id %) id) selected-teleporters-staging)))]
     (when
         (and (true? tp-list-selection-mode)
              (or
@@ -90,11 +90,11 @@
               (< (count selected-teleporters-staging) max-num-selected-teleporters)))
       (if teleporter-selected?
         ;; tp is selected, we should unselect it
-        (rf/dispatch [:set-selected-teleporters-staging (filter #(not (= (str (:teleporter/uuid %)) (str uuid))) selected-teleporters-staging)])
+        (rf/dispatch [:set-selected-teleporters-staging (filter #(not (= (:teleporter/id %) id)) selected-teleporters-staging)])
         ;; tp is not selected, we should select it
         (rf/dispatch [:set-selected-teleporters-staging (conj selected-teleporters-staging teleporter)])))))
 
-(defn- handle-long-tap [{:teleporter/keys [uuid]}]
+(defn- handle-long-tap [{:teleporter/keys [id]}]
   (.vibrate js/window.navigator 50)
   (rf/dispatch [:set-tp-list-selection-mode true]))
 
@@ -107,7 +107,7 @@
 (defn handle-selection-action-select []
   (let [selected-teleporters-staging @(rf/subscribe [:selected-teleporters-staging])]
     (rf/dispatch [:set-selected-teleporters (->> selected-teleporters-staging
-                                                 (map (juxt :teleporter/uuid identity))
+                                                 (map (juxt :teleporter/id identity))
                                                  (into {}))]))
   (rfe/push-state :views/jam)
   (rf/dispatch [:set-tp-list-selection-mode false]))
@@ -118,55 +118,57 @@
     [:div.selection-action-bar
      [:span (str num-selected-teleporters "/" max-num-selected-teleporters " selected")]
      [:div.actions 
-      [:> Button {:type "primary" :on-click #(handle-selection-action-select) :disabled (not (> num-selected-teleporters 1))} "Confirm"]
-      [:> Button {:on-click #(handle-selection-action-cancel)} "Cancel"]]]))
+      [:> Button {:type "primary"
+                  :on-click #(handle-selection-action-select)
+                  :disabled (not (> num-selected-teleporters 1))}
+       "Confirm"]
+      [:> Button {:on-click #(handle-selection-action-cancel)}
+       "Cancel"]]]))
 
+(defn- jamming? [{:keys [jam/status]}]
+  (= status :jamming))
 
 (defn teleporter-row [teleporter]
-  (let [touch? (is-touch?)
-        tp-list-selection-mode @(rf/subscribe [:tp-list-selection-mode])
-        selected-teleporters-staging @(rf/subscribe [:selected-teleporters-staging])
-        uuid (:teleporter/uuid teleporter)
-        online? @(rf/subscribe [:teleporter/online? (str uuid)])
-        props (if touch?
-                {:on-touch-start #(long-tap teleporter handle-long-tap)
-                 :on-touch-end #(short-tap teleporter handle-short-tap)
-                 :on-touch-move #(cancel-tap teleporter)}
-                {:on-click #(handle-short-tap teleporter)
-                 :on-double-click #(handle-long-tap teleporter)})]
-      [:> List.Item (merge props {:class-name "teleporter-row" :actions [(r/as-element [:a {:key (str uuid "-config-link") :href (rfe/href :views/teleporter {:id uuid})} [:> SettingFilled {:style {:font-size "1.2rem"}}]])]})
-     (when (true? tp-list-selection-mode)
-       [:> Checkbox {
-                     :checked (not (empty? (filter #(= (str (:teleporter/uuid %)) (str uuid)) selected-teleporters-staging)))
-                     :disabled (and (empty? (filter #(= (str (:teleporter/uuid %)) (str uuid)) selected-teleporters-staging))
-                                    (>= (count selected-teleporters-staging) max-num-selected-teleporters))
-                     }])
-       [:> List.Item.Meta {:title (r/as-element [:span
-                                                 (if online? [:> GlobalOutlined {:className "tp-online-icon"}] [:> ApiOutlined {:className "tp-offline-icon"}])
-                                                 (:teleporter/nickname teleporter)
-                                                 ])
-                           :description (r/as-element [:span (:teleporter/mac teleporter) ])}]
-     ]))
+  (let [id (:teleporter/id teleporter)
+        online? (rf/subscribe [:teleporter/online? id])
+        jam-status (rf/subscribe [:teleporter/jam-status id])]
+    [:> List.Item {:class-name "teleporter-row"
+                   :actions [(r/as-element
+                              [:a {:key (str id "-config-link")
+                                   :href (rfe/href :views/teleporter {:id id})}
+                               [:> SettingFilled
+                                {:style {:font-size "1.2rem"}}]])]}
+     [:> Button {:type "primary"
+                 :on-click #(if (jamming? @jam-status)
+                              (rf/dispatch [:jam/stop-by-teleporter-id id])
+                              (rf/dispatch [:jam/ask id]))}
+      (if (jamming? @jam-status)
+        "Stop jam"
+        "Join a jam")]
+     [:span (str @jam-status)]
+     (when (jamming? @jam-status)
+       [:span ])
+     [:> List.Item.Meta {:title (r/as-element [:span
+                                               (if @online?
+                                                 [:> GlobalOutlined {:className "tp-online-icon"}]
+                                                 [:> ApiOutlined {:className "tp-offline-icon"}])
+                                               (:teleporter/nickname teleporter)])
+                         :description (r/as-element [:span (:teleporter/mac teleporter) ])}]]))
 
 (defn list-component []
-	(let [items (rf/subscribe [:teleporters])]
-		(fn []
-			[:> List
-			 (for [item (into [] (vals @items))]
-				 (r/as-element ^{:key (:teleporter/uuid item)} [teleporter-row item]))])))
-
+  (let [items (rf/subscribe [:teleporters])]
+    (fn []
+      [:> List
+       (for [item @items]
+	 (r/as-element ^{:key (:teleporter/id item)} [teleporter-row item]))])))
 
 
 (defn index []
-    (fn []
-      (let [tp-list-selection-mode @(rf/subscribe [:tp-list-selection-mode])
-            touch? (is-touch?)]
-        [:div.teleporter-list-view
-         [:h1 "Teleporter list"]
-         [:p (str (if touch? "Long-press" "Double-click") " a row to select teleporters")]
-         (when (true? tp-list-selection-mode)
-           [selection-action-bar])
-         [list-component]
-       ])))
-
-
+  (let [tp-list-selection-mode @(rf/subscribe [:tp-list-selection-mode])
+        touch? (is-touch?)]
+    [:div.teleporter-list-view
+     [:h1 "Teleporter list"]
+     [:p (str (if touch? "Long-press" "Double-click") " a row to select teleporters")]
+     (when (true? tp-list-selection-mode)
+       [selection-action-bar])
+     [list-component]]))
