@@ -14,19 +14,10 @@
      (get-in db [:teleporters tp-id]))))
 
 (rf/reg-sub
- :tp-list-selection-mode
- (fn [db _]
-   (:tp-list-selection-mode db)))
+ :component/radio-group
+ (fn [db [_ group-key default-value]]
+   (get-in db [:component/radio-group group-key] default-value)))
 
-(rf/reg-sub
- :selected-teleporters
- (fn [db _]
-   (:selected-teleporters db)))
-
-(rf/reg-sub
- :selected-teleporters-staging
- (fn [db _]
-   (:selected-teleporters-staging db)))
 
 
 (comment

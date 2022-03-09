@@ -49,11 +49,13 @@
          [:dispatch [:teleporter/upgrading? id false]]]}))
 
 (rf/reg-event-fx
- :save-ipv4
+ :teleporter/save-ipv4
  [mqtt-client]
- (fn [{:keys [mqtt-client]} [_ topic values]]
-   (mqtt/publish mqtt-client topic {:message/type :teleporter.cmd/set-ipv4
-                                    :message/values values})
+ (fn [{:keys [mqtt-client]} [_ tp-id values]]
+   (mqtt/publish mqtt-client (teleporter-topic tp-id)
+                 {:message/type :teleporter.cmd/set-ipv4
+                  :teleporter/network-values values
+                  :teleporter/id tp-id})
    nil))
 
 (rf/reg-event-db

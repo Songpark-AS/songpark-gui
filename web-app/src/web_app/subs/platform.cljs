@@ -6,4 +6,9 @@
  (fn [db _]
    (:platform/version db)))
 
+(rf/reg-sub
+ :platform/latest-available-apt-version
+ (fn [db _]
+   (:platform/latest-available-apt-version db)))
+
 
