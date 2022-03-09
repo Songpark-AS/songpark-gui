@@ -224,7 +224,8 @@
                                             {:message/type :teleporter.cmd/hangup-all
                                              :teleporter/id tp-id}]))}
            "Stop all streams"]
-          [:div {:on-click #(let[tp-id (:teleporter/id @teleporter)]
+          [:> Button {:block true
+                      :on-click #(let[tp-id (:teleporter/id @teleporter)]
                               (rf/dispatch [:mqtt/send-message-to-teleporter
                                             tp-id
                                             {:message/type :teleporter.cmd/reboot
