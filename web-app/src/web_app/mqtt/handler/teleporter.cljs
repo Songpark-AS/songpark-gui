@@ -36,3 +36,19 @@
 
 (defmethod handle-message :teleporter/relay [msg]
   (rf/dispatch [:teleporter/relay msg]))
+
+(defmethod handle-message :teleporter/global-volume [msg]
+  (rf/dispatch [:teleporter/global-volume msg]))
+
+(defmethod handle-message :teleporter/local-volume [msg]
+  (rf/dispatch [:teleporter/local-volume msg]))
+
+(defmethod handle-message :teleporter/network-volume [msg]
+  (rf/dispatch [:teleporter/network-volume msg]))
+
+(defmethod handle-message :teleporter/playout-delay [msg]
+  (rf/dispatch [:teleporter/playout-delay msg]))
+
+(defmethod handle-message :teleporter/path-reset [msg]
+  ;; do nothing
+  )

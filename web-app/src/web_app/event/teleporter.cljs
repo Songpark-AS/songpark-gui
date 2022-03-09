@@ -136,3 +136,31 @@
  :teleporter/relay
  (fn [db [_ {:teleporter/keys [id relay value]}]]
    (assoc-in db [:teleporters id relay] value)))
+
+
+(rf/reg-event-db
+ :teleporter/global-volume
+ (fn [db [_ {:teleporter/keys [id global-volume]}]]
+   (assoc-in db [:teleporters id :volume/global-volume] global-volume)))
+
+(rf/reg-event-db
+ :teleporter/local-volume
+ (fn [db [_ {:teleporter/keys [id local-volume]}]]
+   (assoc-in db [:teleporters id :volume/local-volume] local-volume)))
+
+(rf/reg-event-db
+ :teleporter/network-volume
+ (fn [db [_ {:teleporter/keys [id network-volume]}]]
+   (assoc-in db [:teleporters id :volume/network-volume] network-volume)))
+
+
+(rf/reg-event-db
+ :teleporter/playout-delay
+ (fn [db [_ {:teleporter/keys [id playout-delay]}]]
+   (assoc-in db [:teleporters id :jam/playout-delay] playout-delay)))
+
+(rf/reg-event-fx
+ :teleporter/setting
+ (fn [{:keys [db]} [_ tp-id tp-setting-k tp-setting-v mqtt-msg]]
+   {:db (assoc-in db [:teleporters tp-id tp-setting-k] tp-setting-v)
+    :dispatch [:mqtt/send-message-to-teleporter tp-id mqtt-msg]}))

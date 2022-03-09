@@ -28,6 +28,11 @@
  (fn [db [_ teleporters]]
    (assoc db :selected-teleporters-staging teleporters)))
 
+(rf/reg-event-db
+ :teleporter.view/select-teleporter
+ (fn [db [_ tp-id]]
+   (assoc db :teleporter.view/selected-teleporter tp-id)))
+
 
 (rf/reg-event-fx
  :save-ipv6
