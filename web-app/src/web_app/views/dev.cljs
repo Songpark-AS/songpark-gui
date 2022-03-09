@@ -5,9 +5,18 @@
             [re-frame.core :as rf]
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
+            ["semver" :as semver]
             [taoensso.timbre :as log]
             [web-app.db :as db]
             [web-app.forms.ipv4 :as ipv4-form]))
+
+(defn wrap-semver-lt
+  ([^js semver x y]
+   (if-not (or (or (nil? x) (nil? y))
+               (or (= x "") (= x "Unknown"))
+               (or (= y "") (= y "Unknown")))
+     (.lt semver x y)
+     false)))
 
 (defn scroll-tps-to-pos [pos]
   (let [tps-element (first (js/document.getElementsByClassName "tps"))
@@ -144,11 +153,28 @@
                                             (map name)))]
          (str/join " • " out)))]))
 
+
+(defn- handle-upgrade-failed [tp-id]
+  (rf/dispatch [:teleporter/upgrade-status {:teleporter/id tp-id :teleporter/upgrade-status "failed"}]))
+
+
+(defn- on-upgrade-click [tp-id]
+  ;; start upgrade timeout
+  (rf/dispatch [:teleporter/upgrade-timeout tp-id (js/setTimeout #(handle-upgrade-failed tp-id) (get @config :upgrade_timeout))])
+
+  ;; Send upgrade request to teleporter
+  (rf/dispatch [:teleporter/request-upgrade tp-id])
+
+  ;; We are now upgrading the teleporter
+  (rf/dispatch [:teleporter/upgrading? tp-id true]))
+
+
 (defn teleporter-details [teleporter jam-status]
   (r/with-let [swipe-state (r/atom {:start-x 0 :end-x 0 :direction nil :closed? true})
                css-class (r/atom nil)
                tp-scroller-styling (r/atom default-scroll-area-position)
-               platform-version (rf/subscribe [:platform/version])]
+               platform-version (rf/subscribe [:platform/version])
+               platform-apt-version (rf/subscribe [:platform/latest-available-apt-version])]
     (let [tp-id (:teleporter/id @teleporter)
           scroll-area-props
           {:on-touch-start (fn [e]
@@ -220,6 +246,11 @@
           [:div "Platform: " @platform-version]
           [:div "App: " (:version @config)]]
          [:div.commands
+          (let [{:keys [teleporter/apt-version]} @teleporter
+                latest-available-apt-version @platform-apt-version]
+            (when (wrap-semver-lt semver apt-version latest-available-apt-version)
+              [:div {:on-click #(on-upgrade-click tp-id)}
+               "Upgrade available. Click to upgrade"]))
           [:div {:on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
                                           tp-id
                                           {:message/type :teleporter.cmd/path-reset
