@@ -29,10 +29,16 @@
 (defn slider [props]
   (let [{:keys [label overloading? mode
                 playout-delay pd-measured]} props]
-    [:div {:class (if overloading? "sp-slider overload" "sp-slider")}
+    [:div {:class (if overloading?
+                    "sp-slider overload"
+                    "sp-slider")}
      [:span.label label]
      [:div.sp-slider-clip
-      [:> Slider props]]
+      [:> Slider (assoc props
+                        :on-after-change (fn [_]
+                                           (js/setTimeout
+                                            #(rf/dispatch [:teleporter.setting/clear!])
+                                            3000)))]]
      (when (= mode "playoutdelay")
        [:div.pd-display
         [:span.pd-value (str playout-delay "ms")]
@@ -286,45 +292,74 @@
 
 (def max-slider-value 11)
 
+(defn show-playout-delay [tp-id value]
+  [slider {:label "PLAYOUT DELAY"
+           :key :playout-delay
+           :tooltipVisible false
+           :draggableTrack true
+           :value @value
+           :on-change #(rf/dispatch [:teleporter/setting
+                                     tp-id
+                                     :jam/playout-delay
+                                     %
+                                     {:message/type :teleporter.cmd/set-playout-delay
+                                      :teleporter/playout-delay %
+                                      :teleporter/id tp-id}])
+           :max 32
+           :playout-delay @value
+           :mode "playoutdelay"
+           :pd-measured 6}])
+
+(defn show-volumes [tp-id master-value local-value network-value]
+  [:<>
+   [slider {:label "MASTER"
+            :tooltipVisible false
+            :value @master-value
+            :max max-slider-value
+            :on-change #(rf/dispatch [:teleporter/setting
+                                      tp-id
+                                      :volume/global-volume
+                                      %
+                                      {:message/type :teleporter.cmd/global-volume
+                                       :teleporter/volume %
+                                       :teleporter/id tp-id}])}]
+   [slider {:label "LOCAL"
+            :tooltipVisible false
+            :value @local-value
+            :max max-slider-value
+            :on-change #(rf/dispatch [:teleporter/setting
+                                      tp-id
+                                      :volume/local-volume
+                                      %
+                                      {:message/type :teleporter.cmd/local-volume
+                                       :teleporter/volume %
+                                       :teleporter/id tp-id}])}]
+   [slider {:label "NETWORK"
+            :tooltipVisible false
+            :value @network-value
+            :max max-slider-value
+            :on-change #(rf/dispatch [:teleporter/setting
+                                      tp-id
+                                      :volume/network-volume
+                                      %
+                                      {:message/type :teleporter.cmd/network-volume
+                                       :teleporter/volume %
+                                       :teleporter/id tp-id}])}]])
+
 (defn teleporter-controls [teleporter]
   (let [{tp-id :teleporter/id :as tp} @teleporter]
     [:<>
      [:> Card {:bordered false}
-      [:<>
-       (for [[label k] [["MASTER" :volume/global-volume]
-                        ["LOCAL" :volume/local-volume]
-                        ["NETWORK" :volume/network-volume]]]
-         ^{:key [:slider k]}
-         [slider {:label label
-                  :tooltipVisible false
-                  :value (get tp k (int (/ max-slider-value 2)))
-                  :max max-slider-value
-                  :on-change #(rf/dispatch [:teleporter/setting
-                                            tp-id
-                                            k
-                                            %
-                                            {:message/type (keyword "teleporter.cmd" (name k))
-                                             :teleporter/volume %
-                                             :teleporter/id tp-id}])}])]]
+      [show-volumes
+       tp-id
+       (rf/subscribe [:teleporter/setting tp-id :volume/global-volume])
+       (rf/subscribe [:teleporter/setting tp-id :volume/local-volume])
+       (rf/subscribe [:teleporter/setting tp-id :volume/network-volume])]]
      
      [:> Card {:bordered false}
-      [:<>
-       [slider {:label "PLAYOUT DELAY"
-                :key :playout-delay
-                :tooltipVisible false
-                :draggableTrack true
-                :value (:jam/playout-delay tp)
-                :on-change #(rf/dispatch [:teleporter/setting
-                                          tp-id
-                                          :jam/playout-delay
-                                          %
-                                          {:message/type :teleporter.cmd/set-playout-delay
-                                           :teleporter/playout-delay %
-                                           :teleporter/id tp-id}])
-                :max 32
-                :playout-delay (:jam/playout-delay @teleporter)
-                :mode "playoutdelay"
-                :pd-measured 6}]]]
+      [show-playout-delay
+       tp-id
+       (rf/subscribe [:teleporter/setting tp-id :jam/playout-delay])]]
      
      [:> Card {:bordered false}
       [:<>

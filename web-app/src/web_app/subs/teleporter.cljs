@@ -79,3 +79,10 @@
                       nil)]
      (assoc out
             :jam/with (get-in db [:teleporters with-tp-id :teleporter/nickname])))))
+
+
+(rf/reg-sub
+ :teleporter/setting
+ (fn [db [_ tp-id tp-settings-k]]
+   (or (get-in db [:teleporters tp-id :teleporter/setting tp-settings-k])
+       (get-in db [:teleporters tp-id tp-settings-k]))))

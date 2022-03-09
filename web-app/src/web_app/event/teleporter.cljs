@@ -164,5 +164,14 @@
 (rf/reg-event-fx
  :teleporter/setting
  (fn [{:keys [db]} [_ tp-id tp-setting-k tp-setting-v mqtt-msg]]
-   {:db (assoc-in db [:teleporters tp-id tp-setting-k] tp-setting-v)
+   {:db (-> db
+            (assoc-in [:teleporters tp-id tp-setting-k] tp-setting-v)
+            (assoc-in [:teleporters tp-id :teleporter/setting tp-setting-k] tp-setting-v))
     :dispatch [:mqtt/send-message-to-teleporter tp-id mqtt-msg]}))
+
+(rf/reg-event-db
+ :teleporter.setting/clear!
+ (fn [db _]
+   (reduce (fn [db tp-id]
+             (assoc-in db [:teleporters tp-id :teleporter/setting] {}))
+           db (keys (:teleporters db)))))
