@@ -26458,3 +26458,9 @@ html {
 .dev .tp-details .commands .ant-btn {
   font-weight: bold;
 }
+.dev .tp-details .network {
+  margin-bottom: 1rem;
+}
+.dev .tp-details .network .ant-radio-group {
+  margin-bottom: 1rem;
+}
