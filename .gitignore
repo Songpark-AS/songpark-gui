@@ -29,3 +29,5 @@ deployment/songpark-webapp.yaml
 
 *.png~
 *.png-autosave.kra
+
+web-app/resources/public/css/App.css
