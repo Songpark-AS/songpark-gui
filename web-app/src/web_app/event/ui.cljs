@@ -9,38 +9,19 @@
 
 
 (rf/reg-event-db
- :set-tp-list-selection-mode
- (fn [db [_ value]]
-   (assoc db :tp-list-selection-mode value)))
-
-(rf/reg-event-db
- :set-selected-teleporters
- (fn [db [_ teleporters]]
-   (assoc db :selected-teleporters teleporters)))
-
-(rf/reg-event-db
- :selected-teleporter
- (fn [db [_ teleporter]]
-   (assoc db :selected-teleporter teleporter)))
-
-(rf/reg-event-db
- :set-selected-teleporters-staging
- (fn [db [_ teleporters]]
-   (assoc db :selected-teleporters-staging teleporters)))
-
-(rf/reg-event-db
  :teleporter.view/select-teleporter
  (fn [db [_ tp-id]]
    (assoc db :teleporter.view/selected-teleporter tp-id)))
 
+(rf/reg-event-db
+ :component/radio-group
+ (fn [db [_ group-key value]]
+   (assoc-in db [:component/radio-group group-key] value)))
 
-(rf/reg-event-fx
- :save-ipv6
- (fn [_ [_ topic values]]
-   (send-message! {:message/type :teleporter.cmd/save-ipv6
-                   :message/topic topic
-                   :message/body {:message/type :teleporter.msg/info
-                                  :values values}})))
+(rf/reg-event-db
+ :component/clear!
+ (fn [db _]
+   (dissoc db :component/radio-group)))
 
 ;; testing ground
 (comment

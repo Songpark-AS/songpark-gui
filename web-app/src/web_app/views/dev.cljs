@@ -5,7 +5,9 @@
             [reagent.core :as r]
             [web-app.utils :refer [scale-value clamp-value]]
             [reitit.frontend.easy :as rfe]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [web-app.db :as db]
+            [web-app.forms.ipv4 :as ipv4-form]))
 
 (defn scroll-tps-to-pos [pos]
   (let [tps-element (first (js/document.getElementsByClassName "tps"))
@@ -60,11 +62,13 @@
                            (let [new-pos (inc pos)]
                              (scroll-tps-to-pos new-pos)
                              (select-teleporter @teleporters new-pos)
+                             (rf/dispatch [:component/clear!])
                              (swap! state assoc :pos new-pos)))
                          (when (and (= direction "right") (> pos 0))
                            (let [new-pos (dec pos)]
                              (scroll-tps-to-pos new-pos)
                              (select-teleporter @teleporters new-pos)
+                             (rf/dispatch [:component/clear!])
                              (swap! state assoc :pos new-pos)))))}
       [:div.tps
        (doall
@@ -80,6 +84,7 @@
                                   ;; scroll to pos
                                   (swap! state assoc :pos idx)
                                   (scroll-tps-to-pos idx)
+                                  (rf/dispatch [:component/clear!])
                                   ;; select teleporter
                                   (select-teleporter tp))}
            nickname]))]])))
@@ -101,6 +106,35 @@
 
     :else
     nil))
+
+(defn network-details [teleporter]
+  (let [tp-id (:teleporter/id @teleporter)
+        network-config (rf/subscribe [:teleporter/net-config tp-id])
+        network-choice (rf/subscribe [:component/radio-group :ipv4 :dhcp])]
+    (log/debug "Hit " tp-id (pr-str @network-config))
+    [:div.network
+     [:> Radio.Group {:value @network-choice
+                      :buttonStyle "solid"}
+      [:> Radio.Button {:value :manual
+                        :on-click #(rf/dispatch [:component/radio-group :ipv4 :manual])}
+       "Manual"]
+      [:> Radio.Button {:value :dhcp
+                        :on-click #(do
+                                     (rf/dispatch [:component/radio-group :ipv4 :dhcp])
+                                     (when (false? (:ip/dhcp? @network-config))
+                                       (rf/dispatch [:teleporter/save-ipv4
+                                                     tp-id
+                                                     {:ip/dhcp? true}])))}
+       "DHCP"]]
+     [:div
+      (if (= @network-choice :dhcp)
+        (let [{:ip/keys [address gateway subnet]} (db/get-in [:teleporters tp-id :teleporter/net-config])]
+          [:div.network-details
+           [:div "IP: " address]
+           [:div "Net mask: " subnet]
+           [:div "Gateway: " gateway]])
+        (when (not (nil? @network-config))
+          [ipv4-form/ipv4-config tp-id @network-config]))]]))
 
 (defn teleporter-details []
   (r/with-let [swipe-state (r/atom {:start-x 0 :end-x 0 :direction nil :closed? true})
@@ -163,9 +197,13 @@
                                                              :up true
                                                              :down false
                                                              closed?)})))}]
+      (when (= @css-class "show")
+        (rf/dispatch [:teleporter/request-network-config (:teleporter/id @teleporter)])
+        (rf/dispatch [:platform/fetch-latest-available-apt-version]))
       [:div.tp-details
        [:p.board {:class @css-class}
         [:> Card {:bordered false}
+         [network-details teleporter]
          [:div.versions
           [:span "VERSIONS"]
           [:div "Teleporter: " (:teleporter/apt-version @teleporter)]
@@ -181,6 +219,12 @@
            "Reset"]
           [:> Button {:block true
                       :on-click #(let[tp-id (:teleporter/id @teleporter)]
+                              (rf/dispatch [:mqtt/send-message-to-teleporter
+                                            tp-id
+                                            {:message/type :teleporter.cmd/hangup-all
+                                             :teleporter/id tp-id}]))}
+           "Stop all streams"]
+          [:div {:on-click #(let[tp-id (:teleporter/id @teleporter)]
                               (rf/dispatch [:mqtt/send-message-to-teleporter
                                             tp-id
                                             {:message/type :teleporter.cmd/reboot

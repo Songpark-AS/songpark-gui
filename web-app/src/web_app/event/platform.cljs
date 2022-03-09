@@ -9,9 +9,9 @@
    {:dispatch [:http/get (get-platform-url "/version") nil :set-platform-version]}))
 
 (rf/reg-event-fx
- :fetch-latest-available-apt-version
+ :platform/fetch-latest-available-apt-version
  (fn [_ _]
-   {:dispatch [:http/get (get-platform-url "/latest-available-version") nil :set-latest-available-apt-version]}))
+   {:dispatch [:http/get (get-platform-url "/latest-available-version") nil :platform/set-latest-available-apt-version]}))
 
 (rf/reg-event-db
  :set-platform-version
@@ -19,6 +19,6 @@
    (assoc db :platform/version version)))
 
 (rf/reg-event-db
- :set-latest-available-apt-version
+ :platform/set-latest-available-apt-version
  (fn [db [_ {:keys [version]}]]
-   (assoc db :teleporter/latest-available-apt-version version)))
+   (assoc db :platform/latest-available-apt-version version)))
