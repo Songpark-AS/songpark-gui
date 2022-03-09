@@ -1,5 +1,6 @@
 (ns web-app.views.dev
   (:require ["antd" :refer [Button Card Radio.Group Radio.Button Divider Switch Slider]]
+            [clojure.string :as str]
             [songpark.common.config :refer [config]]
             [re-frame.core :as rf]
             [reagent.core :as r]
@@ -107,7 +108,7 @@
   (let [tp-id (:teleporter/id @teleporter)
         network-config (rf/subscribe [:teleporter/net-config tp-id])
         network-choice (rf/subscribe [:component/radio-group :ipv4 :dhcp])]
-    (log/debug "Hit " tp-id (pr-str @network-config))
+    ;;(log/debug "Hit " tp-id (pr-str @network-config))
     [:div.network
      [:> Radio.Group {:value @network-choice
                       :buttonStyle "solid"}
@@ -132,13 +133,13 @@
         (when (not (nil? @network-config))
           [ipv4-form/ipv4-config tp-id @network-config]))]]))
 
-(defn teleporter-details []
+(defn teleporter-details [teleporter jam-status]
   (r/with-let [swipe-state (r/atom {:start-x 0 :end-x 0 :direction nil :closed? true})
                css-class (r/atom nil)
                tp-scroller-styling (r/atom default-scroll-area-position)
-               teleporter (rf/subscribe [:teleporter.view/selected-teleporter])
                platform-version (rf/subscribe [:platform/version])]
-    (let [base-bottom -20
+    (let [tp-id (:teleporter/id @teleporter)
+          base-bottom -20
           scroll-area-props
           {:on-touch-start (fn [e]
                              (log/debug :on-touch-start @swipe-state)
@@ -206,98 +207,119 @@
           [:div "Platform: " @platform-version]
           [:div "App: " (:version @config)]]
          [:div.commands
-          [:div {:on-click #(let[tp-id (:teleporter/id @teleporter)]
-                              (rf/dispatch [:mqtt/send-message-to-teleporter
-                                            tp-id
-                                            {:message/type :teleporter.cmd/path-reset
-                                             :teleporter/id tp-id}]))}
+          [:div {:on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
+                                          tp-id
+                                          {:message/type :teleporter.cmd/path-reset
+                                           :teleporter/id tp-id}])}
            "Reset"]
-          [:div {:on-click #(let[tp-id (:teleporter/id @teleporter)]
-                              (rf/dispatch [:mqtt/send-message-to-teleporter
-                                            tp-id
-                                            {:message/type :teleporter.cmd/hangup-all
-                                             :teleporter/id tp-id}]))}
+          [:div {:on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
+                                          tp-id
+                                          {:message/type :teleporter.cmd/hangup-all
+                                           :teleporter/id tp-id}])}
            "Stop all streams"]
-          [:div {:on-click #(let[tp-id (:teleporter/id @teleporter)]
-                              (rf/dispatch [:mqtt/send-message-to-teleporter
-                                            tp-id
-                                            {:message/type :teleporter.cmd/reboot
-                                             :teleporter/id tp-id}]))}
+          [:div {:on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
+                                          tp-id
+                                          {:message/type :teleporter.cmd/reboot
+                                           :teleporter/id tp-id}])}
            "Reboot"]]]]
        [:div.bottom-border {:style {:margin-top (str @tp-scroller-styling "px")}}
-        [:img.logo {:on-click #(js/alert "I work!")
-                    :src "/favicon.ico"}]]
+        (let [{:jam/keys [status sip stream sync]} @jam-status
+              props (cond (= status :idle)
+                          {:on-click #(rf/dispatch [:jam/ask tp-id])
+                           :src "/img/logo-idle.png"}
+                          (= status :jam/waiting)
+                          {:on-click #(rf/dispatch [:jam/obviate tp-id])
+                           :src "/img/logo-ask.png"}
+                          (= status :jamming)
+                          {:on-click #(rf/dispatch [:jam/stop-by-teleporter-id tp-id])
+                           :src "/img/logo-jam.png"}
+                          (= status :stopping)
+                          {:src "/img/logo-stop.png"}
+                          :else
+                          {:src "/img/logo.png"})]
+         [:img.logo props])]
        [:div.scroll-area scroll-area-props]])))
 
 (def max-slider-value 11)
 
-(defn teleporter-controls []
-  (r/with-let [teleporter (rf/subscribe [:teleporter.view/selected-teleporter])]
-    (let [{tp-id :teleporter/id :as tp} @teleporter]
+(defn teleporter-controls [teleporter]
+  (let [{tp-id :teleporter/id :as tp} @teleporter]
+    [:<>
+     [:> Card {:bordered false}
       [:<>
-       [:> Card {:bordered false}
-        [:<>
-         (for [[label k] [["MASTER" :volume/global-volume]
-                          ["LOCAL" :volume/local-volume]
-                          ["NETWORK" :volume/network-volume]]]
-           ^{:key [:slider k]}
-           [slider {:label label
-                    :tooltipVisible false
-                    :value (get tp k (int (/ max-slider-value 2)))
-                    :max max-slider-value
-                    :on-change #(rf/dispatch [:teleporter/setting
-                                              tp-id
-                                              k
-                                              %
-                                              {:message/type (keyword "teleporter.cmd" (name k))
-                                               :teleporter/volume %
-                                               :teleporter/id tp-id}])}])]]
-       
-       [:> Card {:bordered false}
-        [:<>
-         [slider {:label "PLAYOUT DELAY"
-                  :key :playout-delay
+       (for [[label k] [["MASTER" :volume/global-volume]
+                        ["LOCAL" :volume/local-volume]
+                        ["NETWORK" :volume/network-volume]]]
+         ^{:key [:slider k]}
+         [slider {:label label
                   :tooltipVisible false
-                  :draggableTrack true
-                  :value (:jam/playout-delay tp)
+                  :value (get tp k (int (/ max-slider-value 2)))
+                  :max max-slider-value
                   :on-change #(rf/dispatch [:teleporter/setting
                                             tp-id
-                                            :jam/playout-delay
+                                            k
                                             %
-                                            {:message/type :teleporter.cmd/set-playout-delay
-                                             :teleporter/playout-delay %
-                                             :teleporter/id tp-id}])
-                  :max 32
-                  :playout-delay (:jam/playout-delay @teleporter)
-                  :mode "playoutdelay"
-                  :pd-measured 6}]]]
-       
-       [:> Card {:bordered false}
-        [:<>
-         [:> Radio.Group {:defaultValue "stereo" :buttonStyle "solid"}
-          [:> Radio.Button {:value "mono"} "Mono"]
-          [:> Radio.Button {:value "stereo"} "Stereo"]]
-         [:div.v-switch [:span.label "48V"] [:> Switch {:unCheckedChildren "OFF" :checkedChildren "ON"}]]
-         [:> Divider {:orientation "left"} "LEFT"]
-         [:> Radio.Group {:defaultValue "line" :buttonStyle "solid"}
-          [:> Radio.Button {:value "instrument"} "Instrument"]
-          [:> Radio.Button {:value "line"} "Line"]]
-         [slider {:label "GAIN" :tooltipVisible false :defaultValue 80}]
-         [:> Divider {:orientation "right"} "RIGHT"]
-         [:> Radio.Group {:defaultValue "line" :buttonStyle "solid"}
-          [:> Radio.Button {:value "instrument"} "Instrument"]
-          [:> Radio.Button {:value "line"} "Line"]]
-         [slider {:label "GAIN" :tooltipVisible false :defaultValue 80 :overloading? true}]]]])))
+                                            {:message/type (keyword "teleporter.cmd" (name k))
+                                             :teleporter/volume %
+                                             :teleporter/id tp-id}])}])]]
+     
+     [:> Card {:bordered false}
+      [:<>
+       [slider {:label "PLAYOUT DELAY"
+                :key :playout-delay
+                :tooltipVisible false
+                :draggableTrack true
+                :value (:jam/playout-delay tp)
+                :on-change #(rf/dispatch [:teleporter/setting
+                                          tp-id
+                                          :jam/playout-delay
+                                          %
+                                          {:message/type :teleporter.cmd/set-playout-delay
+                                           :teleporter/playout-delay %
+                                           :teleporter/id tp-id}])
+                :max 32
+                :playout-delay (:jam/playout-delay @teleporter)
+                :mode "playoutdelay"
+                :pd-measured 6}]]]
+     
+     [:> Card {:bordered false}
+      [:<>
+       [:> Radio.Group {:defaultValue "stereo" :buttonStyle "solid"}
+        [:> Radio.Button {:value "mono"} "Mono"]
+        [:> Radio.Button {:value "stereo"} "Stereo"]]
+       [:div.v-switch [:span.label "48V"] [:> Switch {:unCheckedChildren "OFF" :checkedChildren "ON"}]]
+       [:> Divider {:orientation "left"} "LEFT"]
+       [:> Radio.Group {:defaultValue "line" :buttonStyle "solid"}
+        [:> Radio.Button {:value "instrument"} "Instrument"]
+        [:> Radio.Button {:value "line"} "Line"]]
+       [slider {:label "GAIN" :tooltipVisible false :defaultValue 80}]
+       [:> Divider {:orientation "right"} "RIGHT"]
+       [:> Radio.Group {:defaultValue "line" :buttonStyle "solid"}
+        [:> Radio.Button {:value "instrument"} "Instrument"]
+        [:> Radio.Button {:value "line"} "Line"]]
+       [slider {:label "GAIN" :tooltipVisible false :defaultValue 80 :overloading? true}]]]]))
+
+(defn show-jam-status [jam-status]
+  (let [{:jam/keys [status sync sip stream with]} @jam-status]
+    [:div.status
+     (if (or (= status :idle)
+             (= status :jam/waiting))
+       "Not in jam"
+       (let [out (into ["In jam" with] (->> [sip sync stream]
+                                            (remove nil?)
+                                            (map name)))]
+        (str/join " • " out)))]))
 
 (defn index []
-  (r/with-let [teleporters (rf/subscribe [:teleporters])]
+  (r/with-let [teleporters (rf/subscribe [:teleporters])
+               teleporter (rf/subscribe [:teleporter.view/selected-teleporter])
+               jam-status (rf/subscribe [:teleporter/jam-status])]
     [:div.dev
      [:div.topbar 
       [teleporter-switcher teleporters]
-      [:div.status "In jam - Jimi Hendrix"]]
-     ;; [teleporter-switcher (into [] (vals @(rf/subscribe [:teleporters])))]
-     [teleporter-details]
-     [teleporter-controls]]))
+      [show-jam-status jam-status]]
+     [teleporter-details teleporter jam-status]
+     [teleporter-controls teleporter]]))
 
 (comment
   (def tps
@@ -310,12 +332,9 @@
   (log/debug tps)
   (map-indexed (fn [idx tp]
                  (prn idx)
-                 (prn tp)
-                 ) tps)
+                 (prn tp)) tps)
   (for [[idx tp] (map-indexed identity tps)]
     (log/debug idx)
     (log/debug tp)
-    (log/debug tps)
-    )
-
+    (log/debug tps))
   )

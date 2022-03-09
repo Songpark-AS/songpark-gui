@@ -26,3 +26,6 @@ web-app/src/web_app/config.local.js
 VERSION.git
 VERSION
 deployment/songpark-webapp.yaml
+
+*.png~
+*.png-autosave.kra
