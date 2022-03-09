@@ -86,7 +86,7 @@
                                   (select-teleporter tp))}
            nickname]))]])))
 
-(def default-scroll-area-position 0)
+(def default-scroll-area-position -50)
 (def scroll-area-bump 0)
 (def scroll-area-limit 20)
 
@@ -133,13 +133,23 @@
         (when (not (nil? @network-config))
           [ipv4-form/ipv4-config tp-id @network-config]))]]))
 
+(defn show-jam-status [jam-status]
+  (let [{:jam/keys [status sync sip stream with]} @jam-status]
+    [:div.status
+     (if (or (= status :idle)
+             (= status :jam/waiting))
+       "Not in jam"
+       (let [out (into ["In jam" with] (->> [sip sync stream]
+                                            (remove nil?)
+                                            (map name)))]
+         (str/join " • " out)))]))
+
 (defn teleporter-details [teleporter jam-status]
   (r/with-let [swipe-state (r/atom {:start-x 0 :end-x 0 :direction nil :closed? true})
                css-class (r/atom nil)
                tp-scroller-styling (r/atom default-scroll-area-position)
                platform-version (rf/subscribe [:platform/version])]
     (let [tp-id (:teleporter/id @teleporter)
-          base-bottom -20
           scroll-area-props
           {:on-touch-start (fn [e]
                              (log/debug :on-touch-start @swipe-state)
@@ -162,18 +172,20 @@
                                      (= direction :up)
                                      (false? closed?))
                                 (reset! tp-scroller-styling
-                                        (*
-                                         -1
-                                         (js/Math.min
-                                          diff
-                                          scroll-area-limit)))
+                                        (+ default-scroll-area-position
+                                           (*
+                                            -1
+                                            (js/Math.min
+                                             diff
+                                             scroll-area-limit))))
                                 (and (neg? diff)
                                      (= direction :down)
                                      (true? closed?))
                                 (reset! tp-scroller-styling
-                                        (js/Math.min
-                                         (* -1 diff)
-                                         scroll-area-limit))
+                                        (+ default-scroll-area-position
+                                           (js/Math.min
+                                            (* -1 diff)
+                                            scroll-area-limit)))
                                 :else
                                 (reset! tp-scroller-styling default-scroll-area-position))
                               (swap! swipe-state assoc
@@ -198,6 +210,7 @@
         (rf/dispatch [:teleporter/request-network-config (:teleporter/id @teleporter)])
         (rf/dispatch [:platform/fetch-latest-available-apt-version]))
       [:div.tp-details
+       [show-jam-status jam-status]
        [:p.board {:class @css-class}
         [:> Card {:bordered false}
          [network-details teleporter]
@@ -237,7 +250,7 @@
                           {:src "/img/logo-stop.png"}
                           :else
                           {:src "/img/logo.png"})]
-         [:img.logo props])]
+          [:img.logo props])]
        [:div.scroll-area scroll-area-props]])))
 
 (def max-slider-value 11)
@@ -299,25 +312,13 @@
         [:> Radio.Button {:value "line"} "Line"]]
        [slider {:label "GAIN" :tooltipVisible false :defaultValue 80 :overloading? true}]]]]))
 
-(defn show-jam-status [jam-status]
-  (let [{:jam/keys [status sync sip stream with]} @jam-status]
-    [:div.status
-     (if (or (= status :idle)
-             (= status :jam/waiting))
-       "Not in jam"
-       (let [out (into ["In jam" with] (->> [sip sync stream]
-                                            (remove nil?)
-                                            (map name)))]
-        (str/join " • " out)))]))
-
 (defn index []
   (r/with-let [teleporters (rf/subscribe [:teleporters])
                teleporter (rf/subscribe [:teleporter.view/selected-teleporter])
                jam-status (rf/subscribe [:teleporter/jam-status])]
     [:div.dev
      [:div.topbar 
-      [teleporter-switcher teleporters]
-      [show-jam-status jam-status]]
+      [teleporter-switcher teleporters]]
      [teleporter-details teleporter jam-status]
      [teleporter-controls teleporter]]))
 
