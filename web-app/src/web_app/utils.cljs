@@ -25,6 +25,9 @@
   ;; another way to do it, we should consider it
   (js* "'ontouchstart' in window"))
 
+(defn clamp-value [num min max]
+  (js/Math.min (js/Math.max num min) max))
+
 (defn scale-value
   "Linearly transforms x from range input-range to output-range where:
 

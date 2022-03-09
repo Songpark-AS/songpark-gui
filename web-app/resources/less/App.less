@@ -175,7 +175,7 @@
         }
         .pd-measured-triangle {
             position: absolute;
-            left: 26%;
+            left: 0;
             &::after {
                 position: relative;
                 left: -50%;
@@ -248,13 +248,10 @@
             }
         }
         .commands {
-            div {
+            display: grid;
+            grid-row-gap: 1rem;
+            .ant-btn {
                 font-weight: bold;
-                border-radius: 3px;
-                text-align: center;
-                border: 1px white solid;
-                margin-bottom: 1rem;
-                padding: 4px 0;
             }
         }
     }

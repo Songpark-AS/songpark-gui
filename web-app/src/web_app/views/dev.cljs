@@ -3,6 +3,7 @@
             [songpark.common.config :refer [config]]
             [re-frame.core :as rf]
             [reagent.core :as r]
+            [web-app.utils :refer [scale-value clamp-value]]
             [reitit.frontend.easy :as rfe]
             [taoensso.timbre :as log]))
 
@@ -16,7 +17,7 @@
 
 (defn slider [props]
   (let [{:keys [label overloading? mode
-                playout-delay pd-measured]} props]
+                playout-delay pd-measured min max]} props]
     [:div {:class (if overloading? "sp-slider overload" "sp-slider")}
      [:span.label label]
      [:div.sp-slider-clip
@@ -26,7 +27,10 @@
         [:span.pd-value (str playout-delay "ms")]
         (when pd-measured
           [:span.pd-measured
-           [:span.pd-measured-triangle.triangle-up]
+           [:span.pd-measured-triangle.triangle-up {:style
+                                                    {:left (str
+                                                            (clamp-value
+                                                             (scale-value pd-measured [min max] [0 100]) 0 100) "%")}}]
            [:span.pd-measured-text (str "Measured: " pd-measured "ms")]])])]))
 
 (defn- select-teleporter
@@ -168,13 +172,15 @@
           [:div "Platform: " @platform-version]
           [:div "App: " (:version @config)]]
          [:div.commands
-          [:div {:on-click #(let[tp-id (:teleporter/id @teleporter)]
+          [:> Button {:block true
+                      :on-click #(let[tp-id (:teleporter/id @teleporter)]
                               (rf/dispatch [:mqtt/send-message-to-teleporter
                                             tp-id
                                             {:message/type :teleporter.cmd/path-reset
                                              :teleporter/id tp-id}]))}
            "Reset"]
-          [:div {:on-click #(let[tp-id (:teleporter/id @teleporter)]
+          [:> Button {:block true
+                      :on-click #(let[tp-id (:teleporter/id @teleporter)]
                               (rf/dispatch [:mqtt/send-message-to-teleporter
                                             tp-id
                                             {:message/type :teleporter.cmd/reboot
@@ -223,6 +229,7 @@
                                             {:message/type :teleporter.cmd/set-playout-delay
                                              :teleporter/playout-delay %
                                              :teleporter/id tp-id}])
+                  :min 0
                   :max 32
                   :playout-delay (:jam/playout-delay @teleporter)
                   :mode "playoutdelay"
