@@ -357,7 +357,7 @@
 
 (defn teleporter-controls [teleporter]
   (let [{tp-id :teleporter/id :as tp} @teleporter]
-    [:<>
+    [:div.cards
      [:> Card {:bordered false}
       [show-volumes
        tp-id

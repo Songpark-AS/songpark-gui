@@ -8,7 +8,10 @@
 .dev {
     width: min(100%, 38rem);
     margin-inline: auto;
-    display: grid;
+    .cards {
+        display: grid;
+        grid-row-gap: 2rem;
+    }
     .topbar {
         .tps-container {
             @tp-btn-width: 10rem;
