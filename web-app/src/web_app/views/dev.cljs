@@ -262,19 +262,19 @@
             (when (wrap-semver-lt semver apt-version latest-available-apt-version)
               [:div {:on-click #(on-upgrade-click tp-id)}
                "Upgrade available. Click to upgrade"]))
-          [:> Button {:blocked true
+          [:> Button {:blocked nil
                       :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
                                           tp-id
                                           {:message/type :teleporter.cmd/path-reset
                                            :teleporter/id tp-id}])}
            "Reset"]
-          [:> Button {:blocked true
+          [:> Button {:blocked nil
                       :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
                                           tp-id
                                           {:message/type :teleporter.cmd/hangup-all
                                            :teleporter/id tp-id}])}
            "Stop all streams"]
-          [:> Button {:blocked true
+          [:> Button {:blocked nil
                       :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
                                           tp-id
                                           {:message/type :teleporter.cmd/reboot
