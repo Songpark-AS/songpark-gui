@@ -1,6 +1,7 @@
 (ns web-app.event.teleporter
   (:require ["antd" :refer [message notification]]
             [re-frame.core :as rf]
+            [songpark.jam.util :refer [get-jam-topic-subscriptions]]
             [songpark.mqtt :as mqtt]
             [songpark.mqtt.util :refer [broadcast-topic
                                         heartbeat-topic
@@ -24,6 +25,9 @@
              ht (heartbeat-topic id)]
          (mqtt/subscribe mqtt-client {bt 0
                                       ht 0})))
+     (doseq [jam jams]
+       (let [topics (get-jam-topic-subscriptions :app jam)]
+         (mqtt/subscribe mqtt-client topics)))
      {:db (assoc db
                  :teleporters (->> teleporters
                                    (map (juxt :teleporter/id identity))
