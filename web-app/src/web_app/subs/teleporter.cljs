@@ -1,5 +1,6 @@
 (ns web-app.subs.teleporter
-  (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [web-app.subs.util :refer [get-selected-teleporter]]))
 
 (rf/reg-sub
  :teleporters
@@ -58,11 +59,30 @@
 (rf/reg-sub
  :teleporter/jam-status
  (fn [db [_ tp-id]]
-   (let [status (get-in db [:teleporters tp-id :jam/status] :idle)
+   (let [tp-id (if (nil? tp-id)
+                 (:teleporter/id (get-selected-teleporter db))
+                 tp-id)
+         status (get-in db [:teleporters tp-id :jam/status] :idle)
          sip (get-in db [:teleporters tp-id :jam/sip])
          stream (get-in db [:teleporters tp-id :jam/stream])
-         sync (get-in db [:teleporters tp-id :jam/sync])]
-     {:jam/status status
-      :jam/sip sip
-      :jam/stream stream
-      :jam/sync sync})))
+         sync (get-in db [:teleporters tp-id :jam/sync])
+         out {:jam/status status
+              :jam/sip sip
+              :jam/stream stream
+              :jam/sync sync}
+         with-tp-id (if-not (#{:idle :jam/waiting} status)
+                      (reduce (fn [out [_ {:keys [jam/members]}]]
+                                (if ((set members) tp-id)
+                                  (reduced tp-id)
+                                  false))
+                              false (:jams db))
+                      nil)]
+     (assoc out
+            :jam/with (get-in db [:teleporters with-tp-id :teleporter/nickname])))))
+
+
+(rf/reg-sub
+ :teleporter/setting
+ (fn [db [_ tp-id tp-settings-k]]
+   (or (get-in db [:teleporters tp-id :teleporter/setting tp-settings-k])
+       (get-in db [:teleporters tp-id tp-settings-k]))))

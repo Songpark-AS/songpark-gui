@@ -1,17 +1,13 @@
 (ns web-app.subs.ui
-  (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [web-app.subs.util :refer [get-selected-teleporter]]))
+
+
 
 (rf/reg-sub
  :teleporter.view/selected-teleporter
  (fn [db _]
-   (let [tp-id (or (get db :teleporter.view/selected-teleporter)
-                   (->> db
-                        :teleporters
-                        (vals)
-                        (sort-by :teleporter/nickname)
-                        first
-                        :teleporter/id))]
-     (get-in db [:teleporters tp-id]))))
+   (get-selected-teleporter db)))
 
 (rf/reg-sub
  :component/radio-group
