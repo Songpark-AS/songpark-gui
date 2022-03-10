@@ -29,7 +29,7 @@
 
 (defn slider [props]
   (let [{:keys [label overloading? mode
-                playout-delay pd-measured
+                playout-delay latency
                 min max]} props]
     [:div {:class (if overloading?
                     "sp-slider overload"
@@ -44,13 +44,13 @@
      (when (= mode "playoutdelay")
        [:div.pd-display
         [:span.pd-value (str playout-delay "ms")]
-        (when pd-measured
-          [:span.pd-measured
-           [:span.pd-measured-triangle.triangle-up {:style
+        (when latency
+          [:span.latency
+           [:span.latency-triangle.triangle-up {:style
                                                     {:left (str
                                                             (clamp-value
-                                                             (scale-value pd-measured [min max] [0 100]) 0 100) "%")}}]
-           [:span.pd-measured-text (str "Measured: " pd-measured "ms")]])])]))
+                                                             (scale-value latency [min max] [0 100]) 0 100) "%")}}]
+           [:span.latency-text (str "Measured: " latency "ms")]])])]))
 
 (defn- select-teleporter
   ([teleporter]
@@ -300,7 +300,7 @@
 
 (def max-slider-value 11)
 
-(defn show-playout-delay [tp-id value]
+(defn show-playout-delay [tp-id value latency]
   [slider {:label "PLAYOUT DELAY"
            :key :playout-delay
            :tooltipVisible false
@@ -317,7 +317,7 @@
            :max 32
            :playout-delay @value
            :mode "playoutdelay"
-           :pd-measured 6}])
+           :latency latency}])
 
 (defn show-volumes [tp-id master-value local-value network-value]
   [:<>
@@ -356,7 +356,8 @@
                                        :teleporter/id tp-id}])}]])
 
 (defn teleporter-controls [teleporter]
-  (let [{tp-id :teleporter/id :as tp} @teleporter]
+  (let [{tp-id :teleporter/id :as tp} @teleporter
+        coredump-data (rf/subscribe [:teleporter/coredump tp-id])]
     [:div.cards
      [:> Card {:bordered false}
       [show-volumes
@@ -368,7 +369,10 @@
      [:> Card {:bordered false}
       [show-playout-delay
        tp-id
-       (rf/subscribe [:teleporter/setting tp-id :jam/playout-delay])]]
+       (rf/subscribe [:teleporter/setting tp-id :jam/playout-delay])
+       (when-let [latency (:Latency @coredump-data)]
+         (js/parseFloat (first
+                         (str/split (:Latency @coredump-data) " "))))]]
      
      [:> Card {:bordered false}
       [:<>
