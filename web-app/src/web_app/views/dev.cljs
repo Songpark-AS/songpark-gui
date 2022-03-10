@@ -4,7 +4,7 @@
             [songpark.common.config :refer [config]]
             [re-frame.core :as rf]
             [reagent.core :as r]
-            [web-app.utils :refer [scale-value clamp-value]]
+            [web-app.utils :refer [scale-value clamp-value is-touch?]]
             [reitit.frontend.easy :as rfe]
             ["semver" :as semver]
             [taoensso.timbre :as log]
@@ -242,13 +242,20 @@
                              (reset! swipe-state {:closed? (condp = snap-direction
                                                              :up true
                                                              :down false
-                                                             closed?)})))}]
+                                                             closed?)})))
+           :on-click (fn [e]
+                       (let [{:keys [closed?]} @swipe-state]
+                         (when-not (is-touch?)
+                           (if @css-class
+                             (reset! css-class nil)
+                             (reset! css-class "show")))
+                         (reset! swipe-state {:closed? (not closed?)})))}]
       (when (= @css-class "show")
         (rf/dispatch [:teleporter/request-network-config (:teleporter/id @teleporter)])
         (rf/dispatch [:platform/fetch-latest-available-apt-version]))
       [:div.tp-details
-       [show-jam-status jam-status]
-       [:p.board {:class @css-class}
+       ;; [show-jam-status jam-status]
+       [:div.board {:class @css-class}
         [:> Card {:bordered false}
          [network-details teleporter]
          [:div.versions
@@ -397,7 +404,8 @@
                jam-status (rf/subscribe [:teleporter/jam-status])]
     [:div.dev
      [:div.topbar 
-      [teleporter-switcher teleporters]]
+      [teleporter-switcher teleporters]
+      [show-jam-status jam-status]]
      [teleporter-details teleporter jam-status]
      [teleporter-controls teleporter]]))
 

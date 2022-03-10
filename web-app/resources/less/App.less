@@ -196,44 +196,56 @@
     .tp-details {
         padding-bottom: 20px;
         position: relative;
-        margin: 2rem 0 6rem 0;
-
+        margin: 2rem 0 0 0;
+        @border-height: 40px;
         .ant-card {
             background-color: transparent;
         }
         .status {
             text-align: center;
             margin: .6rem 0 0 0;
-        }        
+        }
         .bottom-border {
             border-bottom: 3px @sp-scroller-color solid;
             position: relative;
-            bottom: 0px;
-            bottom: -20px;
-            height: 40px;
-            width: 200%;
-            left: -50%;
+            height: @border-height;
+            width: 100vw;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
         }
         .scroll-area {
-            position: absolute;
+            cursor: pointer;
+            position: relative;
             //background-color: green;
-            bottom: -20px;
-            height: 40px;
-            width: 200%;
-            left: -25%;
+            height: @border-height;
+            top: -20px;
+            width: 100vw;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
             touch-action: none;
         }
         .board {
             display: none;
+            margin-bottom: 2rem;
             &.show {
                 display: block;
             }
         }
         .logo {
+            cursor: pointer;
             touch-action: none;
             position: absolute;
             bottom: -40px;
-            left: 25%;
+
+            // 1.2rem is the padding on layout on mobile screens
+            // 3px    is the border width
+            // 38rem  is the width of .dev when there is space enough
+            left: calc(50% - (min(50% - 1.2rem + 3px, (38rem / 2) + 3px)) + 1rem);
+
             height: 80px;
             background-color: @layout-body-background;
             border-radius: 20em;
@@ -252,7 +264,7 @@
         .commands {
             display: grid;
             grid-row-gap: 1rem;
-            margin-bottom: 30px;
+            margin-bottom: 2rem;
             .ant-btn {
                 font-weight: bold;
             }
