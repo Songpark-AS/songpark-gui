@@ -31,7 +31,7 @@
   ;; jam
   [songpark/jam "1.0.0"]
   ;; mqtt
-  [songpark/mqtt "1.0.1"]
+  [songpark/mqtt "1.0.2"]
   [com.cognitect/transit-cljs "0.8.269"]
   [org.clojure/core.async "1.5.648"]
   
