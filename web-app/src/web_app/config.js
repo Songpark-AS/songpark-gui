@@ -7,7 +7,7 @@ module.exports = {
     mqtt: {
         port: 8000,
         host: "127.0.0.1",
-        username: "songpark",
+        userName: "songpark",
         password: "testmctestson",
         useSSL: false,
         reconnect: true,

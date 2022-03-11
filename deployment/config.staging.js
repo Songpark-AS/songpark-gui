@@ -7,8 +7,7 @@ module.exports = {
     mqtt: {
         port: 8000,
         host: "spmqtt.inonit.no",
-        client_id_prefix: "app-",
-        username: "songpark",
+        userName: "songpark",
         password: "fNhWktaTlfDGlH4mbmaW6esOpgExs8wKIOBapDcq",
         useSSL: true,
         reconnect: true,
