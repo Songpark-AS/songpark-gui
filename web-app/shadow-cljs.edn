@@ -25,13 +25,13 @@
   [com.taoensso/timbre "5.1.2"]
 
   ;; common
-  [songpark/common "0.1.1-SNAPSHOT"]
+  [songpark/common "0.2.0"]
   ;; taxonomy
-  [songpark/taxonomy "0.2.0-SNAPSHOT"]
+  [songpark/taxonomy "0.2.0"]
   ;; jam
-  [songpark/jam "0.1.0-SNAPSHOT"]
+  [songpark/jam "1.0.0"]
   ;; mqtt
-  [songpark/mqtt "1.0.1-alpha1"]
+  [songpark/mqtt "1.0.1"]
   [com.cognitect/transit-cljs "0.8.269"]
   [org.clojure/core.async "1.5.648"]
   
