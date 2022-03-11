@@ -15,9 +15,6 @@
 (defmethod handle-message :teleporter/net-config-report [msg]
   (rf/dispatch [:teleporter/net-config msg]))
 
-(defmethod handle-message :teleporter/coredump [msg]
-  (rf/dispatch [:teleporter/coredump msg]))
-
 (defmethod handle-message :teleporter/upgrade-status [msg]
   (rf/dispatch [:teleporter/upgrade-status msg]))
 

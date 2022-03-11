@@ -43,14 +43,14 @@
                                             3000)))]]
      (when (= mode "playoutdelay")
        [:div.pd-display
-        [:span.pd-value (str playout-delay "ms")]
+        [:span.pd-value (str playout-delay " ms")]
         (when latency
           [:span.latency
            [:span.latency-triangle.triangle-up {:style
-                                                    {:left (str
-                                                            (clamp-value
-                                                             (scale-value latency [min max] [0 100]) 0 100) "%")}}]
-           [:span.latency-text (str "Measured: " latency "ms")]])])]))
+                                                {:left (str
+                                                        (clamp-value
+                                                         (scale-value (js/parseFloat latency) [min max] [0 100]) 0 100) "%")}}]
+           [:span.latency-text (str "Measured: " latency " ms")]])])]))
 
 (defn- select-teleporter
   ([teleporter]
@@ -63,48 +63,50 @@
   (r/with-let [swipe-state (r/atom {:width 0 :start-x 0 :end-x 0 :direction nil})
                state (r/atom {:pos 0})]
     (let [count-teleporters (count @teleporters)]
-     [:div.tps-container
-      {:on-touch-start (fn [e]
-                         (reset! swipe-state {:width (.. e -target -offsetWidth)
-                                              :start-x (aget e "touches" 0 "pageX")
-                                              :end-x (aget e "touches" 0 "pageX")}))
-       :on-touch-move (fn [e] (swap! swipe-state assoc :end-x (aget e "touches" 0 "pageX"))
-                        (let [{:keys [width start-x end-x]} @swipe-state
-                              direction (if (> end-x start-x) "right" "left")]
-                          (swap! swipe-state assoc :direction direction)))
-       :on-touch-end (fn [_]
-                       (let [direction (:direction @swipe-state)
-                             pos (:pos @state)]
-                         (when (and (= direction "left") (< pos (- count-teleporters 1)))
-                           (let [new-pos (inc pos)]
-                             (scroll-tps-to-pos new-pos)
-                             (select-teleporter @teleporters new-pos)
-                             (rf/dispatch [:component/clear!])
-                             (swap! state assoc :pos new-pos)))
-                         (when (and (= direction "right") (> pos 0))
-                           (let [new-pos (dec pos)]
-                             (scroll-tps-to-pos new-pos)
-                             (select-teleporter @teleporters new-pos)
-                             (rf/dispatch [:component/clear!])
-                             (swap! state assoc :pos new-pos)))))}
-      [:div.tps
-       (doall
-        (for [[idx {:teleporter/keys [id nickname] :as tp}] (map-indexed vector @teleporters)]
-          [:> Button {:key [:teleporter-switch id]
-                      :class (when (= id
-                                      (:teleporter/id (nth @teleporters (:pos @state))))
-                               "active")
-                      :type "primary"
-                      :shape "round"
-                      :size "large"
-                      :on-click (fn [_]
-                                  ;; scroll to pos
-                                  (swap! state assoc :pos idx)
-                                  (scroll-tps-to-pos idx)
-                                  (rf/dispatch [:component/clear!])
-                                  ;; select teleporter
-                                  (select-teleporter tp))}
-           nickname]))]])))
+      [:div.tps-container
+       {:on-touch-start (fn [e]
+                          (reset! swipe-state {:width (.. e -target -offsetWidth)
+                                               :start-x (aget e "touches" 0 "pageX")
+                                               :end-x (aget e "touches" 0 "pageX")}))
+        :on-touch-move (fn [e] (swap! swipe-state assoc :end-x (aget e "touches" 0 "pageX"))
+                         (let [{:keys [width start-x end-x]} @swipe-state
+                               direction (if (> end-x start-x) "right" "left")]
+                           (swap! swipe-state assoc :direction direction)))
+        :on-touch-end (fn [_]
+                        (let [direction (:direction @swipe-state)
+                              pos (:pos @state)]
+                          (when (and (= direction "left") (< pos (- count-teleporters 1)))
+                            (let [new-pos (inc pos)]
+                              (scroll-tps-to-pos new-pos)
+                              (select-teleporter @teleporters new-pos)
+                              (rf/dispatch [:component/clear!])
+                              (swap! state assoc :pos new-pos)))
+                          (when (and (= direction "right") (> pos 0))
+                            (let [new-pos (dec pos)]
+                              (scroll-tps-to-pos new-pos)
+                              (select-teleporter @teleporters new-pos)
+                              (rf/dispatch [:component/clear!])
+                              (swap! state assoc :pos new-pos)))))}
+       [:div.tps
+        (doall
+         (for [[idx {:teleporter/keys [id nickname] :as tp}] (->> @teleporters
+                                                                  (filter :teleporter/online?)
+                                                                  (map-indexed vector))]
+           [:> Button {:key [:teleporter-switch id]
+                       :class (when (= id
+                                       (:teleporter/id (nth @teleporters (:pos @state))))
+                                "active")
+                       :type "primary"
+                       :shape "round"
+                       :size "large"
+                       :on-click (fn [_]
+                                   ;; scroll to pos
+                                   (swap! state assoc :pos idx)
+                                   (scroll-tps-to-pos idx)
+                                   (rf/dispatch [:component/clear!])
+                                   ;; select teleporter
+                                   (select-teleporter tp))}
+            nickname]))]])))
 
 (def default-scroll-area-position -50)
 (def scroll-area-bump 0)
@@ -156,13 +158,15 @@
 (defn show-jam-status [jam-status]
   (let [{:jam/keys [status sync sip stream with]} @jam-status]
     [:div.status
-     (if (or (= status :idle)
-             (= status :jam/waiting))
-       "Not in jam"
-       (let [out (into ["In jam" with] (->> [sync stream]
-                                            (remove nil?)
-                                            (map name)))]
-         (str/join " • " out)))]))
+     ;; status is only available if a teleporter is present in the list
+     (when status
+       (if (or (= status :idle)
+               (= status :jam/waiting))
+         "Not in jam"
+         (let [out (into ["In jam" with] (->> [sync stream]
+                                              (remove nil?)
+                                              (map name)))]
+           (str/join " • " out))))]))
 
 
 (defn- handle-upgrade-failed [tp-id]
@@ -250,44 +254,45 @@
                              (reset! css-class nil)
                              (reset! css-class "show")))
                          (reset! swipe-state {:closed? (not closed?)})))}]
-      (when (= @css-class "show")
+      (when (and tp-id
+                 (= @css-class "show"))
         (rf/dispatch [:teleporter/request-network-config (:teleporter/id @teleporter)])
         (rf/dispatch [:platform/fetch-latest-available-apt-version]))
       [:div.tp-details
-       ;; [show-jam-status jam-status]
-       [:div.board {:class @css-class}
-        [:> Card {:bordered false}
-         [network-details teleporter]
-         [:div.versions
-          [:span "VERSIONS"]
-          [:div "Teleporter: " (:teleporter/apt-version @teleporter)]
-          [:div "Platform: " @platform-version]
-          [:div "App: " (:version @config)]]
-         [:div.commands
-          (let [{:keys [teleporter/apt-version]} @teleporter
-                latest-available-apt-version @platform-apt-version]
-            (when (wrap-semver-lt semver apt-version latest-available-apt-version)
-              [:div {:on-click #(on-upgrade-click tp-id)}
-               "Upgrade available. Click to upgrade"]))
-          [:> Button {:blocked nil
-                      :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
-                                          tp-id
-                                          {:message/type :teleporter.cmd/path-reset
-                                           :teleporter/id tp-id}])}
-           "Reset"]
-          ;; temporarily removed because Christian doesn't like swedes :(
-          ;; [:> Button {:blocked nil
-          ;;             :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
-          ;;                                 tp-id
-          ;;                                 {:message/type :teleporter.cmd/hangup-all
-          ;;                                  :teleporter/id tp-id}])}
-          ;;  "Stop all streams"]
-          [:> Button {:blocked nil
-                      :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
-                                          tp-id
-                                          {:message/type :teleporter.cmd/reboot
-                                           :teleporter/id tp-id}])}
-           "Reboot"]]]]
+       (when tp-id
+         [:div.board {:class @css-class}
+          [:> Card {:bordered false}
+           [network-details teleporter]
+           [:div.versions
+            [:span "VERSIONS"]
+            [:div "Teleporter: " (:teleporter/apt-version @teleporter)]
+            [:div "Platform: " @platform-version]
+            [:div "App: " (:version @config)]]
+           [:div.commands
+            (let [{:keys [teleporter/apt-version]} @teleporter
+                  latest-available-apt-version @platform-apt-version]
+              (when (wrap-semver-lt semver apt-version latest-available-apt-version)
+                [:div {:on-click #(on-upgrade-click tp-id)}
+                 "Upgrade available. Click to upgrade"]))
+            [:> Button {:blocked nil
+                        :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
+                                                 tp-id
+                                                 {:message/type :teleporter.cmd/path-reset
+                                                  :teleporter/id tp-id}])}
+             "Reset"]
+            ;; temporarily removed because Christian doesn't like swedes :(
+            ;; [:> Button {:blocked nil
+            ;;             :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
+            ;;                                 tp-id
+            ;;                                 {:message/type :teleporter.cmd/hangup-all
+            ;;                                  :teleporter/id tp-id}])}
+            ;;  "Stop all streams"]
+            [:> Button {:blocked nil
+                        :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
+                                                 tp-id
+                                                 {:message/type :teleporter.cmd/reboot
+                                                  :teleporter/id tp-id}])}
+             "Reboot"]]]])
        [:div.bottom-border {:style {:margin-top (str @tp-scroller-styling "px")}}
         (let [{:jam/keys [status sip stream sync]} @jam-status
               props (cond (= status :idle)
@@ -302,30 +307,31 @@
                           (= status :stopping)
                           {:src "/img/logo-stop.png"}
                           :else
-                          {:src "/img/logo.png"})]
+                          {:src "/img/logo-idle.png"})]
           [:img.logo props])]
        [:div.scroll-area scroll-area-props]])))
 
 (def max-slider-value 50)
 
-(defn show-playout-delay [tp-id value latency]
-  [slider {:label "PLAYOUT DELAY"
-           :key :playout-delay
-           :tooltipVisible false
-           :draggableTrack true
-           :value @value
-           :on-change #(rf/dispatch [:teleporter/setting
-                                     tp-id
-                                     :jam/playout-delay
-                                     %
-                                     {:message/type :teleporter.cmd/set-playout-delay
-                                      :teleporter/playout-delay %
-                                      :teleporter/id tp-id}])
-           :min 0
-           :max 32
-           :playout-delay @value
-           :mode "playoutdelay"
-           :latency latency}])
+(defn show-playout-delay [tp-id value coredump-data]
+  (let [latency (:Latency @coredump-data)]
+    [slider {:label "PLAYOUT DELAY"
+             :key :playout-delay
+             :tooltipVisible false
+             :draggableTrack true
+             :value @value
+             :on-change #(rf/dispatch [:teleporter/setting
+                                       tp-id
+                                       :jam/playout-delay
+                                       %
+                                       {:message/type :teleporter.cmd/set-playout-delay
+                                        :teleporter/playout-delay %
+                                        :teleporter/id tp-id}])
+             :min 0
+             :max 32
+             :playout-delay @value
+             :mode "playoutdelay"
+             :latency latency}]))
 
 (defn show-volumes [tp-id master-value local-value network-value]
   [:<>
@@ -364,40 +370,39 @@
                                        :teleporter/id tp-id}])}]])
 
 (defn teleporter-controls [teleporter]
-  (let [{tp-id :teleporter/id :as tp} @teleporter
-        coredump-data (rf/subscribe [:teleporter/coredump tp-id])]
-    [:div.cards
-     [:> Card {:bordered false}
-      [show-volumes
-       tp-id
-       (rf/subscribe [:teleporter/setting tp-id :volume/global-volume])
-       (rf/subscribe [:teleporter/setting tp-id :volume/local-volume])
-       (rf/subscribe [:teleporter/setting tp-id :volume/network-volume])]]
-     
-     [:> Card {:bordered false}
-      [show-playout-delay
-       tp-id
-       (rf/subscribe [:teleporter/setting tp-id :jam/playout-delay])
-       (when-let [latency (:Latency @coredump-data)]
-         (js/parseFloat (first
-                         (str/split (:Latency @coredump-data) " "))))]]
-     
-     [:> Card {:bordered false}
-      [:<>
-       [:> Radio.Group {:defaultValue "stereo" :buttonStyle "solid"}
-        [:> Radio.Button {:value "mono"} "Mono"]
-        [:> Radio.Button {:value "stereo"} "Stereo"]]
-       [:div.v-switch [:span.label "48V"] [:> Switch {:unCheckedChildren "OFF" :checkedChildren "ON"}]]
-       [:> Divider {:orientation "left"} "LEFT"]
-       [:> Radio.Group {:defaultValue "line" :buttonStyle "solid"}
-        [:> Radio.Button {:value "instrument"} "Instrument"]
-        [:> Radio.Button {:value "line"} "Line"]]
-       [slider {:label "GAIN" :tooltipVisible false :defaultValue 80}]
-       [:> Divider {:orientation "right"} "RIGHT"]
-       [:> Radio.Group {:defaultValue "line" :buttonStyle "solid"}
-        [:> Radio.Button {:value "instrument"} "Instrument"]
-        [:> Radio.Button {:value "line"} "Line"]]
-       [slider {:label "GAIN" :tooltipVisible false :defaultValue 80 :overloading? true}]]]]))
+  (let [{tp-id :teleporter/id :as tp} @teleporter]
+    (if tp-id
+      [:div.cards
+       [:> Card {:bordered false}
+        [show-volumes
+         tp-id
+         (rf/subscribe [:teleporter/setting tp-id :volume/global-volume])
+         (rf/subscribe [:teleporter/setting tp-id :volume/local-volume])
+         (rf/subscribe [:teleporter/setting tp-id :volume/network-volume])]]
+       
+       [:> Card {:bordered false}
+        [show-playout-delay
+         tp-id
+         (rf/subscribe [:teleporter/setting tp-id :jam/playout-delay])
+         (rf/subscribe [:teleporter/coredump tp-id])]]
+       
+       [:> Card {:bordered false}
+        [:<>
+         [:> Radio.Group {:defaultValue "stereo" :buttonStyle "solid"}
+          [:> Radio.Button {:value "mono"} "Mono"]
+          [:> Radio.Button {:value "stereo"} "Stereo"]]
+         [:div.v-switch [:span.label "48V"] [:> Switch {:unCheckedChildren "OFF" :checkedChildren "ON"}]]
+         [:> Divider {:orientation "left"} "LEFT"]
+         [:> Radio.Group {:defaultValue "line" :buttonStyle "solid"}
+          [:> Radio.Button {:value "instrument"} "Instrument"]
+          [:> Radio.Button {:value "line"} "Line"]]
+         [slider {:label "GAIN" :tooltipVisible false :defaultValue 80}]
+         [:> Divider {:orientation "right"} "RIGHT"]
+         [:> Radio.Group {:defaultValue "line" :buttonStyle "solid"}
+          [:> Radio.Button {:value "instrument"} "Instrument"]
+          [:> Radio.Button {:value "line"} "Line"]]
+         [slider {:label "GAIN" :tooltipVisible false :defaultValue 80 :overloading? true}]]]]
+      [:h2 "No Teleporters are online"])))
 
 (defn index []
   (r/with-let [teleporters (rf/subscribe [:teleporters])

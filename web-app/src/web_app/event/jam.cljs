@@ -62,7 +62,8 @@
                           (assoc-in [:teleporters tp-id :jam/status] :idle)
                           (assoc-in [:teleporters tp-id :jam/sip] nil)
                           (assoc-in [:teleporters tp-id :jam/stream] nil)
-                          (assoc-in [:teleporters tp-id :jam/sync] nil)))
+                          (assoc-in [:teleporters tp-id :jam/sync] nil)
+                          (assoc-in [:teleproters tp-id :jam/coredump] nil)))
                     (update-in db [:jams] dissoc id) members)]
      {:db db})))
 

@@ -7,5 +7,6 @@
                        (vals)
                        (sort-by :teleporter/nickname)
                        first
-                       :teleporter/id))]
-    (get-in db [:teleporters tp-id])))
+                       :teleporter/id))
+        teleporter (get-in db [:teleporters tp-id])]
+    teleporter))

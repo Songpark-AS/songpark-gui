@@ -25,3 +25,6 @@
   ;;(rf/dispatch [:jam.teleporter/leaving msg])
   ;; do nothing for now
   )
+
+(defmethod handle-message :jam.teleporter/coredump [msg]
+  (rf/dispatch [:jam.teleporter/coredump msg]))

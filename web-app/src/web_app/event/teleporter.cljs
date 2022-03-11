@@ -73,9 +73,9 @@
    (assoc-in db [:teleporters id :teleporter/net-config] network-config)))
 
 (rf/reg-event-db
- :teleporter/coredump
- (fn [db [_ {:keys [teleporter/id teleporter/coredump-data]}]]
-   (assoc-in db [:teleporters id :teleporter/coredump] coredump-data)))
+ :jam.teleporter/coredump
+ (fn [db [_ {:keys [teleporter/id jam/coredump]}]]
+   (assoc-in db [:teleporters id :jam/coredump] coredump)))
 
 (rf/reg-event-db
  :teleporter/apt-version

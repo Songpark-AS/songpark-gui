@@ -28,7 +28,7 @@
 (rf/reg-sub
  :teleporter/coredump
  (fn [db [_ tp-id]]
-   (get-in db [:teleporters tp-id :teleporter/coredump])))
+   (get-in db [:teleporters tp-id :jam/coredump])))
 
 (rf/reg-sub
  :teleporter/apt-version
@@ -72,9 +72,10 @@
               :jam/sync sync}
          with-tp-id (if-not (#{:idle :jam/waiting} status)
                       (reduce (fn [out [_ {:keys [jam/members]}]]
-                                (if ((set members) tp-id)
-                                  (reduced tp-id)
-                                  false))
+                                (let [m (set members)]
+                                 (if (m tp-id)
+                                   (reduced (-> m (disj tp-id) first))
+                                   false)))
                               false (:jams db))
                       nil)]
      (assoc out
