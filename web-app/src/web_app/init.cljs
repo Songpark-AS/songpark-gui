@@ -38,7 +38,7 @@
   (let [config-manager (component/start (config/config-manager config-settings))
         mqtt-config (:mqtt @songpark.config/config)
         mqtt-client (component/start (mqtt/mqtt-client {:config (merge mqtt-config
-                                                                       {:connect-options (select-keys mqtt-config [:useSSL])})}))]
+                                                                       {:connect-options (select-keys mqtt-config [:useSSL :reconnect])})}))]
     
     (reset! mqtt.int/client mqtt-client)
     (component/system-map

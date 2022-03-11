@@ -10,6 +10,7 @@ module.exports = {
         username: "songpark",
         password: "testmctestson",
         useSSL: false,
+        reconnect: true,
     },
     heartbeat: {
         timer: 61000
