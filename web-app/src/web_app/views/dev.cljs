@@ -159,7 +159,7 @@
      (if (or (= status :idle)
              (= status :jam/waiting))
        "Not in jam"
-       (let [out (into ["In jam" with] (->> [sip sync stream]
+       (let [out (into ["In jam" with] (->> [sync stream]
                                             (remove nil?)
                                             (map name)))]
          (str/join " • " out)))]))
@@ -275,12 +275,13 @@
                                           {:message/type :teleporter.cmd/path-reset
                                            :teleporter/id tp-id}])}
            "Reset"]
-          [:> Button {:blocked nil
-                      :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
-                                          tp-id
-                                          {:message/type :teleporter.cmd/hangup-all
-                                           :teleporter/id tp-id}])}
-           "Stop all streams"]
+          ;; temporarily removed because Christian doesn't like swedes :(
+          ;; [:> Button {:blocked nil
+          ;;             :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
+          ;;                                 tp-id
+          ;;                                 {:message/type :teleporter.cmd/hangup-all
+          ;;                                  :teleporter/id tp-id}])}
+          ;;  "Stop all streams"]
           [:> Button {:blocked nil
                       :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
                                           tp-id
@@ -305,7 +306,7 @@
           [:img.logo props])]
        [:div.scroll-area scroll-area-props]])))
 
-(def max-slider-value 11)
+(def max-slider-value 50)
 
 (defn show-playout-delay [tp-id value latency]
   [slider {:label "PLAYOUT DELAY"
