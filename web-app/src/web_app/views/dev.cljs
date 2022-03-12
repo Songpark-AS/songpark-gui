@@ -89,9 +89,7 @@
                               (swap! state assoc :pos new-pos)))))}
        [:div.tps
         (doall
-         (for [[idx {:teleporter/keys [id nickname] :as tp}] (->> @teleporters
-                                                                  (filter :teleporter/online?)
-                                                                  (map-indexed vector))]
+         (for [[idx {:teleporter/keys [id nickname] :as tp}] (map-indexed vector @teleporters)]
            [:> Button {:key [:teleporter-switch id]
                        :class (when (= id
                                        (:teleporter/id (nth @teleporters (:pos @state))))
