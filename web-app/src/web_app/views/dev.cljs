@@ -156,15 +156,13 @@
 (defn show-jam-status [jam-status]
   (let [{:jam/keys [status sync sip stream with]} @jam-status]
     [:div.status
-     ;; status is only available if a teleporter is present in the list
-     (when status
-       (if (or (= status :idle)
-               (= status :jam/waiting))
-         "Not in jam"
-         (let [out (into ["In jam" with] (->> [sync stream]
-                                              (remove nil?)
-                                              (map name)))]
-           (str/join " • " out))))]))
+     (if (or (= status :idle)
+             (= status :jam/waiting))
+       "Not in jam"
+       (let [out (into ["In jam" with] (->> [sync stream]
+                                            (remove nil?)
+                                            (map name)))]
+         (str/join " • " out)))]))
 
 
 (defn- handle-upgrade-failed [tp-id]
@@ -252,45 +250,43 @@
                              (reset! css-class nil)
                              (reset! css-class "show")))
                          (reset! swipe-state {:closed? (not closed?)})))}]
-      (when (and tp-id
-                 (= @css-class "show"))
+      (when (= @css-class "show")
         (rf/dispatch [:teleporter/request-network-config (:teleporter/id @teleporter)])
         (rf/dispatch [:platform/fetch-latest-available-apt-version]))
       [:div.tp-details
-       (when tp-id
-         [:div.board {:class @css-class}
-          [:> Card {:bordered false}
-           [network-details teleporter]
-           [:div.versions
-            [:span "VERSIONS"]
-            [:div "Teleporter: " (:teleporter/apt-version @teleporter)]
-            [:div "Platform: " @platform-version]
-            [:div "App: " (:version @config)]]
-           [:div.commands
-            (let [{:keys [teleporter/apt-version]} @teleporter
-                  latest-available-apt-version @platform-apt-version]
-              (when (wrap-semver-lt semver apt-version latest-available-apt-version)
-                [:div {:on-click #(on-upgrade-click tp-id)}
-                 "Upgrade available. Click to upgrade"]))
-            [:> Button {:blocked nil
-                        :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
-                                                 tp-id
-                                                 {:message/type :teleporter.cmd/path-reset
-                                                  :teleporter/id tp-id}])}
-             "Reset"]
-            ;; temporarily removed because Christian doesn't like swedes :(
-            ;; [:> Button {:blocked nil
-            ;;             :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
-            ;;                                 tp-id
-            ;;                                 {:message/type :teleporter.cmd/hangup-all
-            ;;                                  :teleporter/id tp-id}])}
-            ;;  "Stop all streams"]
-            [:> Button {:blocked nil
-                        :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
-                                                 tp-id
-                                                 {:message/type :teleporter.cmd/reboot
-                                                  :teleporter/id tp-id}])}
-             "Reboot"]]]])
+       [:div.board {:class @css-class}
+        [:> Card {:bordered false}
+         [network-details teleporter]
+         [:div.versions
+          [:span "VERSIONS"]
+          [:div "Teleporter: " (:teleporter/apt-version @teleporter)]
+          [:div "Platform: " @platform-version]
+          [:div "App: " (:version @config)]]
+         [:div.commands
+          (let [{:keys [teleporter/apt-version]} @teleporter
+                latest-available-apt-version @platform-apt-version]
+            (when (wrap-semver-lt semver apt-version latest-available-apt-version)
+              [:div {:on-click #(on-upgrade-click tp-id)}
+               "Upgrade available. Click to upgrade"]))
+          [:> Button {:blocked nil
+                      :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
+                                               tp-id
+                                               {:message/type :teleporter.cmd/path-reset
+                                                :teleporter/id tp-id}])}
+           "Reset"]
+          ;; temporarily removed because Christian doesn't like swedes :(
+          ;; [:> Button {:blocked nil
+          ;;             :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
+          ;;                                 tp-id
+          ;;                                 {:message/type :teleporter.cmd/hangup-all
+          ;;                                  :teleporter/id tp-id}])}
+          ;;  "Stop all streams"]
+          [:> Button {:blocked nil
+                      :on-click #(rf/dispatch [:mqtt/send-message-to-teleporter
+                                               tp-id
+                                               {:message/type :teleporter.cmd/reboot
+                                                :teleporter/id tp-id}])}
+           "Reboot"]]]]
        [:div.bottom-border {:style {:margin-top (str @tp-scroller-styling "px")}}
         (let [{:jam/keys [status sip stream sync]} @jam-status
               props (cond (= status :idle)
@@ -369,38 +365,36 @@
 
 (defn teleporter-controls [teleporter]
   (let [{tp-id :teleporter/id :as tp} @teleporter]
-    (if tp-id
-      [:div.cards
-       [:> Card {:bordered false}
-        [show-volumes
-         tp-id
-         (rf/subscribe [:teleporter/setting tp-id :volume/global-volume])
-         (rf/subscribe [:teleporter/setting tp-id :volume/local-volume])
-         (rf/subscribe [:teleporter/setting tp-id :volume/network-volume])]]
-       
-       [:> Card {:bordered false}
-        [show-playout-delay
-         tp-id
-         (rf/subscribe [:teleporter/setting tp-id :jam/playout-delay])
-         (rf/subscribe [:teleporter/coredump tp-id])]]
-       
-       [:> Card {:bordered false}
-        [:<>
-         [:> Radio.Group {:defaultValue "stereo" :buttonStyle "solid"}
-          [:> Radio.Button {:value "mono"} "Mono"]
-          [:> Radio.Button {:value "stereo"} "Stereo"]]
-         [:div.v-switch [:span.label "48V"] [:> Switch {:unCheckedChildren "OFF" :checkedChildren "ON"}]]
-         [:> Divider {:orientation "left"} "LEFT"]
-         [:> Radio.Group {:defaultValue "line" :buttonStyle "solid"}
-          [:> Radio.Button {:value "instrument"} "Instrument"]
-          [:> Radio.Button {:value "line"} "Line"]]
-         [slider {:label "GAIN" :tooltipVisible false :defaultValue 80}]
-         [:> Divider {:orientation "right"} "RIGHT"]
-         [:> Radio.Group {:defaultValue "line" :buttonStyle "solid"}
-          [:> Radio.Button {:value "instrument"} "Instrument"]
-          [:> Radio.Button {:value "line"} "Line"]]
-         [slider {:label "GAIN" :tooltipVisible false :defaultValue 80 :overloading? true}]]]]
-      [:h2 "No Teleporters are online"])))
+    [:div.cards
+     [:> Card {:bordered false}
+      [show-volumes
+       tp-id
+       (rf/subscribe [:teleporter/setting tp-id :volume/global-volume])
+       (rf/subscribe [:teleporter/setting tp-id :volume/local-volume])
+       (rf/subscribe [:teleporter/setting tp-id :volume/network-volume])]]
+     
+     [:> Card {:bordered false}
+      [show-playout-delay
+       tp-id
+       (rf/subscribe [:teleporter/setting tp-id :jam/playout-delay])
+       (rf/subscribe [:teleporter/coredump tp-id])]]
+     
+     [:> Card {:bordered false}
+      [:<>
+       [:> Radio.Group {:defaultValue "stereo" :buttonStyle "solid"}
+        [:> Radio.Button {:value "mono"} "Mono"]
+        [:> Radio.Button {:value "stereo"} "Stereo"]]
+       [:div.v-switch [:span.label "48V"] [:> Switch {:unCheckedChildren "OFF" :checkedChildren "ON"}]]
+       [:> Divider {:orientation "left"} "LEFT"]
+       [:> Radio.Group {:defaultValue "line" :buttonStyle "solid"}
+        [:> Radio.Button {:value "instrument"} "Instrument"]
+        [:> Radio.Button {:value "line"} "Line"]]
+       [slider {:label "GAIN" :tooltipVisible false :defaultValue 80}]
+       [:> Divider {:orientation "right"} "RIGHT"]
+       [:> Radio.Group {:defaultValue "line" :buttonStyle "solid"}
+        [:> Radio.Button {:value "instrument"} "Instrument"]
+        [:> Radio.Button {:value "line"} "Line"]]
+       [slider {:label "GAIN" :tooltipVisible false :defaultValue 80 :overloading? true}]]]]))
 
 (defn index []
   (r/with-let [teleporters (rf/subscribe [:teleporters])
