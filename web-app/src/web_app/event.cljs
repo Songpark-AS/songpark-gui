@@ -3,10 +3,12 @@
             [re-frame.core :as rf]
             [taoensso.timbre :as log]
             [web-app.db :as db]
-            [web-app.utils :refer [get-random-teleporters]]
-            #_[app.event.auth]
-            #_[app.event.data]
-            [web-app.event.ui]))
+            [web-app.event.jam]
+            [web-app.event.mqtt]
+            [web-app.event.platform]
+            [web-app.event.teleporter]
+            [web-app.event.ui]
+            [web-app.utils]))
 
 (rf/reg-event-db ::initialize-db (fn [_ _]
                                    db/default-db))
@@ -16,6 +18,14 @@
                        (log/error ::nil-event args)
                        nil))
 
+(defn set-no-contextmenu! []
+  (js/document.addEventListener "contextmenu"
+                                (fn [e]
+                                  (.preventDefault e)
+                                  (.stopPropagation e)
+                                  false)))
+
+
 (defrecord EventManager [started?]
   component/Lifecycle
   (start [this]
@@ -23,9 +33,10 @@
       this
       (do (log/info "Starting EventManager")
           (rf/dispatch-sync [::initialize-db])
-          (rf/dispatch [:fetch-teleporters])
+          (rf/dispatch [:init-app])
           (rf/dispatch [:fetch-platform-version])
-          ;; (rf/dispatch [:auth/whoami]) ;; check if we are logged in
+          (log/info "Setting no contextmenu")
+          (set-no-contextmenu!)
           (assoc this
                  :started? true))))
   (stop [this]

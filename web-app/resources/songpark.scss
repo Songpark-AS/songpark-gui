@@ -16,7 +16,7 @@ $breakpoints: (phone: 320px, tablet: 768px, desktop: 1024px);
             padding: 2.6rem;
         }
         @include media("<tablet") {
-            padding: 1rem;
+            padding: 1.2rem;
         }
         height: 100%;
     }

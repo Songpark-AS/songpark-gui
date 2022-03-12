@@ -1,16 +1,17 @@
 (ns web-app.init
   (:require [com.stuartsierra.component :as component]
             [re-frame.core :as rf]
-            [taoensso.timbre :as log]
-            [songpark.common.taxonomy.teleporter]
             [songpark.common.config :as songpark.config]
+            [songpark.mqtt :as mqtt]
+            [songpark.taxonomy.teleporter]
+            [taoensso.timbre :as log]
             [web-app.communication :as communication]
             [web-app.config :as config]
             [web-app.event :as event]
-            [web-app.api :as api]
-            [web-app.logging :as logging]
-            [web-app.message :as message]
-            [web-app.mqtt :as mqtt]))
+            [web-app.mqtt.interceptor :as mqtt.int]
+            [web-app.mqtt.handler.jam]
+            [web-app.mqtt.handler.teleporter]
+            [web-app.logging :as logging]))
 
 (defonce -system (atom nil))
 
@@ -34,7 +35,12 @@
   (map->InitManager settings))
 
 (defn- system-map [config-settings]
-  (let [config-manager (component/start (config/config-manager config-settings))]
+  (let [config-manager (component/start (config/config-manager config-settings))
+        mqtt-config (:mqtt @songpark.config/config)
+        mqtt-client (component/start (mqtt/mqtt-client {:config (merge mqtt-config
+                                                                       {:connect-options (select-keys mqtt-config [:useSSL :reconnect])})}))]
+    
+    (reset! mqtt.int/client mqtt-client)
     (component/system-map
      :config-manager config-manager
 
@@ -50,16 +56,13 @@
      :communication-manager (component/using
                              (communication/communication-manager (:communication-manager @songpark.config/config))
                              [:config-manager])
-     :api-manager (component/using
-                   (api/api-manager {:injection-ks [:message-service]})
-                   [:message-service])
-     :mqtt-manager (component/using
-                    (mqtt/mqtt-manager (:mqtt @songpark.config/config))
-                    [:config-manager])
-     :message-service (component/using
-                       (message/message-service {:injection-ks [:mqtt-manager]})
-                       [:mqtt-manager]))))
+     :mqtt-client mqtt-client)))
 
 (defn init [config-settings]
   (log/info "Initializing system")
-  (reset! -system (component/start (system-map config-settings))))
+  (reset! -system (component/start (system-map config-settings)))
+  ;; subscribe to jam
+  (try
+    (mqtt/subscribe (:mqtt-client @-system) "jam" 0)
+    (catch js/Error e
+      (log/error e))))
