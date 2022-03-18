@@ -23,8 +23,8 @@
      (doseq [{:keys [teleporter/id]} teleporters]
        (let [bt (broadcast-topic id)
              ht (heartbeat-topic id)]
-         (mqtt/subscribe mqtt-client {bt 0
-                                      ht 0})))
+         (mqtt/subscribe mqtt-client {bt 2
+                                      ht 2})))
      (doseq [jam jams]
        (let [topics (get-jam-topic-subscriptions :app jam)]
          (mqtt/subscribe mqtt-client topics)))

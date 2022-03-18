@@ -63,6 +63,6 @@
   (reset! -system (component/start (system-map config-settings)))
   ;; subscribe to jam
   (try
-    (mqtt/subscribe (:mqtt-client @-system) "jam" 0)
+    (mqtt/subscribe (:mqtt-client @-system) "jam" 2)
     (catch js/Error e
       (log/error e))))
