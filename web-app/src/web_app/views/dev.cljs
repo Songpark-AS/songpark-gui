@@ -363,6 +363,87 @@
                                        :teleporter/volume %
                                        :teleporter/id tp-id}])}]])
 
+
+(defn analog-controls [tp-id]
+  [:> Card {:bordered false}
+   [:<>
+    [:> Radio.Group {:defaultValue "stereo"
+                     :buttonStyle "solid"
+                     :on-change #(let [value (-> % .-target .-value keyword)]
+                                   (rf/dispatch [:teleporter/setting
+                                                 tp-id
+                                                 :teleporter.relay/cardinality
+                                                 value
+                                                 {:message/type :teleporter.cmd/relay
+                                                  :teleporter/relay :cardinality
+                                                  :teleporter/value value
+                                                  :teleporter/id tp-id}]))}
+     [:> Radio.Button {:value "mono"} "Mono"]
+     [:> Radio.Button {:value "stereo"} "Stereo"]]
+    [:div.v-switch
+     [:span.label "48V"]
+     [:> Switch {:on-click #(rf/dispatch [:teleporter/setting
+                                          tp-id
+                                          :teleporter.relay/voltage
+                                          %
+                                          {:message/type :teleporter.cmd/relay
+                                           :teleporter/relay :voltage
+                                           :teleporter/value %
+                                           :teleporter/id tp-id}])
+                 :unCheckedChildren "OFF"
+                 :checkedChildren "ON"}]]
+    [:> Divider {:orientation "left"} "LEFT"]
+    [:> Radio.Group {:defaultValue "line"
+                     :buttonStyle "solid"
+                     :on-change #(let [value (-> % .-target .-value keyword)]
+                                   (rf/dispatch [:teleporter/setting
+                                                 tp-id
+                                                 :teleporter.relay/left-input
+                                                 value
+                                                 {:message/type :teleporter.cmd/relay
+                                                  :teleporter/relay :left-input
+                                                  :teleporter/value value
+                                                  :teleporter/id tp-id}]))}
+     [:> Radio.Button {:value "instrument"} "Instrument"]
+     [:> Radio.Button {:value "line"} "Line"]]
+    [slider {:label "GAIN"
+             :tooltipVisible false
+             :defaultValue 80
+             :on-change #(rf/dispatch [:teleporter/setting
+                                       tp-id
+                                       :teleporter.relay/left-gain
+                                       %
+                                       {:message/type :teleporter.cmd/relay
+                                        :teleporter/relay :left-gain
+                                        :teleporter/value %
+                                        :teleporter/id tp-id}])}]
+    [:> Divider {:orientation "right"} "RIGHT"]
+    [:> Radio.Group {:defaultValue "line"
+                     :buttonStyle "solid"
+                     :on-change #(let [value (-> % .-target .-value keyword)]
+                                   (rf/dispatch [:teleporter/setting
+                                                 tp-id
+                                                 :teleporter.relay/right-input
+                                                 value
+                                                 {:message/type :teleporter.cmd/relay
+                                                  :teleporter/relay :right-input
+                                                  :teleporter/value value
+                                                  :teleporter/id tp-id}]))}
+     [:> Radio.Button {:value "instrument"} "Instrument"]
+     [:> Radio.Button {:value "line"} "Line"]]
+    [slider {:label "GAIN"
+             :tooltipVisible false
+             :defaultValue 80
+             :overloading? true
+             :on-change #(rf/dispatch [:teleporter/setting
+                                       tp-id
+                                       :teleporter.relay/right-gain
+                                       %
+                                       {:message/type :teleporter.cmd/relay
+                                        :teleporter/relay :right-gain
+                                        :teleporter/value %
+                                        :teleporter/id tp-id}])}]]])
+
 (defn teleporter-controls [teleporter]
   (let [{tp-id :teleporter/id :as tp} @teleporter]
     [:div.cards
@@ -372,36 +453,21 @@
        (rf/subscribe [:teleporter/setting tp-id :volume/global-volume])
        (rf/subscribe [:teleporter/setting tp-id :volume/local-volume])
        (rf/subscribe [:teleporter/setting tp-id :volume/network-volume])]]
-     
+
      [:> Card {:bordered false}
       [show-playout-delay
        tp-id
        (rf/subscribe [:teleporter/setting tp-id :jam/playout-delay])
        (rf/subscribe [:teleporter/coredump tp-id])]]
-     
-     [:> Card {:bordered false}
-      [:<>
-       [:> Radio.Group {:defaultValue "stereo" :buttonStyle "solid"}
-        [:> Radio.Button {:value "mono"} "Mono"]
-        [:> Radio.Button {:value "stereo"} "Stereo"]]
-       [:div.v-switch [:span.label "48V"] [:> Switch {:unCheckedChildren "OFF" :checkedChildren "ON"}]]
-       [:> Divider {:orientation "left"} "LEFT"]
-       [:> Radio.Group {:defaultValue "line" :buttonStyle "solid"}
-        [:> Radio.Button {:value "instrument"} "Instrument"]
-        [:> Radio.Button {:value "line"} "Line"]]
-       [slider {:label "GAIN" :tooltipVisible false :defaultValue 80}]
-       [:> Divider {:orientation "right"} "RIGHT"]
-       [:> Radio.Group {:defaultValue "line" :buttonStyle "solid"}
-        [:> Radio.Button {:value "instrument"} "Instrument"]
-        [:> Radio.Button {:value "line"} "Line"]]
-       [slider {:label "GAIN" :tooltipVisible false :defaultValue 80 :overloading? true}]]]]))
+
+     [analog-controls tp-id]]))
 
 (defn index []
   (r/with-let [teleporters (rf/subscribe [:teleporters])
                teleporter (rf/subscribe [:teleporter.view/selected-teleporter])
                jam-status (rf/subscribe [:teleporter/jam-status])]
     [:div.dev
-     [:div.topbar 
+     [:div.topbar
       [teleporter-switcher teleporters]
       [show-jam-status jam-status]]
      [teleporter-details teleporter jam-status]

@@ -30,7 +30,7 @@
            (catch js/Error e (log/error ::handle-init "failed to subscribe." e)))))
      (doseq [jam jams]
        (let [topics (get-jam-topic-subscriptions :app jam)]
-         (try 
+         (try
            (mqtt/subscribe mqtt-client topics)
            (catch js/Error e (log/error ::handle-init "failed to subscribe." e)))))
      {:db (assoc db
