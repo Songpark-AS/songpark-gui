@@ -364,18 +364,27 @@
                                        :teleporter/id tp-id}])}]])
 
 
+(def ^:private high-z-combo {:line false
+                             :instrument true})
+(def ^:private phonic-combo {:stereo true
+                             :mono false})
+
+;; For info on which relay belongs to which control,
+;; look into the analog
 (defn analog-controls [tp-id]
   [:> Card {:bordered false}
    [:<>
     [:> Radio.Group {:defaultValue "stereo"
                      :buttonStyle "solid"
-                     :on-change #(let [value (-> % .-target .-value keyword)]
+                     :on-change #(let [value (-> % .-target .-value keyword phonic-combo)]
                                    (rf/dispatch [:teleporter/setting
                                                  tp-id
-                                                 :teleporter.relay/cardinality
+                                                 ;; does this exist?
+                                                 ;; relay 2 is mute headphones (at the moment)
+                                                 :analog/relay2
                                                  value
                                                  {:message/type :teleporter.cmd/relay
-                                                  :teleporter/relay :cardinality
+                                                  :teleporter/relay :analog/relay2
                                                   :teleporter/value value
                                                   :teleporter/id tp-id}]))}
      [:> Radio.Button {:value "mono"} "Mono"]
@@ -384,10 +393,10 @@
      [:span.label "48V"]
      [:> Switch {:on-click #(rf/dispatch [:teleporter/setting
                                           tp-id
-                                          :teleporter.relay/voltage
+                                          :analog/relay5
                                           %
                                           {:message/type :teleporter.cmd/relay
-                                           :teleporter/relay :voltage
+                                           :teleporter/relay :analog/relay5
                                            :teleporter/value %
                                            :teleporter/id tp-id}])
                  :unCheckedChildren "OFF"
@@ -395,13 +404,13 @@
     [:> Divider {:orientation "left"} "LEFT"]
     [:> Radio.Group {:defaultValue "line"
                      :buttonStyle "solid"
-                     :on-change #(let [value (-> % .-target .-value keyword)]
+                     :on-change #(let [value (-> % .-target .-value keyword high-z-combo)]
                                    (rf/dispatch [:teleporter/setting
                                                  tp-id
-                                                 :teleporter.relay/left-input
+                                                 :analog/relay0
                                                  value
                                                  {:message/type :teleporter.cmd/relay
-                                                  :teleporter/relay :left-input
+                                                  :teleporter/relay :analog/relay0
                                                   :teleporter/value value
                                                   :teleporter/id tp-id}]))}
      [:> Radio.Button {:value "instrument"} "Instrument"]
@@ -411,22 +420,22 @@
              :defaultValue 80
              :on-change #(rf/dispatch [:teleporter/setting
                                        tp-id
-                                       :teleporter.relay/left-gain
+                                       :analog/left-gain
                                        %
-                                       {:message/type :teleporter.cmd/relay
-                                        :teleporter/relay :left-gain
+                                       {:message/type :teleporter.cmd/gain
+                                        :teleporter/gain :analog/left-gain
                                         :teleporter/value %
                                         :teleporter/id tp-id}])}]
     [:> Divider {:orientation "right"} "RIGHT"]
     [:> Radio.Group {:defaultValue "line"
                      :buttonStyle "solid"
-                     :on-change #(let [value (-> % .-target .-value keyword)]
+                     :on-change #(let [value (-> % .-target .-value keyword high-z-combo)]
                                    (rf/dispatch [:teleporter/setting
                                                  tp-id
-                                                 :teleporter.relay/right-input
+                                                 :analog/relay1
                                                  value
                                                  {:message/type :teleporter.cmd/relay
-                                                  :teleporter/relay :right-input
+                                                  :teleporter/relay :analog/relay1
                                                   :teleporter/value value
                                                   :teleporter/id tp-id}]))}
      [:> Radio.Button {:value "instrument"} "Instrument"]
@@ -437,10 +446,10 @@
              :overloading? true
              :on-change #(rf/dispatch [:teleporter/setting
                                        tp-id
-                                       :teleporter.relay/right-gain
+                                       :analog/right-gain
                                        %
-                                       {:message/type :teleporter.cmd/relay
-                                        :teleporter/relay :right-gain
+                                       {:message/type :teleporter.cmd/gain
+                                        :teleporter/gain :analog/right-gain
                                         :teleporter/value %
                                         :teleporter/id tp-id}])}]]])
 
