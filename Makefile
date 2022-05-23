@@ -175,7 +175,13 @@ kube-deploy-debug: kube-prep-debug
 	@echo "Deploying debug to k8s"
 	kubectl apply -f $(DEPLOYMENTDIR)/$(PROJECT_NAME).yaml
 
-deploy-staging: build-staging push-staging kube-deploy-staging
-deploy-production: build-production push-production kube-deploy-production
-deploy-dev: build-dev push-dev kube-deploy-dev
-deploy-debug: build-debug push-debug kube-deploy-debug
+webapp-deploy-staging:
+	@echo "Deploying to live.songpark.com"
+	sh $(DEPLOYMENTDIR)/webapp.prep.sh
+
+# deploy-staging: build-staging push-staging kube-deploy-staging
+# deploy-production: build-production push-production kube-deploy-production
+# deploy-dev: build-dev push-dev kube-deploy-dev
+# deploy-debug: build-debug push-debug kube-deploy-debug
+
+deploy-staging: prebuild-staging webapp-deploy-staging
