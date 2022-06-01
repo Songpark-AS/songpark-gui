@@ -8,9 +8,11 @@
             [web-app.communication :as communication]
             [web-app.config :as config]
             [web-app.event :as event]
+            [web-app.fx]
             [web-app.mqtt.interceptor :as mqtt.int]
             [web-app.mqtt.handler.jam]
             [web-app.mqtt.handler.teleporter]
+            [web-app.subs]
             [web-app.logging :as logging]))
 
 (defonce -system (atom nil))
@@ -39,7 +41,7 @@
         mqtt-config (:mqtt @songpark.config/config)
         mqtt-client (component/start (mqtt/mqtt-client {:config (merge mqtt-config
                                                                        {:connect-options (select-keys mqtt-config [:useSSL :reconnect])})}))]
-    
+
     (reset! mqtt.int/client mqtt-client)
     (component/system-map
      :config-manager config-manager

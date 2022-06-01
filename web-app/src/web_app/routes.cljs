@@ -1,23 +1,33 @@
 (ns web-app.routes
   (:require [reitit.frontend :as r.frontend]
             [reitit.coercion.spec :as coercion.spec]
-            [web-app.views.dev :as views.dev]
-            [web-app.views.jam :as views.jam]
-            [web-app.views.teleporter.list :as views.teleporter.list]
-            [web-app.views.teleporter.detail :as views.teleporter.detail]))
+            [web-app.views.login :as views.login]
+            [web-app.views.forgot-password :as views.forgot-password]
+            [web-app.views.home :as views.home]
+            [web-app.views.reset-password :as views.reset-password]
+            [web-app.views.signup :as views.signup]
+            [web-app.views.verify-email :as views.verify-email]))
 
 
 (def routes
   [["/"
-    {:name :views/dev
-     :view views.dev/index}]
-   ["/teleporters"
-    ["" 
-     {:name :views/teleporters
-      :view views.teleporter.list/index}]
-    ["/:id"
-     {:name :views/teleporter
-      :view views.teleporter.detail/index}]]])
+    {:name :views/home
+     :view views.home/index}]
+   ["/login"
+    {:name :views/login
+     :view views.login/index}]
+   ["/forgot-password"
+    {:name :views/forgot-password
+     :view views.forgot-password/index}]
+   ["/reset-password"
+    {:name :views/reset-password
+     :view views.reset-password/index}]
+   ["/signup"
+    {:name :views/signup
+     :view views.signup/index}]
+   ["/verify-email"
+    {:name :views/verify-email
+     :view views.verify-email/index}]])
 
 (def router
   (r.frontend/router

@@ -3,7 +3,6 @@
             [re-frame.core :as rf]
             [songpark.common.config :refer [config]]
             [taoensso.timbre :as log]
-            [web-app.api :refer [send-message!]]
             [web-app.data :as data]
             [web-app.utils :refer [get-api-url get-platform-url]]))
 
@@ -26,7 +25,6 @@
 ;; testing ground
 (comment
   (rf/dispatch [:teleporter/status {:teleporter/nickname "christians.dream"}])
-  
 
   (rf/reg-event-fx
    :teleporter/status
@@ -42,4 +40,3 @@
   (rf/dispatch [:fetch-teleporters])
   "e2f7ce6a-54fb-5704-b903-d7a772fce86e"
   )
-

@@ -4,6 +4,7 @@
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
             [taoensso.timbre :as log]
+            ;; load config first, and after that init
             [web-app.config :as config]
             [web-app.init :as init]
             [web-app.routes :refer [routes router]]
