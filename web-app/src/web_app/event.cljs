@@ -3,10 +3,12 @@
             [re-frame.core :as rf]
             [taoensso.timbre :as log]
             [web-app.db :as db]
+            [web-app.event.app]
             [web-app.event.auth]
             [web-app.event.jam]
             [web-app.event.mqtt]
             [web-app.event.platform]
+            [web-app.event.profile]
             [web-app.event.teleporter]
             [web-app.event.ui]
             [web-app.utils]))

@@ -1,6 +1,5 @@
 (ns web-app.event.auth
   (:require [re-frame.core :as rf]
-            [web-app.api :as api]
             [web-app.auth :as auth]
             [web-app.event.util :refer [add-error-message]]
             [web-app.utils :refer [get-api-url get-platform-url]]))
@@ -14,12 +13,15 @@
                :auth.whoami/success
                :auth.whoami/error]}))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  :auth.whoami/success
- (fn [db [_ data]]
-   (when (auth/logged-in? data)
-     (assoc db
-            :auth/user data))))
+ (fn [{:keys [db]} [_ data]]
+   (let [db (if (auth/logged-in? data)
+              (assoc db
+                     :auth/user data)
+              db)]
+     {:db db
+      :dispatch [:app/init]})))
 
 (rf/reg-event-db
  :auth.whoami/error
@@ -84,4 +86,5 @@
 (rf/reg-event-db
  :auth.logout/success
  (fn [db _]
-   (assoc db :auth/user nil)))
+   ;; empty the database
+   {}))

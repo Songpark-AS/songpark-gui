@@ -4,6 +4,7 @@
             [web-app.views.login :as views.login]
             [web-app.views.forgot-password :as views.forgot-password]
             [web-app.views.home :as views.home]
+            [web-app.views.profile :as views.profile]
             [web-app.views.reset-password :as views.reset-password]
             [web-app.views.signup :as views.signup]
             [web-app.views.verify-email :as views.verify-email]))
@@ -27,7 +28,10 @@
      :view views.signup/index}]
    ["/verify-email"
     {:name :views/verify-email
-     :view views.verify-email/index}]])
+     :view views.verify-email/index}]
+   ["/profile"
+    {:name :views/profile
+     :view views.profile/index}]])
 
 (def router
   (r.frontend/router

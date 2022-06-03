@@ -4,6 +4,16 @@
             [taoensso.timbre :as log]
             [web-app.db :as db]))
 
+(defn kw->str [x]
+  (if (keyword? x)
+    (subs (str x) 1)
+    x))
+
+(defn str->kw [x]
+  (if (string? x)
+    (keyword x)
+    x))
+
 (defn get-api-url [path]
   (str (:host (:platform @config))
        ":"

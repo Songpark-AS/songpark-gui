@@ -18,6 +18,7 @@
                form-data (rf/subscribe [::form/on-valid (:id f)])
                handler (fn [data]
                          (rf/dispatch [:auth/user data])
+                         (rf/dispatch [:app/init])
                          (rfe/push-state :views/home))
                error-handler (fn [{:keys [response]}]
                                (add-external-error f
