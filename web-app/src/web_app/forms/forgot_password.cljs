@@ -1,5 +1,6 @@
 (ns web-app.forms.forgot-password
-  (:require ["antd" :refer [Input]]
+  (:require ["antd" :refer [Input
+                            Input.Password]]
             [ez-wire.form :as form]
             [web-app.forms.adapters :refer [text-adapter]]
             [web-app.forms.validation :refer [auth-reset-same-password]])
@@ -19,12 +20,29 @@
     :placeholder "Token"
     :adapter text-adapter
     :name :auth.user/token}
-   {:element Input
+   {:element Input.Password
     :placeholder "New password"
     :adapter text-adapter
     :name :auth.user/new-password
     :validation :auth.user/password}
-   {:element Input
+   {:element Input.Password
+    :placeholder "Repeat password"
+    :adapter text-adapter
+    :name :auth.user/repeat-password
+    :validation auth-reset-same-password}])
+
+(defform changepasswordform
+  {}
+  [{:element Input.Password
+    :placeholder "Current password"
+    :adapter text-adapter
+    :name :auth.user/password}
+   {:element Input.Password
+    :placeholder "New password"
+    :adapter text-adapter
+    :name :auth.user/new-password
+    :validation :auth.user/password}
+   {:element Input.Password
     :placeholder "Repeat password"
     :adapter text-adapter
     :name :auth.user/repeat-password

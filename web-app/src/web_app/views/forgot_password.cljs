@@ -11,8 +11,7 @@
 
 (defn index []
   (r/with-let [f (fwform {:label? false} {})
-               form-data (rf/subscribe [::form/on-valid (:id f)])
-               email (r/atom "")]
+               form-data (rf/subscribe [::form/on-valid (:id f)])]
     [:div.forgot-password
      [:h2 "Forgot your password?"]
      [:<>

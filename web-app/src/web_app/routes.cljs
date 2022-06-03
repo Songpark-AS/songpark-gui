@@ -1,8 +1,9 @@
 (ns web-app.routes
   (:require [reitit.frontend :as r.frontend]
             [reitit.coercion.spec :as coercion.spec]
-            [web-app.views.login :as views.login]
+            [web-app.views.change-password :as views.change-password]
             [web-app.views.forgot-password :as views.forgot-password]
+            [web-app.views.login :as views.login]
             [web-app.views.home :as views.home]
             [web-app.views.profile :as views.profile]
             [web-app.views.reset-password :as views.reset-password]
@@ -31,7 +32,10 @@
      :view views.verify-email/index}]
    ["/profile"
     {:name :views/profile
-     :view views.profile/index}]])
+     :view views.profile/index}]
+   ["/profile/change-password"
+    {:name :views.profile/change-password
+     :view views.change-password/index}]])
 
 (def router
   (r.frontend/router

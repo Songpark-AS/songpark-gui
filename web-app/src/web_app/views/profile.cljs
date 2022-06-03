@@ -103,6 +103,8 @@
                                (.click input))}
            "add_circle"])]
        [form/as-table {} f]
+       [:a {:on-click #(rfe/push-state :views.profile/change-password)}
+        "Change password"]
        [:> Button
         {:type "primary"
          :disabled (not (valid? @form-data))

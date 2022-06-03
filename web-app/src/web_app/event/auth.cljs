@@ -45,6 +45,13 @@
                data
                handlers]}))
 
+(rf/reg-event-fx
+ :auth/change-password
+ (fn [_ [_ data handlers]]
+   {:dispatch [:http/post
+               (get-platform-url "/auth/change-password")
+               data
+               handlers]}))
 
 (rf/reg-event-fx
  :auth/login
