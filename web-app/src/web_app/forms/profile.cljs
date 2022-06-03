@@ -1,6 +1,5 @@
 (ns web-app.forms.profile
   (:require ["antd" :refer [Input
-                            Input.TextArea
                             Select]]
             [ez-wire.form :as form]
             [re-frame.core :as rf]
@@ -21,11 +20,7 @@
     :adapter text-adapter
     :name :profile/name
     :validation :profile/name}
-   {:element Input.TextArea
-    :placeholder "Bio"
-    :adapter text-adapter
-    :name :profile/bio}
    {:element Input
-    :placeholder "Location"
+    :placeholder "Position"
     :adapter text-adapter
-    :name :profile/location}])
+    :name :profile/position}])
