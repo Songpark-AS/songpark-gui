@@ -5,7 +5,9 @@
             [reitit.frontend.easy :as rfe]
             [taoensso.timbre :as log]
             [web-app.auth :as auth]
-            [web-app.views.login :as views.login]))
+            [web-app.views.footer :as views.footer]
+            [web-app.views.login :as views.login]
+            [web-app.views.topbar :as views.topbar]))
 
 (defonce match (r/atom nil))
 
@@ -24,10 +26,13 @@
             "")
         [:> Layout
          [:> Layout.Content
-          [:div.content-wrapper
-           (if matched
-             (let [view (:view data)]
-               [view matched]))]]]))))
+          [:<>
+           [views.topbar/index]
+           [:div.content-wrapper
+            (if matched
+              (let [view (:view data)]
+                [view matched]))]
+           [views.footer/index]]]]))))
 
 (defn main-panel []
   [:div.main-panel

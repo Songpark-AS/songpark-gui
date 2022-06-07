@@ -10,6 +10,7 @@
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
             [taoensso.timbre :as log]
+            [web-app.history :refer [back]]
             [web-app.forms.profile :refer [profileform]]))
 
 (defn- get-file-type [mimetype]
@@ -78,7 +79,9 @@
                                           :error error-handler}]))))]
     [:<>
      [:div.signup
-      [:h2 "Profile"]
+      [:h2
+       {:on-click #(back)}
+       "<- Profile"]
       [:form
        {:on-submit event}
        [:div.image
