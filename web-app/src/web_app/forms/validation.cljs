@@ -15,6 +15,10 @@
 (defvalidation :profile/name
   "A profile name cannot be empty")
 
+(defvalidation :room/name
+  "A room name cannot be empty")
+
+
 (defmultivalidation auth-signup-same-password
   #{:auth.user/password :auth.user/repeat-password}
   (fn [{:keys [values]}]

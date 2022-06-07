@@ -7,6 +7,10 @@
             [web-app.views.home :as views.home]
             [web-app.views.profile :as views.profile]
             [web-app.views.reset-password :as views.reset-password]
+            [web-app.views.room :as views.room]
+            [web-app.views.room-create :as views.room-create]
+            [web-app.views.room-host :as views.room-host]
+            [web-app.views.room-join :as views.room-join]
             [web-app.views.signup :as views.signup]
             [web-app.views.verify-email :as views.verify-email]))
 
@@ -35,7 +39,19 @@
      :view views.profile/index}]
    ["/profile/change-password"
     {:name :views.profile/change-password
-     :view views.change-password/index}]])
+     :view views.change-password/index}]
+   ["/room"
+    {:name :views/room
+     :view views.room/index}]
+   ["/room/host"
+    {:name :views.room/host
+     :view views.room-host/index}]
+   ["/room/join"
+    {:name :views.room/join
+     :view views.room-join/index}]
+   ["/room/create"
+    {:name :views.room/create
+     :view views.room-create/index}]])
 
 (def router
   (r.frontend/router

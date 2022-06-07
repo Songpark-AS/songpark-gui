@@ -14,7 +14,11 @@
          [:dispatch [:http/get
                      (get-api-url "/profile")
                      {}
-                     :app.init/profile]]]}))
+                     :app.init/profile]]
+         [:dispatch [:http/get
+                     (get-api-url "/room")
+                     {}
+                     :app.init/rooms]]]}))
 
 
 (rf/reg-event-db
@@ -26,3 +30,13 @@
  :app.init/profile
  (fn [db [_ data]]
    (assoc db :profile/profile data)))
+
+(rf/reg-event-db
+ :app.init/rooms
+ (fn [db [_ data]]
+   (assoc db :room/room data)))
+
+(rf/reg-event-db
+ :app.init/room
+ (fn [db [_ data]]
+   (update db :room/room conj data)))

@@ -9,6 +9,7 @@
             [web-app.event.mqtt]
             [web-app.event.platform]
             [web-app.event.profile]
+            [web-app.event.room]
             [web-app.event.teleporter]
             [web-app.event.ui]
             [web-app.utils]))

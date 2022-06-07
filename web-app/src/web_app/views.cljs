@@ -11,28 +11,34 @@
 
 (defonce match (r/atom nil))
 
+(defn- login-views? [current-view]
+  (#{:views/login
+     :views/signup
+     :views/forgot-password
+     :views/reset-password
+     :views/verify-email} current-view))
+
 (defn main []
   (r/with-let [user (rf/subscribe [:auth/whoami])]
     (let [matched @match
           data (:data matched)
-          current-view (:name data)]
+          current-view (:name data)
+          login-view? (login-views? current-view)]
       (if (and (auth/logged-out? @user)
-               (not (#{:views/login
-                       :views/signup
-                       :views/forgot-password
-                       :views/reset-password
-                       :views/verify-email} current-view)))
+               (not login-view?))
         (do (rfe/push-state :views/login)
             "")
         [:> Layout
          [:> Layout.Content
           [:<>
-           [views.topbar/index]
+           (when-not login-view?
+             [views.topbar/index])
            [:div.content-wrapper
             (if matched
               (let [view (:view data)]
                 [view matched]))]
-           [views.footer/index]]]]))))
+           (when-not login-view?
+             [views.footer/index])]]]))))
 
 (defn main-panel []
   [:div.main-panel
