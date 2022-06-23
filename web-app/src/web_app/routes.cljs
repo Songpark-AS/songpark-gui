@@ -12,6 +12,8 @@
             [web-app.views.room-host :as views.room-host]
             [web-app.views.room-join :as views.room-join]
             [web-app.views.signup :as views.signup]
+            [web-app.views.teleporter :as views.teleporter]
+            [web-app.views.teleporter.pairing :as views.teleporter.pairing]
             [web-app.views.verify-email :as views.verify-email]))
 
 
@@ -51,7 +53,13 @@
      :view views.room-join/index}]
    ["/room/create"
     {:name :views.room/create
-     :view views.room-create/index}]])
+     :view views.room-create/index}]
+   ["/teleporter"
+    {:name :views/teleporter
+     :view views.teleporter/index}]
+   ["/teleporter/pair"
+    {:name :views.teleporter/pair
+     :view views.teleporter.pairing/index}]])
 
 (def router
   (r.frontend/router

@@ -1,5 +1,6 @@
 (ns web-app.views.topbar
-  (:require [re-frame.core :as rf]
+  (:require ["antd" :refer [Button]]
+            [re-frame.core :as rf]
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]))
 
@@ -13,7 +14,9 @@
      [:span.position position]]))
 
 (defn- show-teleporter-status [teleporter]
-  "TELEPORTER STATUS")
+  [:div
+   {:on-click #(rfe/push-state :views/teleporter)}
+   "TELEPORTER STATUS"])
 
 (defn index []
   (r/with-let [profile (rf/subscribe [:profile/profile])]

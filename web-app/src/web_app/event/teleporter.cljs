@@ -10,7 +10,6 @@
             [web-app.mqtt.interceptor :refer [mqtt-client]]
             [web-app.utils :refer [get-api-url get-platform-url]]))
 
-
 (rf/reg-event-fx
  :init-app
  (fn [_ _]
@@ -42,8 +41,15 @@
                             (into {})))})))
 
 (rf/reg-event-fx
+ :teleporter/pair
+ (fn [cofx [_ teleporter-serial]]
+   {:dispatch [:http/put
+               (get-api-url "/teleporter/pair")
+               {:teleporter/serial teleporter-serial}]}))
+
+(rf/reg-event-fx
  :teleporter/upgrade-status
- (fn [cofx [_ {:keys [teleporter/id teleporter/upgrade-status]}]]
+ (fn [cofx [_ {:teleporter/keys [id upgrade-status]}]]
    (let [upgrade-timeout (rf/subscribe [:teleporter/upgrade-timeout id])]
      (when (= upgrade-status "complete")
        (do

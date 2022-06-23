@@ -19,6 +19,7 @@
                handler (fn [data]
                          (rf/dispatch [:auth/user data])
                          (rf/dispatch [:app/init])
+                         (rf/dispatch [:mqtt/subscribe (:auth.user/channel data)])
                          (rfe/push-state :views/home))
                error-handler (fn [{:keys [response]}]
                                (add-external-error f

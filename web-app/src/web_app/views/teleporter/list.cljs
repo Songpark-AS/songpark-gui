@@ -117,7 +117,7 @@
         num-selected-teleporters (count selected-teleporters-staging)]
     [:div.selection-action-bar
      [:span (str num-selected-teleporters "/" max-num-selected-teleporters " selected")]
-     [:div.actions 
+     [:div.actions
       [:> Button {:type "primary"
                   :on-click #(handle-selection-action-select)
                   :disabled (not (> num-selected-teleporters 1))}
@@ -160,7 +160,7 @@
     (fn []
       [:> List
        (for [item @items]
-	 (r/as-element ^{:key (:teleporter/id item)} [teleporter-row item]))])))
+	 (/as-element ^{:key (:teleporter/id item)} [teleporter-row item]))])))
 
 
 (defn index []

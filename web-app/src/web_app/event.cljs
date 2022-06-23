@@ -37,7 +37,7 @@
       this
       (do (log/info "Starting EventManager")
           (rf/dispatch-sync [::initialize-db])
-          ;(rf/dispatch [:auth/whoami])
+          (rf/dispatch [:auth/whoami])
           ;; (rf/dispatch [:init-app])
           ;; (rf/dispatch [:fetch-platform-version])
           (log/info "Setting no contextmenu")

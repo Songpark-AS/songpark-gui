@@ -16,12 +16,11 @@
 (rf/reg-event-fx
  :auth.whoami/success
  (fn [{:keys [db]} [_ data]]
-   (let [db (if (auth/logged-in? data)
-              (assoc db
-                     :auth/user data)
-              db)]
-     {:db db
-      :dispatch [:app/init]})))
+   (if (auth/logged-in? data)
+     {:db (assoc db :auth/user data)
+      :fx [[:dispatch [:app/init]]
+           [:dispatch [:mqtt/subscribe (:auth.user/channel data)]]]}
+     {:db db})))
 
 (rf/reg-event-db
  :auth.whoami/error
@@ -94,4 +93,5 @@
  :auth.logout/success
  (fn [db _]
    ;; empty the database
-   {}))
+   {:db {}
+    :dispatch [:mqtt/unsubscribe]}))
