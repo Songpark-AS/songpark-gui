@@ -18,8 +18,7 @@
  (fn [{:keys [db]} [_ data]]
    (if (auth/logged-in? data)
      {:db (assoc db :auth/user data)
-      :fx [[:dispatch [:app/init]]
-           [:dispatch [:mqtt/subscribe (:auth.user/channel data)]]]}
+      :fx [[:dispatch [:app/init]]]}
      {:db db})))
 
 (rf/reg-event-db
@@ -89,9 +88,9 @@
                nil
                :auth.logout/success]}))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  :auth.logout/success
- (fn [db _]
+ (fn [{:keys [db]} _]
    ;; empty the database
-   {:db {}
-    :dispatch [:mqtt/unsubscribe]}))
+   {:db {:app/initialized? true}
+    :mqtt/stop true}))

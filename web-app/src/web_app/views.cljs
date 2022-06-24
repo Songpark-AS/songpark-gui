@@ -18,27 +18,38 @@
      :views/reset-password
      :views/verify-email} current-view))
 
+(defn splash-screen []
+  [:div "Splash screen"])
+
 (defn main []
-  (r/with-let [user (rf/subscribe [:auth/whoami])]
+  (r/with-let [initialized? (rf/subscribe [:app/initialized?])
+               user (rf/subscribe [:auth/whoami])]
     (let [matched @match
           data (:data matched)
           current-view (:name data)
           login-view? (login-views? current-view)]
-      (if (and (auth/logged-out? @user)
-               (not login-view?))
-        (do (rfe/push-state :views/login)
-            "")
-        [:> Layout
-         [:> Layout.Content
-          [:<>
-           (when-not login-view?
-             [views.topbar/index])
-           [:div.content-wrapper
-            (if matched
-              (let [view (:view data)]
-                [view matched]))]
-           (when-not login-view?
-             [views.footer/index])]]]))))
+      ;; (log/debug {:current-view current-view
+      ;;             :user @user
+      ;;             :logged-out? (auth/logged-out? @user)
+      ;;             :login-view? login-view?
+      ;;             :!login-view (not login-view?)})
+      (if-not @initialized?
+        [splash-screen]
+        (if (and (auth/logged-out? @user)
+                 (not login-view?))
+          (do (rfe/push-state :views/login)
+              "")
+          [:> Layout
+           [:> Layout.Content
+            [:<>
+             (when-not login-view?
+               [views.topbar/index])
+             [:div.content-wrapper
+              (if matched
+                (let [view (:view data)]
+                  [view matched]))]
+             (when-not login-view?
+               [views.footer/index])]]])))))
 
 (defn main-panel []
   [:div.main-panel

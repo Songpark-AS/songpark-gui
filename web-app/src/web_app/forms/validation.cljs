@@ -1,7 +1,8 @@
 (ns web-app.forms.validation
   (:require [clojure.string :as str]
             [clojure.spec.alpha :as spec]
-            [songpark.taxonomy.auth])
+            [songpark.taxonomy.auth]
+            [songpark.taxonomy.room])
   (:require-macros [ez-wire.form.validation :refer [defvalidation
                                                     defmultivalidation]]))
 

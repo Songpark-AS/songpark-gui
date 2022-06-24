@@ -7,6 +7,7 @@
             ;; load config first, and after that init
             [web-app.config :as config]
             [web-app.init :as init]
+            [web-app.fx]
             [web-app.routes :refer [routes router]]
             [web-app.views :as views]))
 

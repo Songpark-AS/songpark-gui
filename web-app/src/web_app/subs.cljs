@@ -1,5 +1,6 @@
 (ns web-app.subs
   (:require [re-frame.core :as re-frame]
+            [web-app.subs.app]
             [web-app.subs.auth]
             [web-app.subs.platform]
             [web-app.subs.profile]

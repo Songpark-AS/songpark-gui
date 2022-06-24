@@ -14,9 +14,12 @@
      [:span.position position]]))
 
 (defn- show-teleporter-status [teleporter]
-  [:div
-   {:on-click #(rfe/push-state :views/teleporter)}
-   "TELEPORTER STATUS"])
+  (r/with-let [paired? (rf/subscribe [:teleporter/paired?])]
+    [:div.status
+     {:on-click #(rfe/push-state :views/teleporter)}
+     (if @paired?
+       "Linked"
+       "Not linked")]))
 
 (defn index []
   (r/with-let [profile (rf/subscribe [:profile/profile])]

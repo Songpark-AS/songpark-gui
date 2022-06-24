@@ -7,6 +7,7 @@
             [songpark.mqtt.util :refer [broadcast-topic
                                         heartbeat-topic
                                         teleporter-topic]]
+            [web-app.event.util :refer [message-base]]
             [web-app.mqtt.interceptor :refer [mqtt-client]]
             [web-app.utils :refer [get-api-url get-platform-url]]))
 
@@ -45,7 +46,26 @@
  (fn [cofx [_ teleporter-serial]]
    {:dispatch [:http/put
                (get-api-url "/teleporter/pair")
-               {:teleporter/serial teleporter-serial}]}))
+               {:teleporter/serial teleporter-serial}
+               :teleporter/pairing]}))
+
+(rf/reg-event-fx
+ :teleporter/unpair
+ (fn [{:keys [db]} [_ teleporter-serial]]
+   {:dispatch [:http/delete
+               (get-api-url "/teleporter/pair")
+               (message-base db #{:teleporter/id})
+               :teleporter/unpaired]}))
+
+(rf/reg-event-db
+ :teleporter/unpaired
+ (fn [db _]
+   (dissoc db :teleporters)))
+
+(rf/reg-event-fx
+ :teleporter/pairing
+ (fn [_ _]
+   {:rfe/push-state :views.teleporter/confirm}))
 
 (rf/reg-event-fx
  :teleporter/upgrade-status

@@ -5,6 +5,15 @@
             [reitit.frontend.easy :as rfe]
             [taoensso.timbre :as log]))
 
+
+(defn confirm-link []
+  [:div.confirm-link
+   [:h2 "Confirm link"]
+   [:p "Press the blinking button on your Teleporter."]
+   [:p.note
+    {:on-click #(rfe/push-state :views.teleporter/pair)}
+    "Don't see a blinking button?"]])
+
 (defn- get-serial [numbers]
   (apply str numbers))
 

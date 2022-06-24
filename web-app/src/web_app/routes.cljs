@@ -14,6 +14,7 @@
             [web-app.views.signup :as views.signup]
             [web-app.views.teleporter :as views.teleporter]
             [web-app.views.teleporter.pairing :as views.teleporter.pairing]
+            [web-app.views.teleporter.paired :as views.teleporter.paired]
             [web-app.views.verify-email :as views.verify-email]))
 
 
@@ -59,7 +60,13 @@
      :view views.teleporter/index}]
    ["/teleporter/pair"
     {:name :views.teleporter/pair
-     :view views.teleporter.pairing/index}]])
+     :view views.teleporter.pairing/index}]
+   ["/teleporter/confirm"
+    {:name :views.teleporter/confirm
+     :view views.teleporter.pairing/confirm-link}]
+   ["/teleporter/paired"
+    {:name :views.teleporter/paired
+     :view views.teleporter.paired/index}]])
 
 (def router
   (r.frontend/router
