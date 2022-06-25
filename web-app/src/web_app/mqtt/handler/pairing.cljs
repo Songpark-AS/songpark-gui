@@ -4,3 +4,6 @@
 
 (defmethod handle-message :pairing/paired [msg]
   (rf/dispatch [:pairing/paired msg]))
+
+(defmethod handle-message :pairing/unpaired [msg]
+  (rf/dispatch [:pairing/unpaired msg]))

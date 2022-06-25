@@ -11,6 +11,9 @@
             [web-app.mqtt.interceptor :refer [mqtt-client]]
             [web-app.utils :refer [get-api-url get-platform-url]]))
 
+;; TODO: Add message-base to anything we want to be able to use with a paired
+;; teleporter
+
 (rf/reg-event-fx
  :init-app
  (fn [_ _]
@@ -55,12 +58,7 @@
    {:dispatch [:http/delete
                (get-api-url "/teleporter/pair")
                (message-base db #{:teleporter/id})
-               :teleporter/unpaired]}))
-
-(rf/reg-event-db
- :teleporter/unpaired
- (fn [db _]
-   (dissoc db :teleporters)))
+               :pairing/unpaired]}))
 
 (rf/reg-event-fx
  :teleporter/pairing
