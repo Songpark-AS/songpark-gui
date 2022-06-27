@@ -3,6 +3,7 @@
             [songpark.mqtt.util :refer [teleporter-topic]]
             [re-frame.core :as rf]
             [taoensso.timbre :as log]
+            [web-app.event.util :refer [message-base]]
             [web-app.mqtt.interceptor :refer [mqtt-client]]))
 
 (rf/reg-event-fx
@@ -34,13 +35,21 @@
 (rf/reg-event-fx
  :mqtt/publish-message
  [mqtt-client]
- (fn [{:keys [mqtt-client]} [_ topic message]]
-   (mqtt/publish mqtt-client topic message)
+ (fn [{:keys [mqtt-client db]} [_ topic message]]
+   (mqtt/publish mqtt-client
+                 topic
+                 (message-base
+                  db
+                  message))
    nil))
 
 (rf/reg-event-fx
  :mqtt/send-message-to-teleporter
  [mqtt-client]
- (fn [{:keys [mqtt-client]} [_ teleporter-id message]]
-   (mqtt/publish mqtt-client (teleporter-topic teleporter-id) message)
+ (fn [{:keys [mqtt-client db]} [_ teleporter-id message]]
+   (mqtt/publish mqtt-client
+                 (teleporter-topic teleporter-id)
+                 (message-base
+                  db
+                  message))
    nil))
