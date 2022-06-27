@@ -43,7 +43,7 @@
  :teleporter/upgrading?
  (fn [db [_ tp-id]]
    (let [tp-id (get-tp-id db tp-id)]
-     (get-in db [:teleporters tp-id :teleporter/upgrading?]))))
+     (true? (get-in db [:teleporters tp-id :teleporter/upgrading?])))))
 
 (rf/reg-sub
  :teleporter/net-config

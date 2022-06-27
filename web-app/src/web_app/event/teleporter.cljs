@@ -57,7 +57,7 @@
  (fn [{:keys [db]} [_ teleporter-serial]]
    {:dispatch [:http/delete
                (get-api-url "/teleporter/pair")
-               (message-base db #{:teleporter/id})
+               (message-base db nil #{:teleporter/id})
                :pairing/unpaired]}))
 
 (rf/reg-event-fx
@@ -84,11 +84,14 @@
 (rf/reg-event-fx
  :teleporter/save-ipv4
  [mqtt-client]
- (fn [{:keys [mqtt-client]} [_ tp-id values]]
-   (mqtt/publish mqtt-client (teleporter-topic tp-id)
-                 {:message/type :teleporter.cmd/set-ipv4
-                  :teleporter/network-values values
-                  :teleporter/id tp-id})
+ (fn [{:keys [db mqtt-client]} [_ tp-id values]]
+   (mqtt/publish mqtt-client
+                 (teleporter-topic tp-id)
+                 (message-base
+                  db
+                  {:message/type :teleporter.cmd/set-ipv4
+                   :teleporter/network-values values
+                   :teleporter/id tp-id}))
    nil))
 
 (rf/reg-event-db
@@ -140,21 +143,25 @@
 (rf/reg-event-fx
  :teleporter/request-network-config
  [mqtt-client]
- (fn [{:keys [mqtt-client]} [_ tp-id]]
+ (fn [{:keys [mqtt-client db]} [_ tp-id]]
    (mqtt/publish mqtt-client
                  (teleporter-topic tp-id)
-                 {:message/type :teleporter.cmd/report-network-config
-                  :teleporter/id tp-id})
+                 (message-base
+                  db
+                  {:message/type :teleporter.cmd/report-network-config
+                   :teleporter/id tp-id}))
    nil))
 
 (rf/reg-event-fx
  :teleporter/request-upgrade
  [mqtt-client]
- (fn [{:keys [mqtt-client]} [_ tp-id]]
+ (fn [{:keys [mqtt-client db]} [_ tp-id]]
    (mqtt/publish mqtt-client
                  (teleporter-topic tp-id)
-                 {:message/type :teleporter.cmd/upgrade
-                  :teleporter/id tp-id})))
+                 (message-base
+                  db
+                  {:message/type :teleporter.cmd/upgrade
+                   :teleporter/id tp-id}))))
 
 (rf/reg-event-db
  :teleporter/values
@@ -195,12 +202,26 @@
    (assoc-in db [:teleporters id :jam/playout-delay] playout-delay)))
 
 (rf/reg-event-fx
+ :teleporter/settings-form
+ (fn [{:keys [db]} [_ data handlers]]
+   {:dispatch [:http/post
+               (get-api-url "/teleporter/settings")
+               data
+               handlers]}))
+
+(rf/reg-event-fx
  :teleporter/setting
  (fn [{:keys [db]} [_ tp-id tp-setting-k tp-setting-v mqtt-msg]]
-   {:db (-> db
-            (assoc-in [:teleporters tp-id tp-setting-k] tp-setting-v)
-            (assoc-in [:teleporters tp-id :teleporter/setting tp-setting-k] tp-setting-v))
-    :dispatch [:mqtt/send-message-to-teleporter tp-id mqtt-msg]}))
+   (merge
+    {:db (-> db
+             (assoc-in [:teleporters tp-id tp-setting-k] tp-setting-v)
+             (assoc-in [:teleporters tp-id :teleporter/setting tp-setting-k] tp-setting-v))}
+    (when mqtt-msg
+      {:dispatch [:mqtt/send-message-to-teleporter
+                  tp-id
+                  (message-base
+                   db
+                   mqtt-msg)]}))))
 
 (rf/reg-event-db
  :teleporter.setting/clear!

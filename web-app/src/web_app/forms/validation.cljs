@@ -16,6 +16,9 @@
 (defvalidation :profile/name
   "A profile name cannot be empty")
 
+(defvalidation :teleporter/nickname
+  "A teleporter name cannot be empty")
+
 (defvalidation :room/name
   "A room name cannot be empty")
 
