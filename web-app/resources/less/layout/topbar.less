@@ -1,0 +1,73 @@
+@import '../colors.less';
+
+@portrait-size: 64px;
+
+.topbar {
+  background-color: @topbar-brown;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100px;
+  padding: 0 20px;
+  .profile {
+    display: flex;
+    &:hover {
+      cursor: pointer;
+    }
+    .account {
+      span {
+        font-size: @portrait-size;
+        color: @topbar-brown3;
+      }
+    }
+    .details {
+      margin-left: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      .name {
+        font-weight: bold;
+        font-size: 2em;
+        color: @topbar-brown3;
+      }
+      .position {
+        color: @topbar-brown2;
+        line-height: 0;
+      }
+    }
+  }
+  .status {
+    &:hover {
+      cursor: pointer;
+    }
+    span {
+      color: @status-text;
+      font-weight: bold;
+      border-radius: 2em;
+      padding: 0.5em 1em;
+      text-transform: uppercase;
+    }
+    .linked {
+      background-color: @status-linked;
+    }
+    .not-linked {
+      background-color: @status-not-linked;
+    }
+    .in-room {
+      background-color: @status-in-room;
+    }
+  }
+}
+
+
+.account {
+  position: relative;
+  width: @portrait-size;
+  height: @portrait-size;
+  overflow: hidden;
+  border-radius: 48px;
+  img {
+    position: relative;
+    left: -50%;
+  }
+}
