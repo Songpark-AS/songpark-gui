@@ -19,11 +19,13 @@
     0
     (long (* value step))))
 
-(defn- model-changed [interacting? data value-step]
+(defn- model-changed [interacting? on-change data value-step]
   (fn [_ _ _ new-value]
     (when-not @interacting?
       (let [new-rotation (value->rotation new-value value-step)]
-        (swap! data assoc :rotate/rotation new-rotation)))))
+        (swap! data assoc :rotate/rotation new-rotation))
+      (when on-change
+        (on-change new-value)))))
 
 (defn show-value [model]
   [:div.value
@@ -139,7 +141,7 @@
                _ (reset! functions {:mouse-up mouse-up
                                     :mouse-move mouse-move})
                watch-key (random-uuid)
-               _ (add-watch model watch-key (model-changed interacting? data value-step))]
+               _ (add-watch model watch-key (model-changed interacting? on-change data value-step))]
     [:div.knob
      [overload overload?]
      [show-value model]
