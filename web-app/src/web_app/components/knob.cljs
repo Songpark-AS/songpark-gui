@@ -91,41 +91,48 @@
                ;; for keeping track of x/y coordinates
                storage (atom {:x nil
                               :y nil})
+               update-wheel (fn [{:keys [diff-x diff-y x y new-x new-y]}]
+                              (let [{:rotate/keys [rotation start end]} @data
+                                    value @model
+                                    sensitivity (/ 20.0 rotate-sensitivity)]
+                               ;; we move the knob if there is movement on the x
+                               ;; axis or the y axis
+                               (if (> diff-x diff-y)
+                                 (let [step (* sensitivity (- new-x x))]
+                                   (swap! data assoc :rotate/rotation (new-rotation rotation start end step))
+                                   (when-let [v (rotation->value value value-step rotation)]
+                                     ;; swap and check
+                                     (let [updated (reset! model v)]
+                                       ;; the check is needed in order to not reset
+                                       ;; the model multiple times to the same
+                                       ;; value and then report it multiple times
+                                       (when (and on-change
+                                                  (not= value updated))
+                                         ;; (println :x  :value value :update-value (:value updated))
+                                         (on-change v))))))
+                               (if (> diff-y diff-x)
+                                 (let [step (* sensitivity (- new-y y))]
+                                   (swap! data assoc :rotate/rotation (new-rotation rotation start end step))
+                                   (when-let [v (rotation->value value value-step rotation)]
+                                     ;; swap and check
+                                     (let [updated (reset! model v)]
+                                       (when (and on-change
+                                                  (not= value updated))
+                                         ;; (println :y  :value value :update-value (:value updated))
+                                         (on-change v))))))))
                mouse-move (fn [e]
                             (let [{:keys [x y]} @storage
                                   [new-x new-y] [(.-pageX e) (.-pageY e)]
                                   diff-x (js/Math.abs (- new-x x))
-                                  diff-y (js/Math.abs (- new-y y))
-                                  {:rotate/keys [rotation start end]} @data
-                                  value @model
-                                  sensitivity (/ 20.0 rotate-sensitivity)]
+                                  diff-y (js/Math.abs (- new-y y))]
                               (reset! storage {:x new-x
                                                :y new-y})
-                              ;; we move the knob if there is movement on the x
-                              ;; axis or the y axis
-                              (if (> diff-x diff-y)
-                                (let [step (* sensitivity (- new-x x))]
-                                  (swap! data assoc :rotate/rotation (new-rotation rotation start end step))
-                                  (when-let [v (rotation->value value value-step rotation)]
-                                    ;; swap and check
-                                    (let [updated (reset! model v)]
-                                      ;; the check is needed in order to not reset
-                                      ;; the model multiple times to the same
-                                      ;; value and then report it multiple times
-                                      (when (and on-change
-                                                 (not= value updated))
-                                        ;; (println :x  :value value :update-value (:value updated))
-                                        (on-change v))))))
-                              (if (> diff-y diff-x)
-                                (let [step (* sensitivity (- new-y y))]
-                                  (swap! data assoc :rotate/rotation (new-rotation rotation start end step))
-                                  (when-let [v (rotation->value value value-step rotation)]
-                                    ;; swap and check
-                                    (let [updated (reset! model v)]
-                                      (when (and on-change
-                                                 (not= value updated))
-                                        ;; (println :y  :value value :update-value (:value updated))
-                                        (on-change v))))))))
+                              (update-wheel {:diff-x diff-x
+                                             :diff-y diff-y
+                                             :x x
+                                             :y y
+                                             :new-x new-x
+                                             :new-y new-y})))
                mouse-up (fn [e]
                           ;; reset x,y coordinates to nil in order to provide
                           ;; a clean slate
@@ -138,8 +145,36 @@
                                                          (:mouse-up @functions))
                           (js/window.removeEventListener "mousemove"
                                                          (:mouse-move @functions)))
+               touch-move (fn [e]
+                            (let [{:keys [x y]} @storage
+                                  touch (aget (.-changedTouches e) 0)
+                                  [new-x new-y] [(.-pageX touch) (.-pageY touch)]
+                                  diff-x (js/Math.abs (- new-x x))
+                                  diff-y (js/Math.abs (- new-y y))]
+                              (reset! storage {:x new-x
+                                               :y new-y})
+                              (update-wheel {:diff-x diff-x
+                                             :diff-y diff-y
+                                             :x x
+                                             :y y
+                                             :new-x new-x
+                                             :new-y new-y})))
+               touch-end (fn [e]
+                          ;; reset x,y coordinates to nil in order to provide
+                          ;; a clean slate
+                          (reset! storage {:x nil
+                                           :y nil})
+                          ;; we are no longer interacting, the model can now be changed
+                          ;; from the outside
+                          (reset! interacting? false)
+                          (js/window.removeEventListener "touchmove"
+                                                         (:touch-move @functions))
+                          (js/window.removeEventListener "touchend"
+                                                         (:touch-end @functions)))
                _ (reset! functions {:mouse-up mouse-up
-                                    :mouse-move mouse-move})
+                                    :mouse-move mouse-move
+                                    :touch-move touch-move
+                                    :touch-end touch-end})
                watch-key (random-uuid)
                _ (add-watch model watch-key (model-changed interacting? on-change data value-step))]
     [:div.knob
@@ -152,7 +187,21 @@
             :start-angle rotate-start
             :data data}]]
      [:div.area
-      {:on-mouse-down (fn [e]
+      {:style {:touch-action "none"}
+       :on-touch-start (fn [e]
+                         (try
+                           (if (= 1 (.-length (.-changedTouches e)))
+                             (let [touch (aget (.-changedTouches e) 0)
+                                   page-x (.-pageX touch)
+                                   page-y (.-pageY touch)]
+                               (reset! storage {:x page-x
+                                                :y page-y})
+                               (reset! interacting? true)
+                               (js/window.addEventListener "touchmove" touch-move)
+                               (js/window.addEventListener "touchend" touch-end)))
+                           (catch js/Error e
+                             (println e))))
+       :on-mouse-down (fn [e]
                         (reset! storage {:x (.-pageX e)
                                          :y (.-pageY e)})
                         (reset! interacting? true)
