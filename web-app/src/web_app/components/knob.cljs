@@ -46,6 +46,7 @@
 
 (defn knob [{rotate-step :rotate/step
              rotate-sensitivity :rotate/sensitivity
+             skin :skin
              rotate-start :rotate/start
              rotate-end :rotate/end
              initial-value :value
@@ -63,7 +64,8 @@
                   rotate-end (+ 90 90 90)
                   value-min 0
                   value-max 100
-                  value-fn identity}
+                  value-fn identity
+                  skin "dark"}
              :as props}]
   (r/with-let [;; declare model and overload? in here
                ;; if it is declared in the destrucuring the javascript
@@ -181,6 +183,7 @@
                watch-key (random-uuid)
                _ (add-watch model watch-key (model-changed interacting? on-change data value-step))]
     [:div.knob
+     {:class skin}
      [overload overload?]
      [show-value value-fn model]
      [:div.arc

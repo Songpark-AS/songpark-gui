@@ -1,0 +1,70 @@
+@use '../colors.less';
+
+@knob-width: 110px;
+@knob-height: 130px;
+
+.knob {
+  position: relative;
+  width: @knob-width;
+  height: @knob-height;
+  display: inline-block;
+  border-radius: 25px;
+  &.dark {
+    background-color: @knob-bg-color1;
+    color: @knob-alt-color1;
+    .overload {
+      background-color: @knob-bg-color1;
+    }
+    h3 {
+      color: @knob-alt-color1;
+    }
+    .arc-path {
+      stroke: @knob-alt-color1;
+      fill: transparent;
+    }
+  }
+  &.light {
+    background-color: @knob-bg-color2;
+    color: @knob-alt-color2;
+    .overload {
+      background-color: @knob-bg-color2;
+    }
+    h3 {
+      color: @knob-alt-color2;
+    }
+    .arc-path {
+      stroke: @knob-alt-color2;
+      fill: transparent;
+    }
+  }
+  .overload {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    border-radius: 14px;
+  }
+  .value {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+  }
+  .area {
+    position: absolute;
+    top: 30px;
+    left: 20px;
+  }
+  .arc {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+  }
+  h3 {
+    position: absolute;
+    left: 0;
+    bottom: 5px;
+    line-height: 0;
+    width: 100%;
+    text-align: center;
+  }
+}

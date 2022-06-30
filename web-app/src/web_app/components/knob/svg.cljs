@@ -77,15 +77,14 @@
            & [width-height-opts]]
   (let [end-angle (:rotate/rotation @data)]
     [:svg
-     {:version "1.1", :view-box (str/join " " [0 0 (* 4 radius) (* 4 radius)])
-      :height (get width-height-opts :height (str (* 4 radius) "pt"))
-      :width (get width-height-opts :width (str (* 4 radius) "pt"))
-      }
+     {:version "1.1", :view-box (str/join " " [0 0 (* 2.5 radius) (* 2.5 radius)])
+      :height (get width-height-opts :height (str (* 4 radius) "px"))
+      :width (get width-height-opts :width (str (* 4 radius) "px"))}
      [:style {:type "text/css"} styles]
      [:g
-      [:path { ;;:d "A 30 50 0 0 1 162.55 162.45"
+      [:path {:class "arc-path"
               :d (describe-arc x y radius start-angle end-angle)
-              ;; :d "M 20 20 A 10 10 0 0 0 30 30"
-              :stroke "yellow"
-              :fill "transparent"
+              ;; :stroke "#e1d7d2"
+              ;; :fill "transparent"
+              :stroke-linejoin "round"
               :stroke-width "2"}]]]))
