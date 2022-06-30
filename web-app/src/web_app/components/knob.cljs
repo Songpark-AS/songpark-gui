@@ -27,21 +27,22 @@
       (when on-change
         (on-change new-value)))))
 
-(defn show-value [model]
+(defn show-value [value-fn model]
   [:div.value
-   @model])
+   (value-fn @model)])
 
 (defn overload [overloaded?]
-  [:div.overload
-   {:style (merge
-            {:width "1rem"
-             :height "1rem"
-             :border-radius "1rem"
-             :display "inline-block"
-             :background-color "green"}
-            (if @overloaded?
-              {:box-shadow "0 0 5px #D0342C"
-               :background-color "red"}))}])
+  (when (some? overloaded?)
+    [:div.overload
+     [:div.led
+      {:style (merge
+               {:width "1rem"
+                :height "1rem"
+                :border-radius "1rem"
+                :display "inline-block"
+                :background-color "#94aa85"}
+               (if @overloaded?
+                 {:background-color "#d5655f"}))}]]))
 
 (defn knob [{rotate-step :rotate/step
              rotate-sensitivity :rotate/sensitivity
@@ -52,21 +53,23 @@
              value-max :value/max
              overload? :overload?
              on-change :on-change
+             title :title
              change :change
              model :model
+             value-fn :value-fn
              :or {rotate-step 1
                   rotate-sensitivity 20
                   rotate-start 0
                   rotate-end (+ 90 90 90)
                   value-min 0
-                  value-max 100}
+                  value-max 100
+                  value-fn identity}
              :as props}]
   (r/with-let [;; declare model and overload? in here
                ;; if it is declared in the destrucuring the javascript
                ;; produced loses the reference, and the model/overload? ratom
                ;; no longer works
                model (or model (r/atom nil))
-               overload? (or overload? (r/atom false))
                _ (reset! model initial-value)
                ;; we need the total distance the rotation can be
                distance (+ (js/Math.abs rotate-start)
@@ -179,13 +182,15 @@
                _ (add-watch model watch-key (model-changed interacting? on-change data value-step))]
     [:div.knob
      [overload overload?]
-     [show-value model]
+     [show-value value-fn model]
      [:div.arc
       [arc {:radius 20
-            :x 40
-            :y 40
+            :x 25
+            :y 30
             :start-angle rotate-start
-            :data data}]]
+            :data data}
+       {:width "100px"
+        :height "100px"}]]
      [:div.area
       {:style {:touch-action "none"}
        :on-touch-start (fn [e]
@@ -209,7 +214,11 @@
                         (js/window.addEventListener "mouseup" mouse-up))}
       [wheel (merge
               props
-              {:data data})]]]
+              {:data data})
+       {:width "70px"
+        :height "70px"}]]
+     (when title
+       [:h3 title])]
     (finally
       ;; clean up the watcher
       (remove-watch model watch-key))))
