@@ -33,23 +33,21 @@
       ;;             :logged-out? (auth/logged-out? @user)
       ;;             :login-view? login-view?
       ;;             :!login-view (not login-view?)})
-      (if-not @initialized?
-        [splash-screen]
-        (if (and (auth/logged-out? @user)
-                 (not login-view?))
-          (do (rfe/push-state :views/login)
-              "")
-          [:> Layout
-           [:> Layout.Content
-            [:<>
-             (when-not login-view?
-               [views.topbar/index])
-             [:div.content-wrapper
-              (if matched
-                (let [view (:view data)]
-                  [view matched]))]
-             (when-not login-view?
-               [views.footer/index])]]])))))
+      (if (and (auth/logged-out? @user)
+               (not login-view?))
+        (do (rfe/push-state :views/login)
+            "")
+        [:> Layout
+         [:> Layout.Content
+          [:<>
+           (when-not login-view?
+             [views.topbar/index])
+           [:div.content-wrapper
+            (if matched
+              (let [view (:view data)]
+                [view matched]))]
+           (when-not login-view?
+             [views.footer/index current-view])]]]))))
 
 (defn main-panel []
   [:div.main-panel
