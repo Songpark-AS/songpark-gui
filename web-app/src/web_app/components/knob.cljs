@@ -86,7 +86,8 @@
                model (or model (r/atom nil))
                ;; this is used internally in order to make sure things are smooth
                internal-model (r/atom @model)
-               _ (reset! internal-model initial-value)
+               _ (when (nil? @internal-model)
+                   (reset! internal-model initial-value))
                ;; we need the total distance the rotation can be
                distance (+ (js/Math.abs rotate-start)
                            (js/Math.abs rotate-end))
