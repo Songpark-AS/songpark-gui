@@ -1,5 +1,6 @@
 (ns web-app.components.knob
-  (:require [reagent.core :as r]
+  (:require ["antd" :refer [Switch]]
+            [reagent.core :as r]
             [web-app.components.knob.svg :refer [arc
                                                  wheel]]))
 
@@ -19,13 +20,23 @@
     0
     (long (* value step))))
 
-(defn- model-changed [interacting? on-change data value-step]
+(defn- internal-model-changed
+  "The internal model has been updated. This is only run from the outside"
+  [interacting? on-change data value-step]
   (fn [_ _ _ new-value]
+    ;; we are not interacting directly with the knob,
+    ;; it's free to update
     (when-not @interacting?
       (let [new-rotation (value->rotation new-value value-step)]
         (swap! data assoc :rotate/rotation new-rotation))
       (when on-change
         (on-change new-value)))))
+
+(defn model-changed
+  "The external model has been updated. Mirror changes to internal model"
+  [internal-model]
+  (fn [_ _ _ new-value]
+    (reset! internal-model new-value)))
 
 (defn show-value [value-fn model]
   [:div.value
@@ -71,14 +82,17 @@
                ;; if it is declared in the destrucuring the javascript
                ;; produced loses the reference, and the model/overload? ratom
                ;; no longer works
+               ;; this can either be a ratom or a re-frame subscription
                model (or model (r/atom nil))
-               _ (reset! model initial-value)
+               ;; this is used internally in order to make sure things are smooth
+               internal-model (r/atom @model)
+               _ (reset! internal-model initial-value)
                ;; we need the total distance the rotation can be
                distance (+ (js/Math.abs rotate-start)
                            (js/Math.abs rotate-end))
                ;; how much do we need to step in the rotation to hit a new value
                value-step (/ (double distance) value-max)
-               data (r/atom {:rotate/rotation (value->rotation @model value-step)
+               data (r/atom {:rotate/rotation (value->rotation @internal-model value-step)
                              :rotate/start rotate-start
                              :rotate/end rotate-end})
                ;; interacting? is used to control outside changes to the model
@@ -98,7 +112,7 @@
                               :y nil})
                update-wheel (fn [{:keys [diff-x diff-y x y new-x new-y]}]
                               (let [{:rotate/keys [rotation start end]} @data
-                                    value @model
+                                    value @internal-model
                                     sensitivity (/ 20.0 rotate-sensitivity)]
                                ;; we move the knob if there is movement on the x
                                ;; axis or the y axis
@@ -107,7 +121,7 @@
                                    (swap! data assoc :rotate/rotation (new-rotation rotation start end step))
                                    (when-let [v (rotation->value value value-step rotation)]
                                      ;; swap and check
-                                     (let [updated (reset! model v)]
+                                     (let [updated (reset! internal-model v)]
                                        ;; the check is needed in order to not reset
                                        ;; the model multiple times to the same
                                        ;; value and then report it multiple times
@@ -120,7 +134,7 @@
                                    (swap! data assoc :rotate/rotation (new-rotation rotation start end step))
                                    (when-let [v (rotation->value value value-step rotation)]
                                      ;; swap and check
-                                     (let [updated (reset! model v)]
+                                     (let [updated (reset! internal-model v)]
                                        (when (and on-change
                                                   (not= value updated))
                                          ;; (println :y  :value value :update-value (:value updated))
@@ -180,12 +194,15 @@
                                     :mouse-move mouse-move
                                     :touch-move touch-move
                                     :touch-end touch-end})
-               watch-key (random-uuid)
-               _ (add-watch model watch-key (model-changed interacting? on-change data value-step))]
+               watch-key-internal-model (random-uuid)
+               _ (add-watch internal-model watch-key-internal-model
+                            (internal-model-changed interacting? on-change data value-step))
+               watch-key-model (random-uuid)
+               _ (add-watch model watch-key-model (model-changed internal-model))]
     [:div.knob
      {:class skin}
      [overload overload?]
-     [show-value value-fn model]
+     [show-value value-fn internal-model]
      [:div.arc
       [arc {:radius 20
             :x 25
@@ -224,4 +241,28 @@
        [:h3 title])]
     (finally
       ;; clean up the watcher
-      (remove-watch model watch-key))))
+      (remove-watch internal-model watch-key-internal-model)
+      (remove-watch model watch-key-model))))
+
+
+(defn knob-duo [{:keys [knob1 knob2 linked?] :as _prop}]
+  (r/with-let [linked? (or linked? (r/atom false))
+               model1 (or (:model knob1) (r/atom nil))]
+    (let [knob1-adjusted (assoc knob1 :model model1)]
+      [:div.knobs-duo
+       (if @linked?
+         (let [knob2-adjusted (assoc knob2
+                                     :model model1
+                                     :on-change nil
+                                     :disabled? true)]
+           [:<>
+            ^{:key :knob1-alt} [knob knob1]
+            ^{:key :knob2-alt} [knob knob2-adjusted]])
+         [:<>
+          ^{:key :knob1} [knob knob1]
+          ^{:key :knob2} [knob knob2]])
+       [:div.switch
+        [:> Switch
+         {:checkedChildren "Linked"
+          :unCheckedChildren "Link"
+          :on-change #(reset! linked? %)}]]])))
