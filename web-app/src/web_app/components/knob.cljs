@@ -68,7 +68,9 @@
              title :title
              change :change
              model :model
+             internal-model :internal-model
              value-fn :value-fn
+             disabled? :disabled?
              :or {rotate-step 1
                   rotate-sensitivity 20
                   rotate-start 0
@@ -85,8 +87,9 @@
                ;; this can either be a ratom or a re-frame subscription
                model (or model (r/atom nil))
                ;; this is used internally in order to make sure things are smooth
-               internal-model (r/atom @model)
-               _ (when (nil? @internal-model)
+               internal-model (or internal-model (r/atom nil))
+               _ (reset! internal-model @model)
+               _ (when (some? initial-value)
                    (reset! internal-model initial-value))
                ;; we need the total distance the rotation can be
                distance (+ (js/Math.abs rotate-start)
@@ -201,7 +204,9 @@
                watch-key-model (random-uuid)
                _ (add-watch model watch-key-model (model-changed internal-model))]
     [:div.knob
-     {:class skin}
+     {:class (if disabled?
+               ["disabled" skin]
+               skin)}
      [overload overload?]
      [show-value value-fn internal-model]
      [:div.arc
@@ -215,24 +220,26 @@
      [:div.area
       {:style {:touch-action "none"}
        :on-touch-start (fn [e]
-                         (try
-                           (if (= 1 (.-length (.-changedTouches e)))
-                             (let [touch (aget (.-changedTouches e) 0)
-                                   page-x (.-pageX touch)
-                                   page-y (.-pageY touch)]
-                               (reset! storage {:x page-x
-                                                :y page-y})
-                               (reset! interacting? true)
-                               (js/window.addEventListener "touchmove" touch-move)
-                               (js/window.addEventListener "touchend" touch-end)))
-                           (catch js/Error e
-                             (println e))))
+                         (when-not disabled?
+                           (try
+                             (if (= 1 (.-length (.-changedTouches e)))
+                               (let [touch (aget (.-changedTouches e) 0)
+                                     page-x (.-pageX touch)
+                                     page-y (.-pageY touch)]
+                                 (reset! storage {:x page-x
+                                                  :y page-y})
+                                 (reset! interacting? true)
+                                 (js/window.addEventListener "touchmove" touch-move)
+                                 (js/window.addEventListener "touchend" touch-end)))
+                             (catch js/Error e
+                               (println e)))))
        :on-mouse-down (fn [e]
-                        (reset! storage {:x (.-pageX e)
-                                         :y (.-pageY e)})
-                        (reset! interacting? true)
-                        (js/window.addEventListener "mousemove" mouse-move)
-                        (js/window.addEventListener "mouseup" mouse-up))}
+                        (when-not disabled?
+                         (reset! storage {:x (.-pageX e)
+                                          :y (.-pageY e)})
+                         (reset! interacting? true)
+                         (js/window.addEventListener "mousemove" mouse-move)
+                         (js/window.addEventListener "mouseup" mouse-up)))}
       [wheel (merge
               props
               {:data data})
@@ -246,24 +253,39 @@
       (remove-watch model watch-key-model))))
 
 
-(defn knob-duo [{:keys [knob1 knob2 linked?] :as _prop}]
+(defn show-switch [linked?]
+  [:div.switch
+   {:class (if @linked?
+             "linked"
+             "")}
+   [:div.left "∟"]
+   [:> Switch
+    {:checkedChildren "Linked"
+     :unCheckedChildren "Link"
+     :on-change #(reset! linked? %)}]
+   [:div.right "∟"]])
+
+(defn knob-duo [{:keys [knob1 knob2 linked? skin]
+                 :or {skin "dark"}
+                 :as _prop}]
   (r/with-let [linked? (or linked? (r/atom false))
-               model1 (or (:model knob1) (r/atom nil))]
-    (let [knob1-adjusted (assoc knob1 :model model1)]
-      [:div.knobs-duo
-       (if @linked?
-         (let [knob2-adjusted (assoc knob2
-                                     :model model1
-                                     :on-change nil
-                                     :disabled? true)]
-           [:<>
-            ^{:key :knob1-alt} [knob knob1]
-            ^{:key :knob2-alt} [knob knob2-adjusted]])
+               internal-model1 (r/atom nil)
+               knob1 (assoc knob1
+                            :internal-model internal-model1
+                            :skin skin)
+               knob2 (assoc knob2
+                            :skin skin)]
+    [:div.knobs-duo
+     {:class skin}
+     (if @linked?
+       (let [knob2-adjusted (assoc knob1
+                                   :title (:title knob2)
+                                   :on-change nil
+                                   :disabled? true)]
          [:<>
-          ^{:key :knob1} [knob knob1]
-          ^{:key :knob2} [knob knob2]])
-       [:div.switch
-        [:> Switch
-         {:checkedChildren "Linked"
-          :unCheckedChildren "Link"
-          :on-change #(reset! linked? %)}]]])))
+          ^{:key :knob1-alt} [knob knob1]
+          ^{:key :knob2-alt} [knob knob2-adjusted]])
+       [:<>
+        ^{:key :knob1} [knob knob1]
+        ^{:key :knob2} [knob knob2]])
+     [show-switch linked?]]))
