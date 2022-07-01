@@ -1,0 +1,38 @@
+@import '../colors.less';
+
+@picture-size: 78px;
+
+.jammer {
+  display: flex;
+  background-color: @knob-bg-color2;
+  color: @knob-alt-color2;
+  justify-content: space-between;
+  padding: 0 2em;
+  border-radius: 1em;
+
+  .profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    .picture {
+      > img {
+        width: @picture-size;
+        height: @picture-size;
+        border-radius: @picture-size;
+      }
+      span {
+        font-size: @picture-size;
+      }
+    }
+    .name {
+      font-weight: bold;
+    }
+    .latency {
+      font-size: 12px;
+    }
+  }
+
+  .muted {
+    opacity: 0.5;
+  }
+}
