@@ -1,6 +1,7 @@
 (ns web-app.subs.teleporter
   (:require [re-frame.core :as rf]
-            [web-app.subs.util :refer [get-selected-teleporter]]))
+            [web-app.subs.util :refer [get-tp-id
+                                       get-selected-teleporter]]))
 
 (rf/reg-sub
  :teleporters
@@ -17,15 +18,6 @@
         :teleporters
         first
         some?)))
-
-(defn- get-tp-id [db tp-id]
-  (if (nil? tp-id)
-    (->> db
-         :teleporters
-         (vals)
-         first
-         :teleporter/id)
-    tp-id))
 
 (rf/reg-sub
  :teleporter/teleporter
@@ -111,7 +103,6 @@
                       nil)]
      (assoc out
             :jam/with (get-in db [:teleporters with-tp-id :teleporter/nickname])))))
-
 
 (rf/reg-sub
  :teleporter/setting

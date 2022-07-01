@@ -10,3 +10,12 @@
                        :teleporter/id))
         teleporter (get-in db [:teleporters tp-id])]
     teleporter))
+
+(defn- get-tp-id [db tp-id]
+  (if (nil? tp-id)
+    (->> db
+         :teleporters
+         (vals)
+         first
+         :teleporter/id)
+    tp-id))

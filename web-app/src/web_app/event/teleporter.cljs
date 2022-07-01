@@ -9,6 +9,7 @@
                                         teleporter-topic]]
             [web-app.event.util :refer [message-base]]
             [web-app.mqtt.interceptor :refer [mqtt-client]]
+            [web-app.subs.util :refer [get-tp-id]]
             [web-app.utils :refer [get-api-url get-platform-url]]))
 
 ;; TODO: Add message-base to anything we want to be able to use with a paired
@@ -212,16 +213,17 @@
 (rf/reg-event-fx
  :teleporter/setting
  (fn [{:keys [db]} [_ tp-id tp-setting-k tp-setting-v mqtt-msg]]
-   (merge
-    {:db (-> db
-             (assoc-in [:teleporters tp-id tp-setting-k] tp-setting-v)
-             (assoc-in [:teleporters tp-id :teleporter/setting tp-setting-k] tp-setting-v))}
-    (when mqtt-msg
-      {:dispatch [:mqtt/send-message-to-teleporter
-                  tp-id
-                  (message-base
-                   db
-                   mqtt-msg)]}))))
+   (let [tp-id (get-tp-id db tp-id)]
+     (merge
+      {:db (-> db
+               (assoc-in [:teleporters tp-id tp-setting-k] tp-setting-v)
+               (assoc-in [:teleporters tp-id :teleporter/setting tp-setting-k] tp-setting-v))}
+      (when mqtt-msg
+        {:dispatch [:mqtt/send-message-to-teleporter
+                    tp-id
+                    (message-base
+                     db
+                     mqtt-msg)]})))))
 
 (rf/reg-event-db
  :teleporter.setting/clear!
