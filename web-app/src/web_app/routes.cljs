@@ -3,6 +3,7 @@
             [reitit.coercion.spec :as coercion.spec]
             [web-app.views.change-password :as views.change-password]
             [web-app.views.forgot-password :as views.forgot-password]
+            [web-app.views.levels :as views.levels]
             [web-app.views.login :as views.login]
             [web-app.views.home :as views.home]
             [web-app.views.profile :as views.profile]
@@ -55,6 +56,9 @@
    ["/room/create"
     {:name :views.room/create
      :view views.room-create/index}]
+   ["/levels"
+    {:name :views/levels
+     :view views.levels/index}]
    ["/teleporter"
     {:name :views/teleporter
      :view views.teleporter/index}]
