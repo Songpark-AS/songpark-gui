@@ -101,13 +101,13 @@
           {:orientation "left"}
           "Details"]
          [:div.paired
-          [:p "You are currently paired with " nickname  "."]
+          [:p "You are currently linked with " nickname  "."]
           [:p "Firmware version: " @latest-reported-apt-version]
           [:div
            [:> Button
             {:type "primary"
              :on-click #(rf/dispatch [:teleporter/unpair])}
-            "Unpair Teleporter"]]]
+            "Unlink Teleporter"]]]
          (when (wrap-semver-lt semver
                                @latest-reported-apt-version
                                @latest-available-apt-version)
