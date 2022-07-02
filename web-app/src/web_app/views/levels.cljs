@@ -17,7 +17,10 @@
 
 (defn index []
   (r/with-let [m (r/atom 0)
-               master-volume (rf/subscribe [:teleporter/setting nil :volume/global-volume])
+               linked? (r/atom false)
+               master-volume (rf/subscribe [:teleporter/setting
+                                            nil
+                                            :volume/global-volume])
                jammers (rf/subscribe [:room/jammers])]
     [:div.levels
      [:div.controls
@@ -32,13 +35,39 @@
         :model master-volume}]
       [knob-duo
        {:skin "dark"
+        :linked? linked?
         :knob1 {:title "INPUT 1"
-
-                :on-change #(rf/dispatch [:knob/volume :input1 %])
-                :model (rf/subscribe [:knob/volume :input1])}
+                :on-change #(if @linked?
+                              (do
+                                (rf/dispatch [:teleporter/setting
+                                              nil
+                                              :volume/input1-volume
+                                              %
+                                              {:message/type :teleporter.cmd/input1+2-volume
+                                               :teleporter/volume %}])
+                                (rf/dispatch [:teleporter/setting
+                                              nil
+                                              :volume/input2-volume
+                                              %]))
+                              (rf/dispatch [:teleporter/setting
+                                            nil
+                                            :volume/input1-volume
+                                            %
+                                            {:message/type :teleporter.cmd/input1-volume
+                                             :teleporter/volume %}]))
+                :model (rf/subscribe [:teleporter/setting
+                                      nil
+                                      :volume/input1-volume])}
         :knob2 {:title "INPUT 2"
-                :on-change #(rf/dispatch [:knob/volume :input2 %])
-                :model (rf/subscribe [:knob/volume :input2])}}]]
+                :on-change #(rf/dispatch [:teleporter/setting
+                                          nil
+                                          :volume/input2-volume
+                                          %
+                                          {:message/type :teleporter.cmd/input2-volume
+                                           :teleporter/volume %}])
+                :model (rf/subscribe [:teleporter/setting
+                                      nil
+                                      :volume/input2-volume])}}]]
      [:div.jammers
       [:<>
        (for [id @jammers]
