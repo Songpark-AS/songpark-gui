@@ -71,4 +71,5 @@
      [:div.jammers
       [:<>
        (for [id @jammers]
+         ^{:key [:jammer id]}
          [jammer {:jammer (rf/subscribe [:room/jammer id])}])]]]))

@@ -4,7 +4,8 @@
             [re-frame.core :as rf]
             [taoensso.timbre :as log]
             [web-app.event.util :refer [message-base]]
-            [web-app.mqtt.interceptor :refer [mqtt-client]]))
+            [web-app.mqtt.interceptor :refer [mqtt-client]]
+            [web-app.subs.util :refer [get-tp-id]]))
 
 (rf/reg-event-fx
  :mqtt/subscribe
@@ -47,9 +48,10 @@
  :mqtt/send-message-to-teleporter
  [mqtt-client]
  (fn [{:keys [mqtt-client db]} [_ teleporter-id message]]
-   (mqtt/publish mqtt-client
-                 (teleporter-topic teleporter-id)
-                 (message-base
-                  db
-                  message))
+   (let [tp-id (get-tp-id db teleporter-id)]
+     (mqtt/publish mqtt-client
+                   (teleporter-topic tp-id)
+                   (message-base
+                    db
+                    message)))
    nil))

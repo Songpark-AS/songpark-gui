@@ -10,19 +10,21 @@
 (rf/reg-sub
  :room/jammers
  (fn [db _]
-   (let [jammers (get db :room/jammers [{:profile/name "Christian Ruud"
-                                         :auth.user/id 1
-                                         :profile/image-url "http://localhost:3000/static/images/christian.jpg"
-                                         :profile/position "Guitar"
-                                         :jammer/muted? true
-                                         :jammer/volume 30}])]
-     (map :auth.user/id jammers))))
+   (->> (get db :room/jammers)
+        (keys))))
+
+(comment
+  ;; for dev purposes
+  (swap! re-frame.db/app-db assoc :room/jammers {1 {:profile/name "Christian Ruud"
+                                                    :auth.user/id 1
+                                                    :profile/image-url "http://localhost:3000/static/images/christian.jpg"
+                                                    :profile/position "Guitar"
+                                                    :jammer/muted? true
+                                                    :jammer/volume 30}})
+  (get @re-frame.db/app-db :room/jammers)
+  )
 
 (rf/reg-sub
  :room/jammer
  (fn [db [_ auth-id]]
-   (get-in db [:room/jammers auth-id] {:profile/name "Christian Ruud"
-                                       :profile/image-url "http://localhost:3000/static/images/christian.jpg"
-                                       :profile/position "Guitar"
-                                       :jammer/muted? true
-                                       :jammer/volume 30})))
+   (get-in db [:room/jammers auth-id])))

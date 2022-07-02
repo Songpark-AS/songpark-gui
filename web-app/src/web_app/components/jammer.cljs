@@ -22,16 +22,27 @@
       [:div.position position]
       [show-latency jam]]]))
 
-(defn muted [jammer]
-  (if (:jam/muted? @jammer)
-    [:div.muted]
+(defn muted [jammer mute-event]
+  (if (:jammer/muted? @jammer)
+    [:div.muted
+     {:on-click mute-event}
+     [:div.blank]
+     [:div.text
+      [:h2 "MUTED"]]]
     nil))
 
 (defn jammer [{:keys [jammer]}]
   (r/with-let [jam (rf/subscribe [:teleporter/coredump])
-               volume (rf/subscribe [:teleporter/setting nil :volume/network-volume])]
+               volume (rf/subscribe [:teleporter/setting nil :volume/network-volume])
+               mute-event (fn [_]
+                            (rf/dispatch [:room/jammer
+                                          (:auth.user/id @jammer)
+                                          :jammer/muted?
+                                          (not (:jammer/muted? @jammer))]))]
     [:div.jammer
-     [muted jammer]
+     [:div.click-area
+      {:on-click mute-event}]
+     [muted jammer mute-event]
      [show-jammer jammer jam]
      [knob {:skin "light"
             :model volume

@@ -234,6 +234,7 @@
                              (catch js/Error e
                                (println e)))))
        :on-mouse-down (fn [e]
+                        (.stopPropagation e)
                         (when-not disabled?
                          (reset! storage {:x (.-pageX e)
                                           :y (.-pageY e)})
