@@ -26,8 +26,9 @@
 .st21{fill:#232323;}
 .st22{fill:#E1D8D2;}")
 
-(defn wheel [{:keys [data
-                     on-click] :as opts} & [width-height-opts]]
+(defn wheel [{:keys [data on-click]
+              arc-start :arc/start
+              :as opts} & [width-height-opts]]
   [:svg
    (merge
     (when on-click
@@ -35,8 +36,8 @@
     {:version "1.1", :view-box "0 0 204.95 209.78",
      :height (get width-height-opts :height "36pt")
      :width (get width-height-opts :width "36pt")
-     :style {:transform (str "rotate(" (- (get @data :rotate/rotation 0)
-                                          90 45) "deg)")}})
+     :style {:transform (str "rotate(" (+ (get @data :rotate/rotation 0)
+                                          arc-start) "deg)")}})
    [:style {:type "text/css"} styles]
    [:g
     [:g [:circle {:class "st0" :cx "102.31" :cy "102.64" :r "102.64"}]]
@@ -55,25 +56,28 @@
     {:x (+ cx (* r (js/Math.cos angle-rad)))
      :y (+ cy (* r (js/Math.sin angle-rad)))}))
 
-(def ^:private base-arc-x 225)
 
-(defn describe-arc [x y r start-angle end-angle]
-  (let [start (polar-to-cartesian x y r (+ base-arc-x end-angle))
-        end (polar-to-cartesian x y r (+ base-arc-x start-angle))
+(defn describe-arc
+  "Describe the arc for SVG"
+  [x y r arc-start start-angle end-angle]
+  (let [start (polar-to-cartesian x y r (+ arc-start end-angle))
+        end (polar-to-cartesian x y r (+ arc-start start-angle))
         large-arc? (if (<= (js/Math.abs (- end-angle start-angle)) 180)
                      0
                      1)]
     (str/join " " ["M" (:x start) (:y start)
-                   "A" r r base-arc-x large-arc? 0 (:x end) (:y end)])))
+                   "A" r r arc-start large-arc? 0 (:x end) (:y end)])))
 
 (defn arc [{:keys [radius
                    x y
                    start-angle
+                   arc-start
                    data]
             :or {radius 50
                  x 25
                  y 25
-                 start-angle 0}}
+                 start-angle 0
+                 arc-start 225}}
            & [width-height-opts]]
   (let [end-angle (:rotate/rotation @data)]
     [:svg
@@ -83,8 +87,6 @@
      [:style {:type "text/css"} styles]
      [:g
       [:path {:class "arc-path"
-              :d (describe-arc x y radius start-angle end-angle)
-              ;; :stroke "#e1d7d2"
-              ;; :fill "transparent"
+              :d (describe-arc x y radius arc-start start-angle end-angle)
               :stroke-linejoin "round"
               :stroke-width "2"}]]]))

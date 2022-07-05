@@ -9,25 +9,30 @@
       (max start)
       (min end)))
 
-(defn- rotation->value [value step rotation]
-  (let [new-value (long (/ rotation step))]
+(defn- rotation->value [value value-min step rotation]
+  (let [new-value (+ (long (/ rotation step)) value-min)]
     (if (not= new-value value)
       new-value
       nil)))
 
-(defn- value->rotation [value step]
+(defn- value->rotation [value value-min step]
+  ;; for debugging
+  ;; (println :value->rotation {:rotation (long (* value step))
+  ;;                            :step step
+  ;;                            :value value
+  ;;                            :value-min value-min})
   (if (nil? value)
     0
-    (long (* value step))))
+    (long (* (- value value-min) step))))
 
 (defn- internal-model-changed
   "The internal model has been updated. This is only run from the outside"
-  [interacting? on-change data value-step]
+  [interacting? on-change data value-min value-step]
   (fn [_ _ _ new-value]
     ;; we are not interacting directly with the knob,
     ;; it's free to update
     (when-not @interacting?
-      (let [new-rotation (value->rotation new-value value-step)]
+      (let [new-rotation (value->rotation new-value value-min value-step)]
         (swap! data assoc :rotate/rotation new-rotation))
       (when on-change
         (on-change new-value)))))
@@ -60,6 +65,7 @@
              skin :skin
              rotate-start :rotate/start
              rotate-end :rotate/end
+             arc-start :arc/start
              initial-value :value
              value-min :value/min
              value-max :value/max
@@ -78,6 +84,7 @@
                   value-min 0
                   value-max 100
                   value-fn identity
+                  arc-start 225
                   skin "dark"}
              :as props}]
   (r/with-let [;; declare model and overload? in here
@@ -95,8 +102,11 @@
                distance (+ (js/Math.abs rotate-start)
                            (js/Math.abs rotate-end))
                ;; how much do we need to step in the rotation to hit a new value
-               value-step (/ (double distance) value-max)
-               data (r/atom {:rotate/rotation (value->rotation @internal-model value-step)
+               value-step (/ (double distance)
+                             (- value-max value-min))
+               data (r/atom {:rotate/rotation (value->rotation @internal-model
+                                                               value-min
+                                                               value-step)
                              :rotate/start rotate-start
                              :rotate/end rotate-end})
                ;; interacting? is used to control outside changes to the model
@@ -123,7 +133,7 @@
                                (if (> diff-x diff-y)
                                  (let [step (* sensitivity (- new-x x))]
                                    (swap! data assoc :rotate/rotation (new-rotation rotation start end step))
-                                   (when-let [v (rotation->value value value-step rotation)]
+                                   (when-let [v (rotation->value value value-min value-step rotation)]
                                      ;; swap and check
                                      (let [updated (reset! internal-model v)]
                                        ;; the check is needed in order to not reset
@@ -136,7 +146,7 @@
                                (if (> diff-y diff-x)
                                  (let [step (* sensitivity (- new-y y))]
                                    (swap! data assoc :rotate/rotation (new-rotation rotation start end step))
-                                   (when-let [v (rotation->value value value-step rotation)]
+                                   (when-let [v (rotation->value value value-min value-step rotation)]
                                      ;; swap and check
                                      (let [updated (reset! internal-model v)]
                                        (when (and on-change
@@ -200,7 +210,8 @@
                                     :touch-end touch-end})
                watch-key-internal-model (random-uuid)
                _ (add-watch internal-model watch-key-internal-model
-                            (internal-model-changed interacting? on-change data value-step))
+                            (internal-model-changed interacting? on-change data
+                                                    value-min value-step))
                watch-key-model (random-uuid)
                _ (add-watch model watch-key-model (model-changed internal-model))]
     [:div.knob
@@ -214,6 +225,7 @@
             :x 25
             :y 30
             :start-angle rotate-start
+            :arc-start arc-start
             :data data}
        {:width "100px"
         :height "100px"}]]
@@ -243,7 +255,8 @@
                          (js/window.addEventListener "mouseup" mouse-up)))}
       [wheel (merge
               props
-              {:data data})
+              {:data data
+               :arc/start arc-start})
        {:width "70px"
         :height "70px"}]]
      (when title
