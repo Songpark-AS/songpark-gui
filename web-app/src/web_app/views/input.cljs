@@ -287,6 +287,7 @@
   #(rf/dispatch [:teleporter/fx nil input fx-k %
                  {:message/type :teleporter.cmd/fx
                   :teleporter/fx fx-k
+                  :teleporter/input input
                   :teleporter/value %}]))
 
 (defn- create-switch-sub [input fx-k]
@@ -320,10 +321,13 @@
                                       :teleporter/input input
                                       :teleporter/fx :gain
                                       :teleporter/value %}])
-        overload? (rf/subscribe [:teleporter/fx nil input :overload?])]
+        overload? (rf/subscribe [:teleporter/fx nil input :overload?])
+        teleporter-active-inputs (rf/subscribe [:teleporter/active-inputs nil input])
+        current-tab (rf/subscribe [:ui.fx.input/tab input "Gate"])
+        select-tab #(rf/dispatch [:ui.fx.input/tab input %])]
     [:div.input
+     {:key [:input input]}
      [:div.input-fx
-      ^{:key [input :pan]}
       [knob {:title "PAN"
              :model pan-sub
              :on-change pan-dispatch
@@ -332,15 +336,17 @@
              :arc/start 270
              :value/min -50
              :value/max 50}]
-      ^{:key [input :gain]}
       [knob {:title "GAIN"
              :overload? overload?
              :model gain-sub
              :on-change gain-dispatch
              :value-fn (fn [v] (str v " dB"))}]]
      [:div.output-fx
+      {:class @teleporter-active-inputs}
       [:> Tabs
-       {:moreIcon nil}
+       {:moreIcon nil
+        :activeKey @current-tab
+        :onTabClick select-tab}
        [:<>
         (for [fx fxs]
           ^{:key (str input (:tab fx))}

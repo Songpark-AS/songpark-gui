@@ -1,6 +1,8 @@
 (ns web-app.subs.teleporter
-  (:require [re-frame.core :as rf]
-            [web-app.subs.util :refer [get-tp-id
+  (:require [clojure.string :as str]
+            [re-frame.core :as rf]
+            [web-app.subs.util :refer [get-input-kw
+                                       get-tp-id
                                        get-selected-teleporter]]))
 
 (rf/reg-sub
@@ -114,19 +116,38 @@
 
 (defn sub-fx-fn [db [_ tp-id input fx-k]]
   (let [tp-id (get-tp-id db tp-id)]
-    (get-in db [:teleporters tp-id (keyword :fx input) fx-k])))
+    (get-in db [:teleporters tp-id (get-input-kw input fx-k)])))
 
 (rf/reg-sub
  :teleporter/fx
  sub-fx-fn)
 
+(rf/reg-sub
+ :teleporter/active-inputs
+ (fn [db [_ tp-id input]]
+   (let [tp-id (get-tp-id db tp-id)]
+     (->> [(if (get-in db [:teleporters tp-id (get-input-kw input :reverb/switch)])
+             "Reverb")
+           (if (get-in db [:teleporters tp-id (get-input-kw input :equalizer/switch)])
+             "Equalizer")
+           (if (get-in db [:teleporters tp-id (get-input-kw input :echo/switch)])
+             "Echo")
+           (if (get-in db [:teleporters tp-id (get-input-kw input :gate/switch)])
+             "Gate")
+           (if (get-in db [:teleporters tp-id (get-input-kw input :amplify/switch)])
+             "Amplify")
+           (if (get-in db [:teleporters tp-id (get-input-kw input :compressor/switch)])
+             "Compressor")]
+          (remove nil?)
+          (str/join " ")))))
+
 
 (comment
+  @(rf/subscribe [:teleporter/active-inputs nil "input1"])
   (let [db @re-frame.db/app-db
         tp-id (get-tp-id db nil)
-        input :input1
-        fx-k :gate/attack]
-    (sub-fx-fn db [:teleporter/fx nil input :gate/attack])
-    ;;(get-in db [:teleporters tp-id (keyword :fx input) fx-k])
-    )
+        input "input1"
+        fx-k :compressor/switch]
+    ;; (sub-fx-fn db [:teleporter/fx nil input :gate/attack])
+    (get-in db [:teleporters tp-id (get-input-kw input fx-k)]))
   )

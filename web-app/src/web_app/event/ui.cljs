@@ -36,6 +36,11 @@
   )
 
 
+(rf/reg-event-db
+ :ui.fx.input/tab
+ (fn [db [_ input tab]]
+   (assoc-in db [:ui.fx.input/tab input] tab)))
+
 (comment
   (rf/dispatch [:fetch-teleporters])
   "e2f7ce6a-54fb-5704-b903-d7a772fce86e"
