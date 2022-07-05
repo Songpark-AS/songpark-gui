@@ -1,0 +1,63 @@
+@import '../colors.less';
+
+.output-fx {
+  .inner {
+    padding-top: 10px;
+    > h2 {
+      margin-left: 20px;
+    }
+  }
+  .switch {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .inner {
+    background-color: @knob-bg-color2;
+    .ant-switch-handle::before {
+      background-color: @knob-alt-color1;
+    }
+    .ant-switch, .ant-switch-checked {
+      background-color: @knob-bg-color1;
+    }
+    .ant-switch-inner {
+      color: @knob-alt-color1;
+    }
+    .knobs, .sliders {
+      display: flex;
+      justify-content: center;
+      padding-bottom: 20px;
+    }
+    .sliders {
+      .slider {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 80px;
+        h2 {
+          font-size: 1em;
+          text-align: center;
+        }
+      }
+      .ant-slider-vertical {
+        height: 120px;
+        .ant-slider-rail,
+        .ant-slider-track {
+          width: 8px;
+          border-radius: 8px;
+        }
+        .ant-slider-rail {
+          background-color: @slider-rail;
+        }
+        .ant-slider-track {
+          background-color: @slider-track;
+        }
+        .ant-slider-handle {
+          background-color: @slider-handle;
+          border: solid 2px @slider-rail;
+          margin-left: -3px;
+        }
+      }
+    }
+  }
+}

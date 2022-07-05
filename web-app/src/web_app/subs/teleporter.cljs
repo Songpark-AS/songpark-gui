@@ -110,3 +110,23 @@
    (let [tp-id (get-tp-id db tp-id)]
      (or (get-in db [:teleporters tp-id :teleporter/setting tp-settings-k])
          (get-in db [:teleporters tp-id tp-settings-k])))))
+
+
+(defn sub-fx-fn [db [_ tp-id input fx-k]]
+  (let [tp-id (get-tp-id db tp-id)]
+    (get-in db [:teleporters tp-id (keyword :fx input) fx-k])))
+
+(rf/reg-sub
+ :teleporter/fx
+ sub-fx-fn)
+
+
+(comment
+  (let [db @re-frame.db/app-db
+        tp-id (get-tp-id db nil)
+        input :input1
+        fx-k :gate/attack]
+    (sub-fx-fn db [:teleporter/fx nil input :gate/attack])
+    ;;(get-in db [:teleporters tp-id (keyword :fx input) fx-k])
+    )
+  )

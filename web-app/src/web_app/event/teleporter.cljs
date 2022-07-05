@@ -225,6 +225,19 @@
                      db
                      mqtt-msg)]})))))
 
+(rf/reg-event-fx
+ :teleporter/fx
+ (fn [{:keys [db]} [_ tp-id input fx-k fx-v mqtt-msg]]
+   (let [tp-id (get-tp-id db tp-id)]
+     (merge
+      {:db (assoc-in db [:teleporters tp-id (keyword :fx input) fx-k] fx-v)}
+      (when mqtt-msg
+        {:dispatch [:mqtt/send-message-to-teleporter
+                    tp-id
+                    (message-base
+                     db
+                     mqtt-msg)]})))))
+
 (rf/reg-event-db
  :teleporter.setting/clear!
  (fn [db _]
