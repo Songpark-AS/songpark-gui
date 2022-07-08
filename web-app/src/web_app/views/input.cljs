@@ -6,9 +6,12 @@
             [clojure.string :as str]
             [goog.string :as gstring]
             [goog.string.format]
-            [reagent.core :as r]
             [re-frame.core :as rf]
-            [web-app.components.knob :refer [knob]]))
+            [reagent.core :as r]
+            [reitit.frontend.easy :as rfe]
+            [web-app.components.icon :as icon]
+            [web-app.components.knob :refer [knob]]
+            [web-app.components.preset :refer [preset]]))
 
 (defn switch [switch-sub switch-dispatch]
   [:div.switch
@@ -327,6 +330,7 @@
         select-tab #(rf/dispatch [:ui.fx.input/tab input %])]
     [:div.input
      {:key [:input input]}
+     [preset {}]
      [:div.input-fx
       [knob {:title "PAN"
              :model pan-sub

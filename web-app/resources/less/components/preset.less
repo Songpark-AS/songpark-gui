@@ -1,0 +1,28 @@
+@import '../colors.less';
+
+.preset {
+  .info {
+    background-color: @knob-bg-color1;
+    color: @knob-alt-color1;
+  }
+  .body {
+    -webkit-transition: height 500ms ease-out;
+    -moz-transition: height 500ms ease-out;
+    transition: height 500ms ease-out;
+    background-color: black;
+    color: white;
+  }
+  &.active {
+    .body {
+      visibility: visible;
+      height: 500px;
+    }
+  }
+  .body {
+    visibility: hidden;
+    height: 0;
+    .material-symbols-outlined {
+      transform: rotate(180deg);
+    }
+  }
+}
