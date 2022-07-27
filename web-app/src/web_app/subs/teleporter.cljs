@@ -18,7 +18,7 @@
  (fn [db _]
    (->> db
         :teleporters
-        first
+        ffirst
         some?)))
 
 (rf/reg-sub
