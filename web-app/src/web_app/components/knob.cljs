@@ -34,7 +34,8 @@
     (when-not @interacting?
       (let [new-rotation (value->rotation new-value value-min value-step)]
         (swap! data assoc :rotate/rotation new-rotation))
-      (when on-change
+      (when (and on-change
+                 @interacting?)
         (on-change new-value)))))
 
 (defn model-changed
