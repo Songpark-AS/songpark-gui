@@ -76,7 +76,7 @@
   [input preset]
   (->> preset
        :fx/fxs
-       (map #(get-input-fx-map % input))))
+       (mapv #(get-input-fx-map % input))))
 
 (defn- prepare-input-fxs-for-gui
   "Add GUI specific things for the input FX"

@@ -26,7 +26,7 @@
   (r/with-let [active? (r/atom false)
                adding? (r/atom false)
                presets (rf/subscribe [:fx/presets])
-               current-preset (rf/subscribe [:teleporter/setting nil :fx.preset/current])
+               current-preset (rf/subscribe [:fx.preset/current])
                changed? (rf/subscribe [:teleporter/setting nil :fx.preset/changed?])]
     [:div.preset
      {:class (if @active?
@@ -37,11 +37,11 @@
        (if-let [current @current-preset]
          [:<>
           [:span.current "Preset active"]
-          [:span.name (:preset/name current)]]
+          [:span.name (:fx.preset/name current)]]
          [:span "No preset is currently active"])]
       (if @changed?
         [:div.save
-         {:on-click #(rf/dispatch [:fx.preset/update input @current-preset])}
+         {:on-click #(rf/dispatch [:fx.preset/update input (:fx.preset/id @current-preset)])}
          "Save"])
       [:div.change
        {:on-click #(reset! active? true)}
