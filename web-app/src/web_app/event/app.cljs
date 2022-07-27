@@ -31,7 +31,11 @@
          [:dispatch [:http/get
                      (get-api-url "/room")
                      {}
-                     :app.init/rooms]]]}))
+                     :app.init/rooms]]
+         [:dispatch [:http/get
+                     (get-api-url "/fx")
+                     {}
+                     :app.init.fx/presets]]]}))
 
 
 (rf/reg-event-fx
@@ -68,6 +72,12 @@
  :app.init/profile
  (fn [db [_ data]]
    (assoc db :profile/profile data)))
+
+(rf/reg-event-db
+ :app.init.fx/presets
+ (fn [db [_ data]]
+   (assoc db :fx/presets data)))
+
 
 (rf/reg-event-db
  :app.init/rooms

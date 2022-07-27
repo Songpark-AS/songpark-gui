@@ -330,7 +330,7 @@
         select-tab #(rf/dispatch [:ui.fx.input/tab input %])]
     [:div.input
      {:key [:input input]}
-     [preset {}]
+     [preset {:input (keyword input)}]
      [:div.input-fx
       [knob {:title "PAN"
              :model pan-sub

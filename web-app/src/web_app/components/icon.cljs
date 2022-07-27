@@ -10,3 +10,7 @@
   [:span.material-symbols-outlined "backspace"])
 (defn account []
   [:span.material-symbols-outlined "account_circle"])
+(defn delete []
+  [:span.material-symbols-outlined "delete"])
+(defn add []
+  [:span.material-symbols-outlined "add"])

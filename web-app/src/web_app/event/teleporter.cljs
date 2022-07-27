@@ -231,7 +231,9 @@
  (fn [{:keys [db]} [_ tp-id input fx-k fx-v mqtt-msg]]
    (let [tp-id (get-tp-id db tp-id)]
      (merge
-      {:db (assoc-in db [:teleporters tp-id (get-input-kw input fx-k)] fx-v)}
+      {:db (-> db
+               (assoc-in [:teleporters tp-id (get-input-kw input fx-k)] fx-v)
+               (assoc-in [:teleporters tp-id :fx.preset/changed?] true))}
       (when mqtt-msg
         {:dispatch [:mqtt/send-message-to-teleporter
                     tp-id

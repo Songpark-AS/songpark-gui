@@ -22,7 +22,8 @@
     tp-id))
 
 (defn get-input-kw [input k]
-  (let [ns* (namespace k)
+  (let [input* (name input)
+        ns* (namespace k)
         n* (name k)]
-    (keyword (str/join "." (flatten (remove nil? ["fx" input ns*])))
+    (keyword (str/join "." (flatten (remove nil? ["fx" input* ns*])))
              n*)))

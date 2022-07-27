@@ -5,6 +5,7 @@
             [web-app.db :as db]
             [web-app.event.app]
             [web-app.event.auth]
+            [web-app.event.fx]
             [web-app.event.jam]
             [web-app.event.mqtt]
             [web-app.event.pairing]
