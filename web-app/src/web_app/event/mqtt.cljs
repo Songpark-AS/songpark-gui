@@ -49,9 +49,11 @@
  [mqtt-client]
  (fn [{:keys [mqtt-client db]} [_ teleporter-id message]]
    (let [tp-id (get-tp-id db teleporter-id)]
-     (mqtt/publish mqtt-client
-                   (teleporter-topic tp-id)
-                   (message-base
-                    db
-                    message)))
+     (if tp-id
+       (mqtt/publish mqtt-client
+                     (teleporter-topic tp-id)
+                     (message-base
+                      db
+                      message))
+       (log/warn "Tried to publish to a Teleporter. Missing teleporter-id, so unable to do so")))
    nil))
