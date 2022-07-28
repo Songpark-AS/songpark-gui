@@ -1,4 +1,5 @@
-(ns web-app.components.icon)
+(ns web-app.components.icon
+  (:refer-clojure :exclude [sort]))
 
 (defn room []
   [:span.material-symbols-outlined "language"])
@@ -14,3 +15,5 @@
   [:span.material-symbols-outlined "delete"])
 (defn add []
   [:span.material-symbols-outlined "add"])
+(defn sort []
+  [:span.material-symbols-outlined "sort"])

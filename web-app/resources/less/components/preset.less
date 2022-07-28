@@ -4,25 +4,103 @@
   .info {
     background-color: @knob-bg-color1;
     color: @knob-alt-color1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 5px;
+    .left {
+      display: flex;
+      flex-direction: column;
+      .current {
+        font-size: 0.8rem;
+      }
+      .name {
+        font-size: 1.5rem;
+      }
+    }
+    .change span {
+      font-size: 2rem !important;
+      &:hover {
+        cursor: pointer;
+      }
+    }
   }
   .body {
     -webkit-transition: height 500ms ease-out;
     -moz-transition: height 500ms ease-out;
     transition: height 500ms ease-out;
-    background-color: black;
+    background-color: @preset-background;
     color: white;
+    padding: 15px 30px;
+    border-radius: 5px;
+    visibility: hidden;
+    height: 0;
+
+    .effects {
+      margin-bottom: 2rem;
+      &:hover {
+        cursor: pointer;
+      }
+      .material-symbols-outlined {
+        transform: rotate(180deg);
+      }
+    }
+    h2 {
+      color: white;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      margin-bottom: 1rem;
+    }
+    h2.user-effects {
+      margin-top: 2rem;
+    }
+  }
+  .effects {
+    display: flex;
+    align-items: center;
+    span, div {
+      font-size: 2rem;
+    }
   }
   &.active {
     .body {
       visibility: visible;
       height: 500px;
     }
-  }
-  .body {
-    visibility: hidden;
-    height: 0;
-    .material-symbols-outlined {
-      transform: rotate(180deg);
+    .info {
+      visibility: hidden;
+      height: 0;
     }
   }
+
+  .preset {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    > div:first-child {
+      display: flex;
+      flex-direction: column;
+    }
+    .title {
+      font-size: 1.5rem;
+    }
+    .fxs {
+      color: @preset-fx;
+      &::first-letter {
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  .add {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    span {
+      font-size: 2rem;
+    }
+  }
+
 }

@@ -1,22 +1,26 @@
 (ns web-app.components.preset
+  (:refer-clojure :exclude [sort])
   (:require [clojure.string :as str]
             [re-frame.core :as rf]
             [reagent.core :as r]
             [web-app.components.icon :refer [add
-                                             delete]]))
+                                             delete
+                                             sort]]))
 
 
 (defn show-preset [active? input {:keys [fx.preset/name fx.preset/id fx/fxs]}]
   (let [types (->> fxs
                    (map (comp clojure.core/name :fx/type))
-                   sort
+                   clojure.core/sort
                    (str/join ", "))]
-    [:div {:key [::preset id]}
-     [:div.title
-      {:on-click #(do (rf/dispatch [:fx.preset/set input id])
-                      (reset! active? false))}
-      name]
-     [:div.fxs types]
+    [:div.preset
+     {:key [::preset id]}
+     [:div
+      [:div.title
+       {:on-click #(do (rf/dispatch [:fx.preset/set input id])
+                       (reset! active? false))}
+       name]
+      [:div.fxs types]]
      (if id
        [:div.delete
         {:on-click #(rf/dispatch [:fx.preset/delete id])}
@@ -36,7 +40,7 @@
       [:div.left
        (if-let [current @current-preset]
          [:<>
-          [:span.current "Preset active"]
+          [:span.current "Preset"]
           [:span.name (:fx.preset/name current)]]
          [:span "No preset is currently active"])]
       (if @changed?
@@ -45,21 +49,26 @@
          "Save"])
       [:div.change
        {:on-click #(reset! active? true)}
-       "List"]]
+       [sort]]]
 
      ;; body
      [:div.body
       (if (false? @adding?)
         [:<>
-         [:span.material-symbols-outlined
+         [:div.effects
           {:on-click #(reset! active? false)}
-          "arrow_right_alt"]
+          [:span.material-symbols-outlined "arrow_right_alt"]
+          [:div "Effects preset"]]
          ;; show presets
          [:<>
+          ;; [:h2.system-effects "System effects"]
+          ;; (map #(show-preset active? input %) system-effects)
+          ;; [:h2.user-effects "User effects"]
           (map #(show-preset active? input %) @presets)]
          ;; add a new preset (button)
          [:div.add
           {:on-click #(reset! adding? true)}
-          [add] "New preset"]]
+          [add]
+          [:div "New preset"]]]
         [:div.preset-form
          "foobar"])]]))
