@@ -112,13 +112,22 @@
 
 (rf/reg-event-fx
  :fx.preset/save
- (fn [{:keys [db]} [_ input preset-name]]
+ (fn [{:keys [db]} [_ input preset-name adding?]]
+   (log/debug {:input input
+               :preset-name preset-name
+               :adding? adding?})
    (let [fxs (get-active-fxs db input)]
      {:dispatch [:http/put
                  (get-api-url "/fx")
                  {:fx.preset/name preset-name
                   :fx/fxs fxs}
-                 :fx.preset/saved]})))
+                 {:handler (fn [data]
+                             (when adding?
+                               (reset! adding? false))
+                             (rf/dispatch [:fx.preset/saved data]))
+                  :error-handler (fn [_]
+                                   (when adding?
+                                     (reset! adding? false)))}]})))
 
 (rf/reg-event-db
  :fx.preset/saved

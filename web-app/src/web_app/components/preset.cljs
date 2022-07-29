@@ -1,6 +1,8 @@
 (ns web-app.components.preset
   (:refer-clojure :exclude [sort])
-  (:require [clojure.string :as str]
+  (:require ["antd" :refer [Button
+                            Input]]
+            [clojure.string :as str]
             [re-frame.core :as rf]
             [reagent.core :as r]
             [web-app.components.icon :refer [add
@@ -25,6 +27,23 @@
        [:div.delete
         {:on-click #(rf/dispatch [:fx.preset/delete id])}
         [delete]])]))
+
+(defn save-preset [input adding?]
+  (r/with-let [preset-name (r/atom "")]
+    [:div.save-form
+     [:div.navigation
+      {:on-click #(reset! adding? false)}
+      [:span.material-symbols-outlined "arrow_right_alt"]
+      [:div "Add current FX as preset"]]
+     [:div.form
+      [:> Input
+       {:default-value @preset-name
+        :placeholder "Name"
+        :on-change #(reset! preset-name (-> % .-target .-value))}]
+      [:> Button
+       {:type "primary"
+        :on-click #(rf/dispatch [:fx.preset/save input @preset-name adding?])}
+       "Save"]]]))
 
 (defn preset [{:keys [input] :as props}]
   (r/with-let [active? (r/atom false)
@@ -55,7 +74,7 @@
      [:div.body
       (if (false? @adding?)
         [:<>
-         [:div.effects
+         [:div.navigation
           {:on-click #(reset! active? false)}
           [:span.material-symbols-outlined "arrow_right_alt"]
           [:div "Effects preset"]]
@@ -70,5 +89,4 @@
           {:on-click #(reset! adding? true)}
           [add]
           [:div "New preset"]]]
-        [:div.preset-form
-         "foobar"])]]))
+        [save-preset input adding?])]]))

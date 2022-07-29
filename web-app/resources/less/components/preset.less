@@ -37,13 +37,18 @@
     visibility: hidden;
     height: 0;
 
-    .effects {
+    .navigation {
       margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
       &:hover {
         cursor: pointer;
       }
       .material-symbols-outlined {
         transform: rotate(180deg);
+      }
+      span, div {
+        font-size: 2rem;
       }
     }
     h2 {
@@ -54,13 +59,6 @@
     }
     h2.user-effects {
       margin-top: 2rem;
-    }
-  }
-  .effects {
-    display: flex;
-    align-items: center;
-    span, div {
-      font-size: 2rem;
     }
   }
   &.active {
@@ -98,6 +96,9 @@
     display: flex;
     align-items: center;
     font-size: 1.5rem;
+    &:hover {
+      cursor: pointer;
+    }
     span {
       font-size: 2rem;
     }
