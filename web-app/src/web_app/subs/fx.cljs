@@ -11,9 +11,9 @@
 
 (rf/reg-sub
  :fx.preset/current
- (fn [db _]
+ (fn [db [_ input]]
    (let [tp-id (get-tp-id db nil)
-         preset-id (get-in db [:teleporters tp-id :fx.preset/current])]
+         preset-id (get-in db [:teleporters tp-id :fx.preset/current input])]
      (reduce (fn [_ fx]
                (if (= (:fx.preset/id fx) preset-id)
                  (reduced fx)

@@ -176,7 +176,7 @@
          ;;             :gui-fxs-settings gui-fxs-settings})
          {:db (-> db
                   (update-in [:teleporters tp-id] merge gui-fxs-settings)
-                  (assoc-in [:teleporters tp-id :fx.preset/current] preset-id)
+                  (assoc-in [:teleporters tp-id :fx.preset/current input] preset-id)
                   (assoc-in [:teleporters tp-id :fx.preset/changed?] false))
           :dispatch [:mqtt/send-message-to-teleporter tp-id {:message/type :fx.preset/set
                                                              :fx/fxs fxs}]})))))

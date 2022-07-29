@@ -49,7 +49,7 @@
   (r/with-let [active? (r/atom false)
                adding? (r/atom false)
                presets (rf/subscribe [:fx/presets])
-               current-preset (rf/subscribe [:fx.preset/current])
+               current-preset (rf/subscribe [:fx.preset/current input])
                changed? (rf/subscribe [:teleporter/setting nil :fx.preset/changed?])]
     [:div.preset
      {:class (if @active?
