@@ -62,13 +62,14 @@
           [:span.current "Preset"]
           [:span.name (:fx.preset/name current)]]
          [:span "No preset is currently active"])]
-      (if @changed?
-        [:div.save
-         {:on-click #(rf/dispatch [:fx.preset/update input (:fx.preset/id @current-preset)])}
-         "Save"])
-      [:div.change
-       {:on-click #(reset! active? true)}
-       [sort]]]
+      [:div.right
+       (if @changed?
+         [:div.save
+          {:on-click #(rf/dispatch [:fx.preset/update input (:fx.preset/id @current-preset)])}
+          "Save"])
+       [:div.change
+        {:on-click #(reset! active? true)}
+        [sort]]]]
 
      ;; body
      [:div.body
