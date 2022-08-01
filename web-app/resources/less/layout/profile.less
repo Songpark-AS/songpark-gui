@@ -1,0 +1,62 @@
+@import '../colors.less';
+
+.profile-form {
+  padding-bottom: 3rem;
+  .image {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    .wrapper {
+      position: relative;
+      .material-symbols-outlined {
+        position: absolute;
+        bottom: 3px;
+        right: 3px;
+        font-size: 20px;
+        background-color: @light-brown;
+        border-radius: 50%;
+        border: 1px white solid;
+        padding: 4px;
+      }
+    }
+    img {
+      object-fit: cover;
+      border-radius: 50%;
+      height: 128px;
+      width: 128px;
+    }
+    .material-symbols-outlined {
+      &:hover {
+        cursor: pointer;
+      }
+      color: white;
+      font-size: 128px;
+    }
+  }
+  table {
+    width: 100%;
+  }
+  .change-password {
+    font-weight: bold;
+    display: block;
+    color: white;
+    margin-bottom: 2rem;
+  }
+
+  .bottom {
+    text-align: right;
+    margin-top: 2rem;
+  }
+
+  .logout {
+    padding: 10px 15px;
+    width: initial;
+    border: 0;
+    font-size: 15px;
+    background-color: white;
+    color: @light-brown;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}

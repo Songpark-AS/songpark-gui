@@ -8,7 +8,9 @@
             [re-frame.core :as rf]
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
-            [web-app.forms.forgot-password :refer [changepasswordform]]))
+            [web-app.components.icon :refer [arrow-left-alt]]
+            [web-app.forms.forgot-password :refer [changepasswordform]]
+            [web-app.history :refer [back]]))
 
 
 (defn index []
@@ -29,8 +31,11 @@
                                          data
                                          {:handler handler
                                           :error error-handler}]))))]
-    [:div.forgot-password
-     [:h2 "Change password"]
+    [:div.change-password.form
+     [:h2
+      {:on-click #(back)}
+      [arrow-left-alt]
+      "Change password"]
      [:<>
       [:form
        {:on-submit event}

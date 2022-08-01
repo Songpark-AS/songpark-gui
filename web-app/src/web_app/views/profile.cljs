@@ -10,8 +10,11 @@
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
             [taoensso.timbre :as log]
-            [web-app.history :refer [back]]
-            [web-app.forms.profile :refer [profileform]]))
+            [web-app.components.icon :refer [add-circle
+                                             arrow-left-alt
+                                             edit]]
+            [web-app.forms.profile :refer [profileform]]
+            [web-app.history :refer [back]]))
 
 (defn- get-file-type [mimetype]
   (if (= mimetype :unknown)
@@ -54,7 +57,6 @@
 (defn- show-form [profile-data]
   (r/with-let [f (profileform {:label? false} profile-data)
                form-data (rf/subscribe [::form/on-valid (:id f)])
-               pronouns (rf/subscribe [:profile/pronouns])
                image-data (atom nil)
                handler (fn [data]
                          (rf/dispatch [:profile/set data]))
@@ -74,14 +76,15 @@
                          (when (valid? data)
                            (log/debug :data data)
                            (rf/dispatch [:profile/save
-                                         (assoc data ::foobar true)
+                                         data
                                          {:handler handler
                                           :error error-handler}]))))]
     [:<>
-     [:div.signup
+     [:div.profile-form.form
       [:h2
        {:on-click #(back)}
-       "<- Profile"]
+       [arrow-left-alt]
+       "Profile"]
       [:form
        {:on-submit event}
        [:div.image
@@ -97,22 +100,30 @@
                  :id "profile-image"}]
         (if (:profile/image-url profile-data)
           [:<>
-           [:> Image {:width 200
-                      :on-click #(let [input (js/document.getElementById "profile-image")]
-                                   (.click input))
-                      :src (:profile/image-url profile-data)}]]
-          [:span {:class "materials-symbols-outlined"
-                  :on-click #(let [input (js/document.getElementById "profile-image")]
-                               (.click input))}
-           "add_circle"])]
+           [:div.wrapper
+            [edit]
+            [:img
+             {:on-click #(let [input (js/document.getElementById "profile-image")]
+                           (.click input))
+              :src (:profile/image-url profile-data)}]]]
+          [add-circle {:on-click #(let [input (js/document.getElementById "profile-image")]
+                                    (.click input))}])]
        [form/as-table {} f]
-       [:a {:on-click #(rfe/push-state :views.profile/change-password)}
+       ;; change password
+       [:a.change-password
+        {:on-click #(rfe/push-state :views.profile/change-password)}
         "Change password"]
+       ;; save button
        [:> Button
         {:type "primary"
          :disabled (not (valid? @form-data))
          :on-click event}
-        "Save"]]]]))
+        "Save"]
+
+       [:div.bottom
+        [:span.button.logout
+         {:on-click #(rf/dispatch [:auth/logout])}
+         "Logout"]]]]]))
 
 (defn index []
   (r/with-let [profile (rf/subscribe [:profile/profile])]

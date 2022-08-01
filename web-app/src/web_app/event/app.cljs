@@ -21,10 +21,6 @@
                      {}
                      :app.init/app]]
          [:dispatch [:http/get
-                     (get-api-url "/profile/pronouns")
-                     {}
-                     :app.init.profile/pronouns]]
-         [:dispatch [:http/get
                      (get-api-url "/profile")
                      {}
                      :app.init/profile]]
@@ -62,11 +58,6 @@
                :jams (->> jams
                           (map (juxt :jam/id #(select-keys % [:jam/id :jam/members])))
                           (into {})))}))
-
-(rf/reg-event-db
- :app.init.profile/pronouns
- (fn [db [_ data]]
-   (assoc db :profile/pronouns data)))
 
 (rf/reg-event-db
  :app.init/profile
