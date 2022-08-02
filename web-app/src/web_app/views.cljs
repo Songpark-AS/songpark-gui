@@ -16,7 +16,15 @@
      :views/signup
      :views/forgot-password
      :views/reset-password
-     :views/verify-email} current-view))
+     :views/verify-email
+     :views/start} current-view))
+
+(defn- teleporter-views? [current-view]
+  (#{:views/room
+     :views/levels
+     :views/input1
+     :views/input2}
+   current-view))
 
 (defn splash-screen []
   [:div "Splash screen"])
@@ -27,7 +35,8 @@
     (let [matched @match
           data (:data matched)
           current-view (:name data)
-          login-view? (login-views? current-view)]
+          login-view? (login-views? current-view)
+          teleporter-view? (teleporter-views? current-view)]
       ;; (log/debug {:current-view current-view
       ;;             :user @user
       ;;             :logged-out? (auth/logged-out? @user)
@@ -35,18 +44,17 @@
       ;;             :!login-view (not login-view?)})
       (if (and (auth/logged-out? @user)
                (not login-view?))
-        (do (rfe/push-state :views/login)
-            "")
+        (rfe/push-state :views/start)
         [:> Layout
          [:> Layout.Content
           [:<>
-           (when-not login-view?
+           (when teleporter-view?
              [views.topbar/index])
            [:div.content-wrapper
             (if matched
               (let [view (:view data)]
                 [view matched]))]
-           (when-not login-view?
+           (when teleporter-view?
              [views.footer/index current-view])]]]))))
 
 (defn main-panel []
