@@ -28,3 +28,22 @@
   [:span.arrow-left.material-symbols-outlined "arrow_right_alt"])
 (defn edit []
   [:span.material-symbols-outlined "edit"])
+
+
+(defn logo []
+  [:svg
+   {:version "1.1"
+    :id "logo"
+    :viewBox "0 0 274.1 225.83"}
+   [:g
+    [:g
+     [:polygon {:class "st0"
+                :points "216.6,60.61 216.6,132.08 274.1,96.34"}]]
+    [:g
+     [:circle {:class "st0"
+               :cx "115.38"
+               :cy "94.58"
+               :r "26.71"}]]
+    [:g
+     [:path {:class "st0"
+             :d "M134.06,0H59.75C26.75,0,0,26.75,0,59.75v55.98l28.49,16.19V59.75c0-17.24,14.02-31.26,31.26-31.26h74.32 c17.24,0,31.26,14.02,31.26,31.26v149.9l28.49,16.19V59.75C193.81,26.75,167.06,0,134.06,0z"}]]]])
