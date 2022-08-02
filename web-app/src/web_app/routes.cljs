@@ -6,7 +6,6 @@
             [web-app.views.input :as views.input]
             [web-app.views.levels :as views.levels]
             [web-app.views.login :as views.login]
-            [web-app.views.home :as views.home]
             [web-app.views.preset :as views.preset]
             [web-app.views.profile :as views.profile]
             [web-app.views.reset-password :as views.reset-password]
@@ -15,6 +14,7 @@
             [web-app.views.room-host :as views.room-host]
             [web-app.views.room-join :as views.room-join]
             [web-app.views.signup :as views.signup]
+            [web-app.views.start :as views.start]
             [web-app.views.teleporter :as views.teleporter]
             [web-app.views.teleporter.pairing :as views.teleporter.pairing]
             [web-app.views.teleporter.paired :as views.teleporter.paired]
@@ -23,8 +23,8 @@
 
 (def routes
   [["/"
-    {:name :views/home
-     :view views.home/index}]
+    {:name :views/start
+     :view views.start/index}]
    ["/login"
     {:name :views/login
      :view views.login/index}]
