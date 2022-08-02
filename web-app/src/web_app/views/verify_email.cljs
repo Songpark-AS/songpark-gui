@@ -17,7 +17,7 @@
   (r/with-let [f (verifyemailform {:label? false} {})
                form-data (rf/subscribe [::form/on-valid (:id f)])
                handler (fn [data]
-                         (rfe/push-state :views/home))
+                         (rfe/push-state :views/room))
                error-handler (fn [{:keys [response]}]
                                (add-external-error f
                                                    :auth.user/token

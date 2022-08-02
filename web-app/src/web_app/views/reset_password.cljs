@@ -35,7 +35,7 @@
        [:div.info
         "You have successfully reset your password"
         [:> Button
-         {:on-click #(rfe/push-state :views/home)}
+         {:on-click #(rfe/push-state :views/room)}
          "Take me back"]]
        [:<>
         [:div.info

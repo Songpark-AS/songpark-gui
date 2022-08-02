@@ -55,7 +55,7 @@
        :disabled (not= @pos 3)}
       "Connect"]
      [:p
-      {:on-click #(rfe/push-state :views/home)}
+      {:on-click #(rfe/push-state :views/room)}
       "Continue without connecting"]]))
 
 (defn index []

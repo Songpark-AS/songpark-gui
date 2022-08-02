@@ -10,7 +10,7 @@
                paired? (rf/subscribe [:teleporter/paired?])]
     (if @paired?
       [:div.paired
-       [:img {:on-click #(rfe/push-state :views/home)
+       [:img {:on-click #(rfe/push-state :views/room)
               :src "http://foobar.com/img.png"}]
        [:h2 (str "Connected to " (:teleporter/nickname @teleporter))]]
       [:div.paired
@@ -21,5 +21,5 @@
         "Redo the pairing"]
        [:> Button
         {:type "primary"
-         :on-click #(rfe/push-state :views/home)}
+         :on-click #(rfe/push-state :views/room)}
         "Continue without pairing"]])))
