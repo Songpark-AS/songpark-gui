@@ -19,7 +19,7 @@
                handler (fn [data]
                          (rf/dispatch [:auth/user data])
                          (rf/dispatch [:app/init])
-                         (rfe/push-state :views/home))
+                         (rfe/push-state :views/room))
                error-handler (fn [{:keys [response]}]
                                (add-external-error f
                                                    (:error/key response)
@@ -33,21 +33,22 @@
                                          data
                                          {:handler handler
                                           :error error-handler}]))))]
-    [:<>
-     [:h2 "Login to Songpark Live"]
+    [:div.login.squeeze
+     [:div.intro
+      [:div.title "Welcome back"]
+      [:div.slogan "Log in to your account"]]
      [:form
       {:on-submit event}
       [form/as-table {} f]
+      [:div.forgot-password
+       {:on-click #(rfe/push-state :views/forgot-password)}
+       "Forgot password?"]
       [:> Button
        {:type "primary"
         :disabled (not (valid? @form-data))
         :on-click event}
        "Login"]]
+
      [:div.signup
-      [:> Button
-       {:on-click #(rfe/push-state :views/forgot-password)}
-       "Forgot password?"]]
-     [:div.signup
-      [:> Button
-       {:on-click #(rfe/push-state :views/signup)}
-       "Signup"]]]))
+      {:on-click #(rfe/push-state :views/signup)}
+      "Don't have an account? Sign up."]]))
