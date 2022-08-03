@@ -12,11 +12,15 @@
 (defn index []
   (r/with-let [f (fwform {:label? false} {})
                form-data (rf/subscribe [::form/on-valid (:id f)])]
-    [:div.forgot-password
-     [:h2 "Forgot your password?"]
+    [:div.forgot-password.squeeze
+     [:div.intro
+      [:div.title "Forgot your password?"]]
      [:<>
       [:form
        [form/as-table {} f]]
+      [:div.login
+       {:on-click #(rfe/push-state :views/login)}
+       "Go back to the login screen"]
       [:> Button
        {:disabled (not (valid? @form-data))
         :on-click #(do (rf/dispatch [:auth/forgot-password
