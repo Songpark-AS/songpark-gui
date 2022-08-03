@@ -32,11 +32,16 @@
                                          {:handler handler
                                           :error error-handler}]))))]
     [:<>
-     [:div.signup
-      [:h2 "Create user"]
+     [:div.signup.squeeze
+      [:div.intro
+       [:div.title "Sign up"]
+       [:div.slogan "Create your account"]]
       [:form
        {:on-submit event}
        [form/as-table {} f]
+       [:div.login
+        {:on-click #(rfe/push-state :views/login)}
+        "Go back to the login screen"]
        [:> Button
         {:type "primary"
          :disabled (not (valid? @form-data))

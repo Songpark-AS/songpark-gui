@@ -15,7 +15,7 @@
     :name :profile/name
     :validation :profile/name}
    {:element Input
-    :placeholder "Email"
+    :placeholder "Email address"
     :adapter text-adapter
     :name :auth.user/email
     :validation :auth.user/email}
@@ -25,7 +25,7 @@
     :name :auth.user/password
     :validation :auth.user/password}
    {:element Input.Password
-    :placeholder "Repeat your password"
+    :placeholder "Confirm password"
     :adapter text-adapter
     :name :auth.user/repeat-password
     :validation auth-signup-same-password}])
