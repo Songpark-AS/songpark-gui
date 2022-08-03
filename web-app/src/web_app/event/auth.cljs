@@ -18,7 +18,8 @@
  (fn [{:keys [db]} [_ data]]
    (if (auth/logged-in? data)
      {:db (assoc db :auth/user data)
-      :fx [[:dispatch [:app/init]]]}
+      :fx [[:dispatch [:app/init]]
+           [:rfe/push-state :views/room]]}
      {:db db})))
 
 (rf/reg-event-db
@@ -93,4 +94,5 @@
  (fn [{:keys [db]} _]
    ;; empty the database
    {:db {:app/initialized? true}
-    :mqtt/stop true}))
+    :fx [[:mqtt/stop true]
+         [:rfe/push-state :views/start]]}))
