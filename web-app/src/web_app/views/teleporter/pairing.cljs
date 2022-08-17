@@ -3,7 +3,9 @@
             [re-frame.core :as rf]
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [web-app.components.icon :refer [backspace]]
+            [web-app.history :refer [back]]))
 
 
 (defn confirm-link []
@@ -16,6 +18,15 @@
 
 (defn- get-serial [numbers]
   (apply str numbers))
+
+(defn- row [event-fn start-position]
+  [:div.row
+   (doall
+    (for [i (range start-position (+ start-position 3))]
+      ^{:key [:input-number i]}
+      [:div.input-number
+       {:on-click (event-fn i)}
+       i]))])
 
 (defn number-pad [success-fn]
   (r/with-let [pos (r/atom 0)
@@ -32,34 +43,42 @@
     [:<>
      [:div.number-pad
       [:div.numbers
-       (doall
-        (for [i (range 4)]
-          ^{:key [:number i]}
-          [:div.number
-           (if (= i @pos)
-             {:class "active"})
-           (nth @numbers i)]))]
+       [:div.inner
+        (doall
+         (for [i (range 4)]
+           ^{:key [:number i]}
+           [:div.number
+            (if (= i @pos)
+              {:class "active"})
+            (nth @numbers i)]))]
+       [:div.no-connect
+        {:on-click #(rfe/push-state :views/room)}
+        "Continue without connecting"]]
+
       [:div.pad
-       (doall
-        (for [i (range 10)]
-          ^{:key [:input-number i]}
-          [:div.input-number
-           {:on-click (update-numbers i)}
-           i]))
-       [:div.back
-        {:on-click backtrack}
-        "back"]]]
+       [row update-numbers 0]
+       [row update-numbers 3]
+       [row update-numbers 6]
+       [:div.row.last
+        [:div.input-number
+         {:on-click (update-numbers 9)}
+         9]
+        [:div.input-number.no-bg
+         [backspace {:on-click backtrack}]]]]]
+
+
+     [:div.back
+      {:on-click #(back)}
+      "Go back"]
      [:> Button
       {:type "primary"
        :on-click #(success-fn (get-serial @numbers))
        :disabled (not= @pos 3)}
-      "Connect"]
-     [:p
-      {:on-click #(rfe/push-state :views/room)}
-      "Continue without connecting"]]))
+      "Connect"]]))
 
 (defn index []
-  [:div.pairing
-   [:h2 "Link up Teleporter"]
-   [:p "Enter the four-digit serial number printed on your Teleporter"]
+  [:div.pairing.squeeze
+   [:div.intro
+    [:div.title "Link up Teleporter"]
+    [:div.slogan "Enter the four-digit serial number printed on your Teleporter"]]
    [number-pad #(rf/dispatch [:teleporter/pair %])]])
