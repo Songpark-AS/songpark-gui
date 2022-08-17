@@ -31,12 +31,12 @@
                                          data
                                          {:handler handler
                                           :error error-handler}]))))]
-    [:<>
-     [:div.verify-email
-      [:h2 "Verify email"]
-      [:form
-       {:on-submit event}
-       [form/as-table {} f]]
+    [:div.verify-email.squeeze
+     [:div.intro
+      [:div.title "Verify email"]]
+     [:form
+      {:on-submit event}
+      [form/as-table {} f]
       [:> Button
        {:type "primary"
         :disabled (not (valid? @form-data))
