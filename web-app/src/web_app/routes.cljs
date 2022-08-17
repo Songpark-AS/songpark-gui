@@ -6,7 +6,6 @@
             [web-app.views.input :as views.input]
             [web-app.views.levels :as views.levels]
             [web-app.views.login :as views.login]
-            [web-app.views.preset :as views.preset]
             [web-app.views.profile :as views.profile]
             [web-app.views.reset-password :as views.reset-password]
             [web-app.views.room :as views.room]
@@ -46,9 +45,6 @@
    ["/profile/change-password"
     {:name :views.profile/change-password
      :view views.change-password/index}]
-   ["/preset/:input"
-    {:name :views/preset
-     :view views.preset/index}]
    ["/input1"
     {:name :views/input1
      :view views.input/index}]

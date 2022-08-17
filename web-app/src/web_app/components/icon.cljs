@@ -7,8 +7,11 @@
   [:span.material-symbols-outlined "tune"])
 (defn input []
   [:span.material-symbols-outlined "input"])
-(defn backspace []
-  [:span.material-symbols-outlined "backspace"])
+(defn backspace
+  ([]
+   [:span.material-symbols-outlined "backspace"])
+  ([props]
+   [:span.material-symbols-outlined props "backspace"]))
 (defn account []
   [:span.material-symbols-outlined "account_circle"])
 (defn delete []
@@ -28,7 +31,6 @@
   [:span.arrow-left.material-symbols-outlined "arrow_right_alt"])
 (defn edit []
   [:span.material-symbols-outlined "edit"])
-
 
 (defn logo []
   [:svg
