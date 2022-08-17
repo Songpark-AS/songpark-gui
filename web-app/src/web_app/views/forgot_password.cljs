@@ -17,13 +17,13 @@
       [:div.title "Forgot your password?"]]
      [:<>
       [:form
-       [form/as-table {} f]]
-      [:div.login
-       {:on-click #(rfe/push-state :views/login)}
-       "Go back to the login screen"]
-      [:> Button
-       {:disabled (not (valid? @form-data))
-        :on-click #(do (rf/dispatch [:auth/forgot-password
-                                     (:auth.user/email @form-data)])
-                       (rfe/push-state :views/reset-password))}
-       "Send instructions"]]]))
+       [form/as-table {} f]
+       [:div.login
+        {:on-click #(rfe/push-state :views/login)}
+        "Go back to the login screen"]
+       [:> Button
+        {:disabled (not (valid? @form-data))
+         :on-click #(do (rf/dispatch [:auth/forgot-password
+                                      (:auth.user/email @form-data)])
+                        (rfe/push-state :views/reset-password))}
+        "Send instructions"]]]]))
