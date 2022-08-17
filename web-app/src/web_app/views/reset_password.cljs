@@ -29,8 +29,11 @@
                                          data
                                          {:handler handler
                                           :error error-handler}]))))]
-    [:div.forgot-password
-     [:h2 "Reset your password"]
+    [:div.reset-password.squeeze
+     [:div.intro
+      [:div.title "Reset your password"]
+      ;;[:div.slogan (if @success)]
+      ]
      (if @success?
        [:div.info
         "You have successfully reset your password"
