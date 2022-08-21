@@ -9,12 +9,16 @@
 
 
 (defn confirm-link []
-  [:div.confirm-link
-   [:h2 "Confirm link"]
-   [:p "Press the blinking button on your Teleporter."]
-   [:p.note
+  [:div.confirm-link.squeeze
+   [:div.intro
+    [:div.title "Confirm link"]
+    [:div.slogan "Press the blinking button on your Teleporter."]]
+   [:div.note
     {:on-click #(rfe/push-state :views.teleporter/pair)}
-    "Don't see a blinking button?"]])
+    "Don't see a blinking button?"]
+   [:div.teleporter
+    [:div.circle]
+    [:img {:src "/img/teleporter-blinking-800x800.png"}]]])
 
 (defn- get-serial [numbers]
   (apply str numbers))
