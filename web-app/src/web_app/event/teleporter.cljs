@@ -13,9 +13,6 @@
                                        get-tp-id]]
             [web-app.utils :refer [get-api-url get-platform-url]]))
 
-;; TODO: Add message-base to anything we want to be able to use with a paired
-;; teleporter
-
 (rf/reg-event-fx
  :init-app
  (fn [_ _]
