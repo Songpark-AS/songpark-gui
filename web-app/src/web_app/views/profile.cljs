@@ -80,7 +80,7 @@
                                          {:handler handler
                                           :error error-handler}]))))]
     [:<>
-     [:div.profile-form.form
+     [:div.profile-form.form.squeeze
       [:h2
        {:on-click #(back)}
        [arrow-left-alt]

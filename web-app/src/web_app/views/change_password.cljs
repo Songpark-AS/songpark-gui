@@ -31,7 +31,7 @@
                                          data
                                          {:handler handler
                                           :error error-handler}]))))]
-    [:div.change-password.form
+    [:div.change-password.form.squeeze
      [:h2
       {:on-click #(back)}
       [arrow-left-alt]
