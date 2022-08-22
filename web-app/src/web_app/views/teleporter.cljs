@@ -8,9 +8,9 @@
 
 (defn index []
   (r/with-let [paired? (rf/subscribe [:teleporter/paired?])]
-    [:div.teleporter
+    [:div.teleporter.squeeze
      (if-not @paired?
-       [:div.teleporter.squeeze
+       [:div.teleporter
         [:div.intro
          [:div.title "You are not linked"]
          [:div.slogan "Link a teleporter?"]]

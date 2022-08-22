@@ -12,9 +12,11 @@
    [taoensso.timbre :as log]
    [songpark.common.config :refer [config]]
    ["semver" :as semver]
+   [web-app.components.icon :refer [arrow-left-alt]]
+   [web-app.event.ui]
    [web-app.forms.ipv4 :as ipv4-form]
    [web-app.forms.settings :refer [settingsform]]
-   [web-app.event.ui]))
+   [web-app.history :refer [back]]))
 
 ;; Here be detailview of a teleporter
 ;; This view will contain configuration options for a teleporter
@@ -95,7 +97,11 @@
 
             latest-reported-apt-version (or apt-version-from-mqtt apt-version)
             latest-available-apt-version (rf/subscribe [:teleporter/latest-available-apt-version])]
-        [:div.teleporter
+        [:div.teleporter.details.form
+         [:h2
+          {:on-click #(back)}
+          [arrow-left-alt]
+          "Teleporter"]
          ;; Details
          [:> Divider
           {:orientation "left"}
@@ -151,10 +157,10 @@
              (if (= @network-choice :dhcp)
                (let [{:ip/keys [address gateway subnet]}
                      @network-config]
-                 [:div.network-details
-                  [:div "IP: " address]
-                  [:div "Net mask: " subnet]
-                  [:div "Gateway: " gateway]])
+                 [:table.network-details
+                  [:tr [:td "IP"] [:td address]]
+                  [:tr [:td "Netmask"] [:td subnet]]
+                  [:tr [:td "Gateway"] [:td gateway]]])
                (when (not (nil? @network-config))
                  [ipv4-form/ipv4-config id @network-config]))]]
            [:div.network
