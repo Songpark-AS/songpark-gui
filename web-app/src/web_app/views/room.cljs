@@ -6,9 +6,13 @@
 
 (defn index []
   [:div.room
-   [:> Button
-    {:on-click #(rfe/push-state :views.room/host)}
-    "Host room"]
-   [:> Button
-    {:on-click #(rfe/push-state :views.room/join)}
-    "Join room"]])
+   [:div
+    [:> Button
+     {:type "primary"
+      :on-click #(rfe/push-state :views.room/host)}
+     "Host room"]]
+   [:div
+    [:> Button
+     {:type "primary"
+      :on-click #(rfe/push-state :views.room/join)}
+     "Join room"]]])

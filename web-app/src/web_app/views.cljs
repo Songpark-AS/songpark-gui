@@ -21,6 +21,9 @@
 
 (defn- teleporter-views? [current-view]
   (#{:views/room
+     :views.room/host
+     :views.room/create
+     :views.room/join
      :views/levels
      :views/input1
      :views/input2}
