@@ -24,3 +24,25 @@
                    db
                    {:message/type :teleporter.cmd/network-mute
                     :teleporter/mute v})]}))))
+
+(rf/reg-event-fx
+ :room.session/host
+ (fn [_ [_ room-id]]
+   {:dispatch [:http/post
+               (get-api-url "/room/session/host")
+               {:room/id room-id}
+               :room.session/hosted
+               :room.session/hosted-failed]}))
+
+(rf/reg-event-fx
+ :room.session/hosted
+ (fn [{:keys [db]} [_ {:keys [room/id]}]]
+   {:db (assoc db :room/session {:room/id id})
+    :rfe/push-state :views.room/session}))
+
+(rf/reg-event-fx
+ :room.session/hosted-failed
+ (fn [{:keys [db]} [_ data]]
+   ;; data is an error message -> #{:error/key :error/message}
+   #_{:db (update db :room/session merge data)
+    :rfe/push-state :views.room/session}))

@@ -12,9 +12,10 @@
 
 (comment
 
-  @app-db
+  (get-in @app-db [:room/session])
 
   (rf/dispatch [:app/init])
+  (rf/dispatch [:room.session/host 2])
 
   (let [tp1 #uuid "39d04c2c-7214-5e2c-a9ae-32ff15405b7f"]
     (swap! app-db assoc-in [:teleporters tp1] {:teleporter/nickname "My test teleporter"

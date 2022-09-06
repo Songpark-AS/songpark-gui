@@ -31,6 +31,7 @@
      (for [{:room/keys [id name last-jammers last-jammed]} data]
        ^{:key [:room/id id]}
        [:div.room-entry
+        {:on-click #(rf/dispatch [:room.session/host id])}
         [:div.left
          [:div.room-name name]
          [:div.jammers (str/join ", " last-jammers)]]

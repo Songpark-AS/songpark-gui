@@ -13,6 +13,11 @@
    (->> (get db :room/jammers)
         (keys))))
 
+(rf/reg-sub
+ :room/jammer
+ (fn [db [_ auth-id]]
+   (get-in db [:room/jammers auth-id])))
+
 (comment
   ;; for dev purposes
   (swap! re-frame.db/app-db assoc :room/jammers {1 {:profile/name "Christian Ruud"
@@ -25,6 +30,14 @@
   )
 
 (rf/reg-sub
- :room/jammer
- (fn [db [_ auth-id]]
-   (get-in db [:room/jammers auth-id])))
+ :room.session/room-id
+ (fn [db _]
+   (get-in db [:room/session :room/id])))
+
+(rf/reg-sub
+ :room.session/error
+ (fn [db _]
+   (let [error (select-keys (get-in db [:room/session]) [:error/key :error/message])]
+     (if error
+       error
+       nil))))
