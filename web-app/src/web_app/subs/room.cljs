@@ -8,36 +8,34 @@
    (:room/room db)))
 
 (rf/reg-sub
- :room/jammers
- (fn [db _]
-   (->> (get db :room/jammers)
-        (keys))))
+ :room/people
+ (fn [db [_ what]]
+   (let [owner-id (-> db :room/jam :room/owner)
+         [owner & others]
+         (->> (get-in db [:room/jam :room/jammers])
+              (vals)
+              (mapv (fn [jammer]
+                      (assoc jammer :room/owner? (= owner-id (:auth.user/id jammer))))))]
+     (case what
+       :owner owner
+       :jamming (->> others
+                     (filter #(= :jamming (:jammer/status %))))
+       :knocking (->> others
+                      (filter #(= :knocking (:jammer/status %))))))))
 
 (rf/reg-sub
  :room/jammer
  (fn [db [_ auth-id]]
-   (get-in db [:room/jammers auth-id])))
+   (get-in db [:room/jam :room/jammers auth-id])))
 
 (comment
-  ;; for dev purposes
-  (swap! re-frame.db/app-db assoc :room/jammers {1 {:profile/name "Christian Ruud"
-                                                    :auth.user/id 1
-                                                    :profile/image-url "http://localhost:3000/static/images/christian.jpg"
-                                                    :profile/position "Guitar"
-                                                    :jammer/muted? true
-                                                    :jammer/volume 30}})
-  (get @re-frame.db/app-db :room/jammers)
+
   )
 
 (rf/reg-sub
- :room.session/room-id
+ :room/jam
  (fn [db _]
-   (get-in db [:room/session :room/id])))
-
-(rf/reg-sub
- :room.session/error
- (fn [db _]
-   (let [error (select-keys (get-in db [:room/session]) [:error/key :error/message])]
-     (if error
-       error
-       nil))))
+   (let [{:keys [room/jam auth/user]} db]
+     (-> jam
+         (assoc :room/owner? (= (:room/owner jam) (:auth.user/id user)))
+         (dissoc :room/jammers)))))

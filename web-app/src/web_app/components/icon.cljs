@@ -31,6 +31,16 @@
   [:span.arrow-left.material-symbols-outlined "arrow_right_alt"])
 (defn edit []
   [:span.material-symbols-outlined "edit"])
+(defn close []
+  [:span.material-symbols-outlined "close"])
+(defn cancel []
+  [:span.material-symbols-outlined "cancel"])
+(defn link []
+  [:span.material-symbols-outlined "link"])
+(defn check []
+  [:span.material-symbols-outlined "check"])
+(defn check-circle []
+  [:span.material-symbols-outlined "check_circle"])
 
 (defn logo []
   [:svg

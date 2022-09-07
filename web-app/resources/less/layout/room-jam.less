@@ -1,0 +1,119 @@
+@import '../colors.less';
+
+.jam {
+  .jam-action {
+    color: white;
+    font-weight: bold;
+    margin-left: 1rem;
+    &:hover {
+      cursor: pointer;
+    }
+    div {
+      display: flex;
+      // font-size: 1.2rem;
+      .material-symbols-outlined {
+        // font-size: 1.8rem;
+        margin-right: 5px;
+      }
+    }
+  }
+  .room-name {
+    margin: 1rem 0 0 2rem;
+    font-size: 2rem;
+    font-weight: bold;
+    color: @knob-alt-color1;
+  }
+  .share-link {
+    color: white;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+    &:hover {
+      cursor: pointer;
+    }
+    .material-symbols-outlined {
+      margin-left: 5px;
+    }
+  }
+  .jammers {
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+    background-color: @knob-bg-color2;
+    padding-bottom: 2rem;
+    .jamming {
+      padding: 2rem 1rem 0 1rem;
+    }
+    .jammer {
+      display: flex;
+      align-items: center;
+      &.owner {
+        margin-bottom: 1rem;
+      }
+      .image {
+        margin-right: 1rem;
+        .material-symbols-outlined {
+          font-size: 3rem;
+          font-weight: bold;
+        }
+        img {
+          border-radius: 50%;
+          width: 45px;
+        }
+      }
+      .details {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        .name {
+          font-weight: bold;
+        }
+        .decline, .accept {
+          //position: relative;
+          display: flex;
+          flex-direction: column;
+          // .text {
+          //   position: absolute;
+          //   bottom: -10px;
+          //   left: -10px;
+          // }
+        }
+        .decline {
+          color: @status-not-linked;
+        }
+        .accept {
+          color: @status-in-room;
+        }
+        .remove, .decline, .accept {
+          display: flex;
+          align-items: center;
+          .material-symbols-outlined {
+            font-weight: bold;
+          }
+          &:hover {
+            cursor: pointer;
+          }
+        }
+        .actions {
+          display: flex;
+          gap: 3rem;
+        }
+      }
+    }
+    .knockers {
+      margin-top: 80px;
+      position: relative;;
+      .knocker {
+        position: relative;
+        padding: 1rem 1.5rem 1rem 3rem;
+        margin-right: 0.5rem;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;;
+        border-bottom-right-radius: 4rem;
+        border-top-right-radius: 4rem;;
+        background-color: @knob-alt-color2;
+        color: white;
+      }
+    }
+  }
+}

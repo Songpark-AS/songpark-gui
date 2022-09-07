@@ -26,23 +26,67 @@
                     :teleporter/mute v})]}))))
 
 (rf/reg-event-fx
- :room.session/host
+ :room.jam/host
  (fn [_ [_ room-id]]
    {:dispatch [:http/post
-               (get-api-url "/room/session/host")
+               (get-api-url "/room/jam/host")
                {:room/id room-id}
-               :room.session/hosted
-               :room.session/hosted-failed]}))
+               :room.jam/hosted
+               :room.jam/hosted-failed]}))
 
 (rf/reg-event-fx
- :room.session/hosted
- (fn [{:keys [db]} [_ {:keys [room/id]}]]
-   {:db (assoc db :room/session {:room/id id})
-    :rfe/push-state :views.room/session}))
+ :room.jam/hosted
+ (fn [{:keys [db]} [_ data]]
+   {:db (assoc db :room/jam data)
+    :rfe/push-state :views.room/jam}))
 
 (rf/reg-event-fx
- :room.session/hosted-failed
+ :room.jam/hosted-failed
  (fn [{:keys [db]} [_ data]]
    ;; data is an error message -> #{:error/key :error/message}
-   #_{:db (update db :room/session merge data)
-    :rfe/push-state :views.room/session}))
+   {:db (update db :room/jam merge (:response data))
+    :rfe/push-state :views.room/jam}))
+
+
+(rf/reg-event-fx
+ :room.jam/close
+ (fn [_ [_ room-id]]
+   {:dispatch [:http/post
+               (get-api-url "/room/jam/close")
+               {:room/id room-id}
+               :room.jam/closed
+               :room.jam/closed-failed]}))
+
+(rf/reg-event-fx
+ :room.jam/closed
+ (fn [{:keys [db]} [_ data]]
+   {:db (dissoc db :room/jam)
+    :rfe/push-state :views/room}))
+
+(rf/reg-event-fx
+ :room.jam/closed-failed
+ (fn [{:keys [db]} [_ data]]
+   ;; data is an error message -> #{:error/key :error/message}
+   {:db (update db :room/jam merge (:response data))}))
+
+
+(rf/reg-event-fx
+ :room.jam/leave
+ (fn [_ [_ room-id]]
+   {:dispatch [:http/post
+               (get-api-url "/room/jam/leave")
+               {:room/id room-id}
+               :room.jam/left
+               :room.jam/left-failed]}))
+
+(rf/reg-event-fx
+ :room.jam/left
+ (fn [{:keys [db]} [_ data]]
+   {:db (dissoc db :room/jam)
+    :rfe/push-state :views/room}))
+
+(rf/reg-event-fx
+ :room.jam/left-failed
+ (fn [{:keys [db]} [_ data]]
+   ;; data is an error message -> #{:error/key :error/message}
+   {:db (update db :room/jam merge (:response data))}))

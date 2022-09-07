@@ -22,6 +22,7 @@
 (defn- teleporter-views? [current-view]
   (#{:views/room
      :views.room/host
+     :views.room/jam
      :views.room/create
      :views.room/join
      :views/levels

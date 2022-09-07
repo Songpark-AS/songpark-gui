@@ -12,7 +12,7 @@
             [web-app.views.room-create :as views.room-create]
             [web-app.views.room-host :as views.room-host]
             [web-app.views.room-join :as views.room-join]
-            [web-app.views.room-session :as views.room-session]
+            [web-app.views.room-jam :as views.room-jam]
             [web-app.views.signup :as views.signup]
             [web-app.views.start :as views.start]
             [web-app.views.teleporter :as views.teleporter]
@@ -59,8 +59,8 @@
     {:name :views.room/host
      :view views.room-host/index}]
    ["/room/jam"
-    {:name :views.room/session
-     :view views.room-session/index}]
+    {:name :views.room/jam
+     :view views.room-jam/index}]
    ["/room/join"
     {:name :views.room/join
      :view views.room-join/index}]

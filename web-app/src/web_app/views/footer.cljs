@@ -12,6 +12,7 @@
   [:div.room
    {:class (get-active-css-class #{:views/room
                                    :views.room/create
+                                   :views.room/jam
                                    :views.room/host
                                    :views.room/join} view-name)
     :on-click #(rfe/push-state :views/room)}
