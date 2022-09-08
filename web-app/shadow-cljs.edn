@@ -19,7 +19,7 @@
   [metosin/reitit "0.5.15"]
 
   ;; nrepl
-  [cider/cider-nrepl "0.27.2"]
+  [cider/cider-nrepl "0.28.5"]
 
   ;; logging
   [com.taoensso/timbre "5.1.2"]
