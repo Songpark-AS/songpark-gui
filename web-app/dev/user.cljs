@@ -13,10 +13,10 @@
 (comment
 
   (get-in @app-db [:auth/user])
-  (get-in @app-db [:room/jam])
+  (get-in @app-db [:room/jam :room/jammers])
   (get-in @app-db [:room/room])
   @(rf/subscribe [:room/jam])
-  @(rf/subscribe [:room/jammers])
+  @(rf/subscribe [:room/people :knocking])
 
   (rf/dispatch [:app/init])
   (rf/dispatch [:room.jam/host 2])

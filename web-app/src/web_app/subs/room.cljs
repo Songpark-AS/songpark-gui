@@ -21,7 +21,8 @@
        :jamming (->> others
                      (filter #(= :jamming (:jammer/status %))))
        :knocking (->> others
-                      (filter #(= :knocking (:jammer/status %))))))))
+                      (filter #(= :knocking (:jammer/status %))))
+       nil))))
 
 (rf/reg-sub
  :room/jammer

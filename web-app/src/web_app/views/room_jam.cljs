@@ -70,43 +70,55 @@
         ^{:key [::knocker id]}
         [show-knocker room-id knocker])]]))
 
-(defn- show-jam [{room-id :room/id :as jammed}]
-  [:div.jam
-   [:div.jam-action
-    (if (:room/owner? jammed)
-      [:div
-       {:on-click #(rf/dispatch [:room.jam/close (:room/id jammed)])}
-       [cancel]
-       "Close room"]
-      [:div
-       {:on-click #(rf/dispatch [:room.jam/leave (:room/id jammed)])}
-       [arrow-left-alt]
-       "Leave room"])]
-   [:div.room-name
-    (:room/name jammed)]
-   [:div.share-link
-    {:on-click #(let [url (str js/window.location.href "/" (:room/name-normaliezed jammed))
-                      title (str "Come join us in " (:room/name jammed))
-                      text "Come jam with me"
-                      data {:url url
-                            :title title
-                            :text text}]
-                  (try
-                    (js/navigator.share (clj->js data))
-                    (catch js/Error e
-                      (log/error "Unable to share" {:exception e
-                                                    :data data}))))}
-    "Share link"
-    [link]]
-   [show-jammers room-id]])
+(defn- show-jam [jam]
+  (let [{room-id :room/id :as jammed} @jam]
+    [:div.jam
+     [:div.jam-action
+      (if (:room/owner? jammed)
+        [:div
+         {:on-click #(rf/dispatch [:room.jam/close (:room/id jammed)])}
+         [cancel]
+         "Close room"]
+        [:div
+         {:on-click #(rf/dispatch [:room.jam/leave (:room/id jammed)])}
+         [arrow-left-alt]
+         "Leave room"])]
+     [:div.room-name
+      (:room/name jammed)]
+     [:div.share-link
+      {:on-click #(let [url (str js/window.location.href "/" (:room/name-normaliezed jammed))
+                        title (str "Come join us in " (:room/name jammed))
+                        text "Come jam with me"
+                        data {:url url
+                              :title title
+                              :text text}]
+                    (try
+                      (js/navigator.share (clj->js data))
+                      (catch js/Error e
+                        (log/error "Unable to share" {:exception e
+                                                      :data data}))))}
+      "Share link"
+      [link]]
+     [show-jammers room-id]]))
 
-(defn- show-no-jam []
-  [:div.jam
-   [:h2 "There is no jam in play. Leave?"]])
+(defn- show-no-jam [jam]
+  (when-not @jam
+   [:div.jam
+    [:h2 "There is no jam in play. Leave?"]]))
+
+(defn- show-errors [jam]
+  (let [{:error/keys [key]} @jam
+        msg (case key
+              :room/already-hosted "You are already hosting this room"
+              :room/does-not-exist "You tried to host a non-existant room"
+              nil)]
+    [:<>
+     (when msg
+       [:div.error msg])]))
 
 (defn index []
   (r/with-let [jam (rf/subscribe [:room/jam])]
-    (let [jammed @jam]
-      (if-not jammed
-        [show-no-jam]
-        [show-jam jammed]))))
+    [:<>
+     [show-errors jam]
+     [show-no-jam jam]
+     [show-jam jam]]))

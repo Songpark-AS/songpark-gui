@@ -1,7 +1,8 @@
 (ns web-app.event.room
   (:require [re-frame.core :as rf]
             [web-app.event.util :refer [message-base]]
-            [web-app.utils :refer [get-api-url get-platform-url]]))
+            [web-app.utils :refer [get-api-url get-platform-url]]
+            [taoensso.timbre :as log]))
 
 
 (rf/reg-event-fx
@@ -44,9 +45,15 @@
  :room.jam/hosted-failed
  (fn [{:keys [db]} [_ data]]
    ;; data is an error message -> #{:error/key :error/message}
-   {:db (update db :room/jam merge (:response data))
-    :rfe/push-state :views.room/jam}))
-
+   (let [response (:response data)]
+     (merge {:db (update db :room/jam merge response)
+             :rfe/push-state :views.room/jam}
+            (condp = (:error/key response)
+              :room/already-hosted {:dispatch [:http/get
+                                               (get-api-url "/room/jam")
+                                               {}
+                                               :app.init.room/jam]}
+              nil)))))
 
 (rf/reg-event-fx
  :room.jam/close
@@ -90,3 +97,32 @@
  (fn [{:keys [db]} [_ data]]
    ;; data is an error message -> #{:error/key :error/message}
    {:db (update db :room/jam merge (:response data))}))
+
+
+(rf/reg-event-fx
+ :room.jam/knocked
+ (fn [{:keys [db]} [_ {:keys [room/jammer room/id] :as data}]]
+   (let [jam-room (:room/jam db)]
+     (log/debug data)
+     (if (and jam-room
+              (= (:room/id jam-room) id))
+       (let [jammers (get-in db [:room/jam :room/jammers])
+             new-jammers (assoc jammers (:auth.user/id jammer) jammer)]
+         {:db (assoc-in db [:room/jam :room/jammers] new-jammers)})
+       {:db db}))))
+
+;; TODO: add :room.jam/leave
+
+(rf/reg-event-db
+ :room.jam/left
+ (fn [db [_ {room-id :room/id user-id :auth.user/id}]]
+   (let [jam-room (:room/jam db)]
+     (if (and jam-room
+              (= (:room/id jam-room) room-id))
+       (update-in db [:room/jam :room/jammers] dissoc user-id)
+       db))))
+
+;; TODO: add :room.jam/accept and :room.jam/accepted
+;; TODO: add :room.jam/decline :room.jam/declined
+;; TODO: add :room.jam/remove :room.jam/removed
+;; TODO: add :room.jam/close :room.jam/closed

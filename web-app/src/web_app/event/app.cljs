@@ -31,7 +31,11 @@
          [:dispatch [:http/get
                      (get-api-url "/fx")
                      {}
-                     :app.init.fx/presets]]]}))
+                     :app.init.fx/presets]]
+         [:dispatch [:http/get
+                     (get-api-url "/room/jam")
+                     {}
+                     :app.init.room/jam]]]}))
 
 
 (rf/reg-event-fx
@@ -79,6 +83,14 @@
  :app.init/room
  (fn [db [_ data]]
    (update db :room/room conj data)))
+
+(rf/reg-event-db
+ :app.init.room/jam
+ (fn [db [_ data]]
+   (if (= data {:result :success})
+     db
+     (assoc db :room/jam data))))
+
 
 (rf/reg-event-db
  :app/initialize

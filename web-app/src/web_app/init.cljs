@@ -11,6 +11,7 @@
             [web-app.mqtt.interceptor :as mqtt.int]
             [web-app.mqtt.handler.jam]
             [web-app.mqtt.handler.pairing]
+            [web-app.mqtt.handler.room]
             [web-app.mqtt.handler.teleporter]
             [web-app.subs]
             [web-app.logging :as logging]))
