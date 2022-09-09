@@ -1,7 +1,5 @@
 (ns web-app.views.room-create
-  (:require ["antd" :refer [Button
-                            Input
-                            Input.Password]]
+  (:require ["antd" :refer [Button]]
             [ez-wire.form :as form]
             [ez-wire.form.helpers :refer [add-external-error
                                           valid?]]
@@ -30,13 +28,18 @@
                                          {:handler handler
                                           :error error-handler}]))))]
     [:div.room-create
-     [:h2 "New room"]
-     [:div "Choose a name for you room."]
-     [:form
-      {:on-submit event}
-      [form/as-table {} f]
-      [:> Button
-       {:type "primary"
-        :disabled (not (valid? @form-data))
-        :on-click event}
-       "Create"]]]))
+     [:div.intro
+      [:div.title "New room"]
+      [:div.slogan "Choose a name for you room"]]
+     [:div.container
+      [:form
+       {:on-submit event}
+       [form/as-table {} f]
+       [:> Button
+        {:type "primary"
+         :disabled (not (valid? @form-data))
+         :on-click event}
+        "Create"]
+       [:div.join-room
+        {:on-click #(rfe/push-state :views.room/join)}
+        "Join a room instead"]]]]))

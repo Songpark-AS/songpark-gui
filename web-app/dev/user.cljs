@@ -11,12 +11,17 @@
 
 
 (comment
+  (swap! app-db dissoc :room/jam)
 
   (get-in @app-db [:auth/user])
   (get-in @app-db [:room/jam :room/jammers])
+  (get-in @app-db [:room/jam])
+  (let [db @app-db]
+    (-> db (update-in [:room/jam :room/jammers] dissoc 3)
+        (get-in [:room/jam :room/jammers])))
   (get-in @app-db [:room/room])
   @(rf/subscribe [:room/jam])
-  @(rf/subscribe [:room/people :knocking])
+  @(rf/subscribe [:room/people :owner])
 
   (rf/dispatch [:app/init])
   (rf/dispatch [:room.jam/host 2])

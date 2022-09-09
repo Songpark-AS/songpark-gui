@@ -21,7 +21,7 @@
                master-volume (rf/subscribe [:teleporter/setting
                                             nil
                                             :volume/global-volume])
-               jammers (rf/subscribe [:room/jammers])]
+               jammers (rf/subscribe [:room/people :jamming])]
     [:div.levels
      [:div.controls
       [knob
@@ -70,6 +70,6 @@
                                       :volume/input2-volume])}}]]
      [:div.jammers
       [:<>
-       (for [id @jammers]
+       (for [{:keys [auth.user/id]} @jammers]
          ^{:key [:jammer id]}
          [jammer {:jammer (rf/subscribe [:room/jammer id])}])]]]))

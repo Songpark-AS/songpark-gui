@@ -9,9 +9,11 @@
             [taoensso.timbre :as log]))
 
 (defn- show-jammer [room-id
-                    {:keys [room/owner?]
+                    {:keys [room/owner?
+                            jammer/you?]
                      user-id :auth.user/id
-                     :profile/keys [name position image-url]}]
+                     :profile/keys [name position image-url]}
+                    i-own-the-room?]
   [:div.jammer
    (if owner?
      {:class "owner"})
@@ -22,13 +24,14 @@
    [:div.details
     [:div.name-position
      [:div.name name]
-     [:div.position (if owner?
+     [:div.position (if you?
                       "You"
                       position)]]
-    (if-not owner?
+    (if (and i-own-the-room?
+             (not owner?))
       [:div.actions
        [:div.remove
-        {:on-click #(rf/dispatch [:room/remove room-id user-id])}
+        {:on-click #(rf/dispatch [:room.jam/remove room-id user-id])}
         [cancel]]])]])
 
 (defn- show-knocker [room-id
@@ -45,16 +48,16 @@
      [:div.position position]]
     [:div.actions
      [:div.decline
-      {:on-click #(rf/dispatch [:room/decline room-id user-id])}
+      {:on-click #(rf/dispatch [:room.jam/decline room-id user-id])}
       [cancel]
       [:div.text "Decline"]]
      [:div.accept
-      {:on-click #(rf/dispatch [:room/accept room-id user-id])}
+      {:on-click #(rf/dispatch [:room.jam/accept room-id user-id])}
       [check-circle]
       [:div.text "Accept"]]]]])
 
 
-(defn- show-jammers [room-id]
+(defn- show-jammers [room-id owner?]
   (r/with-let [owner (rf/subscribe [:room/people :owner])
                jammers (rf/subscribe [:room/people :jamming])
                knockers (rf/subscribe [:room/people :knocking])]
@@ -64,53 +67,71 @@
       [:<>
        (for [{:keys [auth.user/id] :as jammer} @jammers]
          ^{:key [::jammer id]}
-         [show-jammer room-id jammer])]]
+         [show-jammer room-id jammer owner?])]]
      [:div.knockers
       (for [{:keys [auth.user/id] :as knocker} @knockers]
         ^{:key [::knocker id]}
         [show-knocker room-id knocker])]]))
 
 (defn- show-jam [jam]
-  (let [{room-id :room/id :as jammed} @jam]
-    [:div.jam
-     [:div.jam-action
-      (if (:room/owner? jammed)
-        [:div
-         {:on-click #(rf/dispatch [:room.jam/close (:room/id jammed)])}
-         [cancel]
-         "Close room"]
-        [:div
-         {:on-click #(rf/dispatch [:room.jam/leave (:room/id jammed)])}
-         [arrow-left-alt]
-         "Leave room"])]
-     [:div.room-name
-      (:room/name jammed)]
-     [:div.share-link
-      {:on-click #(let [url (str js/window.location.href "/" (:room/name-normaliezed jammed))
-                        title (str "Come join us in " (:room/name jammed))
-                        text "Come jam with me"
-                        data {:url url
-                              :title title
-                              :text text}]
-                    (try
-                      (js/navigator.share (clj->js data))
-                      (catch js/Error e
-                        (log/error "Unable to share" {:exception e
-                                                      :data data}))))}
-      "Share link"
-      [link]]
-     [show-jammers room-id]]))
+  (let [{room-id :room/id
+         :room/keys [knocking? owner?]
+         :as jammed} @jam]
+    (when-not knocking?
+      [:div.jam
+       [:div.jam-action
+        (if (:room/owner? jammed)
+          [:div
+           {:on-click #(rf/dispatch [:room.jam/close room-id])}
+           [cancel]
+           "Close room"]
+          [:div
+           {:on-click #(rf/dispatch [:room.jam/leave room-id])}
+           [arrow-left-alt]
+           "Leave room"])]
+       [:div.room-name
+        (:room/name jammed)]
+       ;; [:div.share-link
+       ;;  {:on-click #(let [url (str js/window.location.href "/" (:room/name-normaliezed jammed))
+       ;;                    title (str "Come join us in " (:room/name jammed))
+       ;;                    text "Come jam with me"
+       ;;                    data {:url url
+       ;;                          :title title
+       ;;                          :text text}]
+       ;;                (try
+       ;;                  (js/navigator.share (clj->js data))
+       ;;                  (catch js/Error e
+       ;;                    (log/error "Unable to share" {:exception e
+       ;;                                                  :data data}))))}
+       ;;  "Share link"
+       ;;  [link]]
+       [show-jammers room-id owner?]])))
 
 (defn- show-no-jam [jam]
   (when-not @jam
    [:div.jam
     [:h2 "There is no jam in play. Leave?"]]))
 
+(defn show-knocking [jam]
+  (when (:room/knocking? @jam)
+    [:div.jam
+     (let [{room-id :room/id
+            :keys [room/knocking?]
+            :as jammed} @jam]
+       [:div.knocking
+        [:div.jam-action>div
+         {:on-click #(rf/dispatch [:room.jam/leave room-id])}
+         [arrow-left-alt]
+         "Leave room"]
+        [:div.room-name
+         (:room/name jammed)]
+        [:div.punchline "Knock, knock!"]])]))
+
 (defn- show-errors [jam]
   (let [{:error/keys [key]} @jam
         msg (case key
               :room/already-hosted "You are already hosting this room"
-              :room/does-not-exist "You tried to host a non-existant room"
+              :room/does-not-exist "The room no longer exist"
               nil)]
     [:<>
      (when msg
@@ -121,4 +142,5 @@
     [:<>
      [show-errors jam]
      [show-no-jam jam]
-     [show-jam jam]]))
+     [show-jam jam]
+     [show-knocking jam]]))

@@ -26,6 +26,21 @@
                    {:message/type :teleporter.cmd/network-mute
                     :teleporter/mute v})]}))))
 
+(defn- update-cofx-from-error-message
+  ([cofx data]
+   (update-cofx-from-error-message cofx data nil))
+  ([cofx {:error/keys [key] :as data} context]
+   (case key
+     :room/does-not-exist (-> cofx
+                              (update-in [:db :room/jam] dissoc)
+                              (assoc :rfe/push-state :views/room))
+     :room/user-not-in-the-room (if-let [user-id (:auth.user/id context)]
+                                  (update-in cofx [:db :room/jam :room/jammers] dissoc user-id)
+                                  cofx)
+     (update-in cofx [:db :room/jam] merge data))))
+
+;; jam host
+
 (rf/reg-event-fx
  :room.jam/host
  (fn [_ [_ room-id]]
@@ -54,7 +69,9 @@
                                                {}
                                                :app.init.room/jam]}
               nil)))))
+;; eof jam host
 
+;; jam close
 (rf/reg-event-fx
  :room.jam/close
  (fn [_ [_ room-id]]
@@ -71,12 +88,20 @@
     :rfe/push-state :views/room}))
 
 (rf/reg-event-fx
- :room.jam/closed-failed
+ :room.jam.mqtt/closed
  (fn [{:keys [db]} [_ data]]
-   ;; data is an error message -> #{:error/key :error/message}
-   {:db (update db :room/jam merge (:response data))}))
+   {:db (dissoc db :room/jam)
+    :rfe/push-state :views/room}))
 
+(rf/reg-event-fx
+ :room.jam/closed-failed
+ (fn [cofx [_ data]]
+   (let [response (:response data)]
+     (update-cofx-from-error-message cofx response))))
 
+;; eof jam close
+
+;; jam leave
 (rf/reg-event-fx
  :room.jam/leave
  (fn [_ [_ room-id]]
@@ -94,35 +119,121 @@
 
 (rf/reg-event-fx
  :room.jam/left-failed
- (fn [{:keys [db]} [_ data]]
-   ;; data is an error message -> #{:error/key :error/message}
-   {:db (update db :room/jam merge (:response data))}))
-
-
-(rf/reg-event-fx
- :room.jam/knocked
- (fn [{:keys [db]} [_ {:keys [room/jammer room/id] :as data}]]
-   (let [jam-room (:room/jam db)]
-     (log/debug data)
-     (if (and jam-room
-              (= (:room/id jam-room) id))
-       (let [jammers (get-in db [:room/jam :room/jammers])
-             new-jammers (assoc jammers (:auth.user/id jammer) jammer)]
-         {:db (assoc-in db [:room/jam :room/jammers] new-jammers)})
-       {:db db}))))
-
-;; TODO: add :room.jam/leave
+ (fn [cofx [_ data]]
+   (let [response (:response data)]
+    (update-cofx-from-error-message cofx response))))
 
 (rf/reg-event-db
- :room.jam/left
+ :room.jam.mqtt/left
  (fn [db [_ {room-id :room/id user-id :auth.user/id}]]
    (let [jam-room (:room/jam db)]
      (if (and jam-room
               (= (:room/id jam-room) room-id))
        (update-in db [:room/jam :room/jammers] dissoc user-id)
        db))))
+;; eof jam leave
 
-;; TODO: add :room.jam/accept and :room.jam/accepted
-;; TODO: add :room.jam/decline :room.jam/declined
-;; TODO: add :room.jam/remove :room.jam/removed
-;; TODO: add :room.jam/close :room.jam/closed
+;; jam knock
+(rf/reg-event-fx
+ :room.jam/knock
+ (fn [_ [_ room-name handlers]]
+   {:dispatch [:http/post
+               (get-api-url "/room/jam/knock")
+               {:room/name room-name}
+               handlers]}))
+
+(rf/reg-event-fx
+ :room.jam/knocked
+ (fn [{:keys [db]} [_ data]]
+   {:db (assoc db :room/jam (assoc data :room/knocking? true))
+    :rfe/push-state :views.room/jam}))
+
+(rf/reg-event-fx
+ :room.jam.mqtt/knocked
+ (fn [{:keys [db]} [_ {:keys [room/jammer room/id] :as data}]]
+   (let [jam-room (:room/jam db)]
+     (if (and jam-room
+              (= (:room/id jam-room) id))
+       (let [jammers (get-in db [:room/jam :room/jammers])
+             new-jammers (assoc jammers (:auth.user/id jammer) jammer)]
+         {:db (assoc-in db [:room/jam :room/jammers] new-jammers)})
+       {:db db}))))
+;; eof jam knock
+
+;; jam decline
+(rf/reg-event-fx
+ :room.jam/decline
+ (fn [_ [_ room-id user-id]]
+   {:dispatch [:http/post
+               (get-api-url "/room/jam/decline")
+               {:room/id room-id
+                :auth.user/id user-id}
+               :room.jam/declined
+               :room.jam/declined-failed]}))
+(rf/reg-event-db
+ :room.jam/declined
+ (fn [db [_ data]]
+   (update-in db [:room/jam :room/jammers] dissoc (:auth.user/id data))))
+(rf/reg-event-fx
+ :room.jam/declined-failed
+ (fn [cofx [_ data]]
+   (let [response (:response data)]
+     (update-cofx-from-error-message cofx response))))
+(rf/reg-event-db
+ :room.jam.mqtt/declined
+ (fn [db [_ data]]
+   (dissoc db :room/jam)))
+;; eof jam decline
+
+;; jam accept
+(rf/reg-event-fx
+ :room.jam/accept
+ (fn [_ [_ room-id user-id]]
+   {:dispatch [:http/post
+               (get-api-url "/room/jam/accept")
+               {:room/id room-id
+                :auth.user/id user-id}
+               :room.jam/accepted
+               :room.jam/accepted-failed]}))
+(rf/reg-event-db
+ :room.jam/accepted
+ (fn [db [_ data]]
+   (assoc-in db [:room/jam :room/jammers (:auth.user/id data) :jammer/status] :jamming)))
+(rf/reg-event-fx
+ :room.jam/accepted-failed
+ (fn [cofx [_ data]]
+   (let [response (:response data)]
+     (update-cofx-from-error-message cofx response))))
+
+(rf/reg-event-db
+ :room.jam.mqtt/accepted
+ (fn [db [_ data]]
+   (assoc db :room/jam (:room/jam data))))
+;; eof jam accept
+
+;; jam remove
+(rf/reg-event-fx
+ :room.jam/remove
+ (fn [_ [_ room-id user-id]]
+   {:dispatch [:http/post
+               (get-api-url "/room/jam/remove")
+               {:room/id room-id
+                :auth.user/id user-id}
+               :room.jam/removed
+               :room.jam/removed-failed
+               {:auth.user/id user-id}]}))
+(rf/reg-event-db
+ :room.jam/removed
+ (fn [db [_ data]]
+   (update-in db [:room/jam :room/jammers] dissoc (:auth.user/id data))))
+(rf/reg-event-fx
+ :room.jam/removed-failed
+ (fn [cofx [_ data ?context]]
+   (let [response (:response data)]
+     (update-cofx-from-error-message cofx response ?context))))
+
+(rf/reg-event-db
+ :room.jam.mqtt/removed
+ (fn [db [_ data]]
+   (assoc db :room/jam (:room/jam data))))
+;; eof jam remove

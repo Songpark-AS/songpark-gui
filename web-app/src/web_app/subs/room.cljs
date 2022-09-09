@@ -11,27 +11,30 @@
  :room/people
  (fn [db [_ what]]
    (let [owner-id (-> db :room/jam :room/owner)
-         [owner & others]
+         user-id (-> db :auth/user :auth.user/id)
+         others
          (->> (get-in db [:room/jam :room/jammers])
               (vals)
-              (mapv (fn [jammer]
-                      (assoc jammer :room/owner? (= owner-id (:auth.user/id jammer))))))]
+              (mapv (fn [{:keys [auth.user/id] :as jammer}]
+                      (assoc jammer
+                             :room/owner? (= owner-id id)
+                             :jammer/you? (= user-id id)))))]
      (case what
-       :owner owner
+       :owner (->> others
+                   (filter :room/owner?)
+                   first)
        :jamming (->> others
-                     (filter #(= :jamming (:jammer/status %))))
+                     (filter #(= :jamming (:jammer/status %)))
+                     (remove :room/owner?))
        :knocking (->> others
-                      (filter #(= :knocking (:jammer/status %))))
+                      (filter #(= :knocking (:jammer/status %)))
+                      (remove :room/owner?))
        nil))))
 
 (rf/reg-sub
  :room/jammer
  (fn [db [_ auth-id]]
    (get-in db [:room/jam :room/jammers auth-id])))
-
-(comment
-
-  )
 
 (rf/reg-sub
  :room/jam

@@ -9,7 +9,7 @@
 (defform roomform
   {}
   [{:element Input
-    :placeholder "Name"
+    :placeholder "Room name"
     :adapter text-adapter
     :name :room/name
     :validation :room/name}])

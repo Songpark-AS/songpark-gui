@@ -1,0 +1,37 @@
+@import '../colors.less';
+
+.room-join {
+  display: flex;
+  flex-direction: column;
+  .intro {
+    margin-bottom: 2rem;
+  }
+  table {
+    width: 100%;
+    input {
+      background-color: @light-brown;
+      border: 0;
+      border-bottom: 1px solid @knob-alt-color1;
+      border-radius: 0;
+      &:focus {
+        outline: 0;
+        box-shadow: 0 0 0 0 rgba(0,0,0,0);
+        border-bottom: 1px solid @knob-alt-color1;
+      }
+      &:hover {
+        border-color: @knob-alt-color1;
+      }
+    }
+  }
+  .container {
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+  .host-room {
+    margin-top: 10px;
+    color: @knob-alt-color1;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}

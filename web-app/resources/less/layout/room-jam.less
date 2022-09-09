@@ -18,7 +18,7 @@
     }
   }
   .room-name {
-    margin: 1rem 0 0 2rem;
+    margin: 1rem 0 2rem 2rem;
     font-size: 2rem;
     font-weight: bold;
     color: @knob-alt-color1;
@@ -71,14 +71,8 @@
           font-weight: bold;
         }
         .decline, .accept {
-          //position: relative;
           display: flex;
           flex-direction: column;
-          // .text {
-          //   position: absolute;
-          //   bottom: -10px;
-          //   left: -10px;
-          // }
         }
         .decline {
           color: @status-not-linked;
@@ -116,6 +110,15 @@
         background-color: @knob-alt-color2;
         color: white;
       }
+    }
+  }
+  .knocking {
+    .punchline {
+      color: white;
+      font-size: 3rem;
+      font-weight: bold;
+      margin-left: 2rem;
+
     }
   }
 }
