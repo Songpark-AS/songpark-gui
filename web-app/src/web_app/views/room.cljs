@@ -14,5 +14,6 @@
    [:div
     [:> Button
      {:type "primary"
-      :on-click #(rfe/push-state :views.room/join)}
+      :on-click #(do (rf/dispatch [:room.jam/history])
+                     (rfe/push-state :views.room/join))}
      "Join room"]]])

@@ -1,5 +1,7 @@
 (ns web-app.views.footer
-  (:require [reitit.frontend.easy :as rfe]
+  (:require [re-frame.core :as rf]
+            [reagent.core :as r]
+            [reitit.frontend.easy :as rfe]
             [web-app.components.icon :as icon]))
 
 
@@ -9,15 +11,18 @@
     ""))
 
 (defn show-room [view-name]
-  [:div.room
-   {:class (get-active-css-class #{:views/room
-                                   :views.room/create
-                                   :views.room/jam
-                                   :views.room/host
-                                   :views.room/join} view-name)
-    :on-click #(rfe/push-state :views/room)}
-   [icon/room]
-   "Room"])
+  (r/with-let [jamming? (rf/subscribe [:room/jamming?])]
+    [:div.room
+     {:class (get-active-css-class #{:views/room
+                                     :views.room/create
+                                     :views.room/jam
+                                     :views.room/host
+                                     :views.room/join} view-name)
+      :on-click #(if @jamming?
+                   (rfe/push-state :views.room/jam)
+                   (rfe/push-state :views/room))}
+     [icon/room]
+     "Room"]))
 
 (defn show-levels [view-name]
   [:div.levels

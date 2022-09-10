@@ -26,6 +26,19 @@
                    {:message/type :teleporter.cmd/network-mute
                     :teleporter/mute v})]}))))
 
+(rf/reg-event-fx
+ :room.jam/history
+ (fn [_ _]
+   {:dispatch [:http/get
+               (get-api-url "/room/jam/history")
+               nil
+               :room.jam.history/ok]}))
+
+(rf/reg-event-db
+ :room.jam.history/ok
+ (fn [db [_ data]]
+   (assoc db :room.jam/history data)))
+
 (defn- update-cofx-from-error-message
   ([cofx data]
    (update-cofx-from-error-message cofx data nil))

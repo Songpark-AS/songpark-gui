@@ -43,3 +43,13 @@
      (-> jam
          (assoc :room/owner? (= (:room/owner jam) (:auth.user/id user)))
          (dissoc :room/jammers)))))
+
+(rf/reg-sub
+ :room/jamming?
+ (fn [db _]
+   (get-in db [:room/jam :room/id])))
+
+(rf/reg-sub
+ :room.jam/history
+ (fn [db _]
+   (:room.jam/history db)))

@@ -4,16 +4,15 @@
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
             [tick.core :as t]
-            [tick.alpha.interval :as t.i]
             [web-app.components.icon :refer [add]]))
 
-(defn- get-compareable-days [inst]
+(defn get-compareable-days [inst]
   (let [inst-year (t/int (t/year inst))
         inst-month (t/int (t/month inst))
         inst-day (t/day-of-month inst)]
     (+ inst-year inst-month inst-day)))
 
-(defn- get-time-display [days-today last-jammed]
+(defn get-time-display [days-today last-jammed]
   (let [days-jammed (get-compareable-days last-jammed)]
     (cond (= days-today
              days-jammed)

@@ -1,5 +1,6 @@
 (ns web-app.views.room-join
   (:require ["antd" :refer [Button]]
+            [clojure.string :as str]
             [ez-wire.form :as form]
             [ez-wire.form.helpers :refer [add-external-error
                                           valid?]]
@@ -7,7 +8,28 @@
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
             [taoensso.timbre :as log]
-            [web-app.forms.room :refer [roomform]]))
+            [tick.core :as t]
+            [web-app.forms.room :refer [roomform]]
+            [web-app.views.room-host :refer [get-compareable-days
+                                             get-time-display]]))
+
+(defn- show-jam [days-today {:room/keys [name jammer-names last-jammed]}]
+  [:div.history-entry
+   [:div.left
+    [:div.room-name name]
+    [:div.jammers (str/join ", " jammer-names)]]
+   [:div.right
+    (get-time-display days-today last-jammed)]])
+
+(defn- show-history [history]
+  (let [jams @history
+        days-today (get-compareable-days (t/now))]
+    (when-not (empty? jams)
+      [:div.history
+       [:h3 "Recent"]
+       (for [{:room/keys [id last-jammed] :as jam} jams]
+         ^{:key [::show-history id last-jammed]}
+         [show-jam days-today jam])])))
 
 (defn index []
   (r/with-let [f (roomform {:label? false} {})
@@ -27,7 +49,8 @@
                            (rf/dispatch [:room.jam/knock
                                          (:room/name data)
                                          {:handler handler
-                                          :error error-handler}]))))]
+                                          :error error-handler}]))))
+               history (rf/subscribe [:room.jam/history])]
     [:div.room-join
      [:div.intro
       [:div.title "Join room"]
@@ -43,4 +66,5 @@
         "Join"]
        [:div.host-room
         {:on-click #(rfe/push-state :views.room/host)}
-        "Host a room instead"]]]]))
+        "Host a room instead"]
+       [show-history history]]]]))
