@@ -340,11 +340,16 @@
              :arc/start 270
              :value/min -50
              :value/max 50}]
-      [knob {:title "GAIN"
-             :overload? overload?
-             :model gain-sub
-             :on-change gain-dispatch
-             :value-fn (fn [v] (str v " dB"))}]]
+
+      ;; temporarily remove this on orders from Christian
+      ;; it might back in, so leave it as is
+
+      ;; [knob {:title "GAIN"
+      ;;        :overload? overload?
+      ;;        :model gain-sub
+      ;;        :on-change gain-dispatch
+      ;;        :value-fn (fn [v] (str v " dB"))}]
+      ]
      [:div.output-fx
       {:class @teleporter-active-inputs}
       [:> Tabs
