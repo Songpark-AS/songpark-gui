@@ -29,6 +29,9 @@
         font-weight: bold;
         font-size: 2em;
         color: @topbar-brown3;
+        @media @break-small {
+          font-size: 1.2em;
+        }
       }
       .position {
         color: @topbar-brown2;
@@ -46,6 +49,7 @@
       border-radius: 2em;
       padding: 0.5em 1em;
       text-transform: uppercase;
+      white-space: nowrap;
     }
     .linked {
       background-color: @status-linked;
