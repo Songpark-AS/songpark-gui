@@ -31,7 +31,13 @@
    current-view))
 
 (defn splash-screen []
-  [:div "Splash screen"])
+  [:div.splash
+   [:div.container
+    [:img {:width "350px"
+           :src "/img/logo.svg"}]
+    [:div.intro
+     [:div.title "songpark"]
+     [:div.slogan "never play alone"]]]])
 
 (defn main []
   (r/with-let [initialized? (rf/subscribe [:app/initialized?])
@@ -48,7 +54,8 @@
       ;;             :!login-view (not login-view?)})
       (if (and (auth/logged-out? @user)
                (not login-view?))
-        (rfe/push-state :views/start)
+        (do (rfe/push-state :views/start)
+            [splash-screen])
         [:> Layout
          [:> Layout.Content
           [:<>
