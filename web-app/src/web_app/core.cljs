@@ -7,6 +7,7 @@
             ;; load config first, and after that init
             [web-app.config :as config]
             [web-app.init :as init]
+            [web-app.components.error-boundary :refer [err-boundary]]
             [web-app.fx]
             [web-app.routes :refer [routes router]]
             [web-app.views :as views]))
@@ -30,7 +31,9 @@
   (rf/clear-subscription-cache!)
   (let [root-el (.getElementById js/document "app")]
     (rdom/unmount-component-at-node root-el)
-    (rdom/render [views/main-panel] root-el)))
+    (if config/debug?
+      (rdom/render [err-boundary [views/main-panel]] root-el)
+      (rdom/render [views/main-panel] root-el))))
 
 
 (defn start []
