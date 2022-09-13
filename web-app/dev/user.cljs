@@ -13,6 +13,7 @@
 (comment
   (swap! app-db dissoc :room/jam)
 
+  (get-in @app-db [:teleporters])
   (get-in @app-db [:auth/user])
   (get-in @app-db [:room/jam :room/jammers])
   (get-in @app-db [:room/jam])
@@ -20,8 +21,16 @@
     (-> db (update-in [:room/jam :room/jammers] dissoc 3)
         (get-in [:room/jam :room/jammers])))
   (get-in @app-db [:room/room])
+  (get-in @app-db [:teleporters
+                   #uuid "77756ff0-bb05-5e6a-b7d9-28086f3a07fd"
+                   :jam/coredump])
   @(rf/subscribe [:room/jam])
   @(rf/subscribe [:room/people :owner])
+  @(rf/subscribe [:room/people :knocking])
+
+  @(rf/subscribe [:teleporter/jam-status #uuid "77756ff0-bb05-5e6a-b7d9-28086f3a07fd"])
+  @(rf/subscribe [:teleporter/jam-status #uuid "39d04c2c-7214-5e2c-a9ae-32ff15405b7f"])
+  @(rf/subscribe [:teleporter/coredump])
 
   (rf/dispatch [:app/init])
   (rf/dispatch [:room.jam/host 2])

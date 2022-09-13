@@ -21,7 +21,7 @@
                master-volume (rf/subscribe [:teleporter/setting
                                             nil
                                             :volume/global-volume])
-               jammers (rf/subscribe [:room/people :jamming])]
+               jammers (rf/subscribe [:room/people :other-jammers])]
     [:div.levels
      [:div.controls
       [knob

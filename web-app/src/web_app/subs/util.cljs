@@ -13,13 +13,14 @@
     teleporter))
 
 (defn- get-tp-id [db tp-id]
-  (if (nil? tp-id)
-    (->> db
-         :teleporters
-         (vals)
-         first
-         :teleporter/id)
-    tp-id))
+  (or
+   tp-id
+   (:teleporter/id db)
+   (->> db
+        :teleporters
+        (vals)
+        first
+        :teleporter/id)))
 
 (defn get-input-kw [input k]
   (let [input* (name input)

@@ -59,6 +59,9 @@
                :teleporters (->> teleporters
                                  (map (juxt :teleporter/id identity))
                                  (into {}))
+               :teleporter/id (->> teleporters
+                                   first
+                                   :teleporter/id)
                :jams (->> jams
                           (map (juxt :jam/id #(select-keys % [:jam/id :jam/members])))
                           (into {})))}))

@@ -7,7 +7,7 @@
 
 
 (defn show-latency [jam]
-  [:div.latency (str (:latency @jam) "ms latency")])
+  [:div.latency (str (:Latency @jam) "ms latency")])
 
 (defn show-jammer [jammer jam]
   (let [{:profile/keys [name position image-url]} @jammer]
@@ -32,8 +32,9 @@
     nil))
 
 (defn jammer [{:keys [jammer]}]
-  (r/with-let [jam (rf/subscribe [:teleporter/coredump])
+  (r/with-let [jam (rf/subscribe [:teleporter/coredump (:teleporter/id jammer)])
                volume (rf/subscribe [:teleporter/setting nil :volume/network-volume])
+               playout-delay (rf/subscribe [:teleporter/setting nil :jam/playout-delay])
                mute-event (fn [_]
                             (rf/dispatch [:room/jammer
                                           (:auth.user/id @jammer)
@@ -45,7 +46,18 @@
      [muted jammer mute-event]
      [show-jammer jammer jam]
      [knob {:skin "light"
+            :model playout-delay
+            :value/max 24
+            :title "Playout Delay"
+            :on-change #(rf/dispatch [:teleporter/setting
+                                      nil
+                                      :jam/playout-delay
+                                      %
+                                      {:message/type :teleporter.cmd/set-playout-delay
+                                       :teleporter/playout-delay %}])}]
+     [knob {:skin "light"
             :model volume
+            :title "Volume"
             :on-change #(rf/dispatch [:teleporter/setting
                                       nil
                                       :volume/network-volume

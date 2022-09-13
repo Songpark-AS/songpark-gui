@@ -56,12 +56,29 @@
       [check-circle]
       [:div.text "Accept"]]]]])
 
+(defn- status-indicator [jam-status jammers]
+  (let [{:jam/keys [sip stream sync status]} @jam-status]
+    [:div.status
+     {:class (and
+              (> (count @jammers) 0)
+              (cond
+                (or (#{:stream/broken :stream/stopped} stream)
+                    (#{:sync/sync-failed} sync)) "failed"
 
-(defn- show-jammers [room-id owner?]
+                (#{:sip/call-ended} sip) "idle"
+
+                (or (#{:sip/in-call :sip/call :sip/calling} sip)
+                    (#{:stream/streaming} stream)
+                    (#{:sync/syncing :sync/synced} sync)) "streaming"
+
+                :else "idle"))}]))
+
+(defn- show-jammers [room-id owner? status]
   (r/with-let [owner (rf/subscribe [:room/people :owner])
                jammers (rf/subscribe [:room/people :jamming])
                knockers (rf/subscribe [:room/people :knocking])]
     [:div.jammers
+     [status-indicator status jammers]
      [:div.jamming
       [show-jammer room-id @owner]
       [:<>
@@ -73,7 +90,7 @@
         ^{:key [::knocker id]}
         [show-knocker room-id knocker])]]))
 
-(defn- show-jam [jam]
+(defn- show-jam [jam status]
   (let [{room-id :room/id
          :room/keys [knocking? owner?]
          :as jammed} @jam]
@@ -105,7 +122,7 @@
        ;;                                                  :data data}))))}
        ;;  "Share link"
        ;;  [link]]
-       [show-jammers room-id owner?]])))
+       [show-jammers room-id owner? status]])))
 
 (defn- show-no-jam [jam]
   (when-not @jam
@@ -138,9 +155,10 @@
        [:div.error msg])]))
 
 (defn index []
-  (r/with-let [jam (rf/subscribe [:room/jam])]
+  (r/with-let [jam (rf/subscribe [:room/jam])
+               status (rf/subscribe [:teleporter/jam-status])]
     [:<>
      [show-errors jam]
      [show-no-jam jam]
-     [show-jam jam]
+     [show-jam jam status]
      [show-knocking jam]]))

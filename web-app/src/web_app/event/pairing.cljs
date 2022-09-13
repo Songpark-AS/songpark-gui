@@ -8,7 +8,7 @@
 
 (rf/reg-event-fx
  :pairing/paired
- (fn [{:keys [db]} [_ data]]
+ (fn [{:keys [db mqtt-client]} [_ data]]
    {:dispatch [:app.init/app data]
     :rfe/push-state :views.teleporter/paired}))
 
@@ -23,4 +23,4 @@
      (when timeout-obj
        (js/clearTimeout timeout-obj))
      (mqtt/unsubscribe mqtt-client [ht bt]))
-   {:db (dissoc db :teleporters)}))
+   {:db (dissoc db :teleporters :teleporter/id)}))

@@ -84,9 +84,7 @@
 (rf/reg-sub
  :teleporter/jam-status
  (fn [db [_ tp-id]]
-   (let [tp-id (if (nil? tp-id)
-                 (:teleporter/id (get-selected-teleporter db))
-                 tp-id)
+   (let [tp-id (get-tp-id db tp-id)
          status (get-in db [:teleporters tp-id :jam/status] :idle)
          sip (get-in db [:teleporters tp-id :jam/sip])
          stream (get-in db [:teleporters tp-id :jam/stream])

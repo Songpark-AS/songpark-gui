@@ -15,7 +15,9 @@
          others
          (->> (get-in db [:room/jam :room/jammers])
               (vals)
-              (mapv (fn [{:keys [auth.user/id] :as jammer}]
+              (mapv (fn [{:keys [auth.user/id]
+                          tp-id :teleporter/id
+                          :as jammer}]
                       (assoc jammer
                              :room/owner? (= owner-id id)
                              :jammer/you? (= user-id id)))))]
@@ -26,6 +28,9 @@
        :jamming (->> others
                      (filter #(= :jamming (:jammer/status %)))
                      (remove :room/owner?))
+       :other-jammers (->> others
+                           (filter #(= :jamming (:jammer/status %)))
+                           (remove :jammer/you?))
        :knocking (->> others
                       (filter #(= :knocking (:jammer/status %)))
                       (remove :room/owner?))

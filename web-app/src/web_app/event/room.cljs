@@ -2,6 +2,7 @@
   (:require [re-frame.core :as rf]
             [web-app.event.util :refer [message-base]]
             [web-app.utils :refer [get-api-url get-platform-url]]
+            [web-app.subs.util :refer [get-tp-id]]
             [taoensso.timbre :as log]))
 
 
@@ -56,12 +57,18 @@
 
 (rf/reg-event-fx
  :room.jam/host
- (fn [_ [_ room-id]]
-   {:dispatch [:http/post
-               (get-api-url "/room/jam/host")
-               {:room/id room-id}
-               :room.jam/hosted
-               :room.jam/hosted-failed]}))
+ (fn [{:keys [db]} [_ room-id]]
+   (let [tp-id (get-tp-id db nil)]
+     {:db (update-in db [:teleporters tp-id] dissoc
+                     :jam/status
+                     :jam/sip
+                     :jam/stream
+                     :jam/sync)
+      :dispatch [:http/post
+                 (get-api-url "/room/jam/host")
+                 {:room/id room-id}
+                 :room.jam/hosted
+                 :room.jam/hosted-failed]})))
 
 (rf/reg-event-fx
  :room.jam/hosted
