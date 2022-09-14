@@ -39,10 +39,23 @@
                     0)]
     (subs string-data index)))
 
+(defn- get-image-url [blob image-url]
+  (if-let [data @blob]
+    (let [{:file/keys [type base64]} data
+          start (case type
+                  "jpg" "data:image/jpg;base64,"
+                  "jpeg" "data:image/jpeg;base64,"
+                  "png" "data:image/png;base64,"
+                  nil)]
+      (str start base64))
+    image-url))
+
 (defn- read-image-data [blob file-object]
   (if (and (.-type file-object)
            (not (str/starts-with? (.-type file-object) "image/")))
-    false
+    (do
+      (log/error "Not an image")
+      false)
     (do (let [reader (js/FileReader.)]
           (.addEventListener reader
                              "load"
@@ -50,14 +63,16 @@
                                (let [metadata (get-file-metadata file-object)
                                      image-base64 (trim-image-data (-> e .-target .-result))]
                                  (reset! blob {:file/base64 image-base64
-                                               :file/type (:file/type metadata)}))))
+                                               :file/type (:file/type metadata)})))
+                             (fn [error]
+                               (log/error error)))
           (.readAsDataURL reader file-object))
         true)))
 
 (defn- show-form [profile-data]
   (r/with-let [f (profileform {:label? false} profile-data)
                form-data (rf/subscribe [::form/on-valid (:id f)])
-               image-data (atom nil)
+               image-data (r/atom nil)
                handler (fn [data]
                          (rf/dispatch [:profile/set data]))
                error-handler (fn [{:keys [response]}]
@@ -98,16 +113,17 @@
                                            nil)]
                                 (read-image-data image-data file)))
                  :id "profile-image"}]
-        (if (:profile/image-url profile-data)
-          [:<>
-           [:div.wrapper
-            [edit]
-            [:img
-             {:on-click #(let [input (js/document.getElementById "profile-image")]
-                           (.click input))
-              :src (:profile/image-url profile-data)}]]]
-          [add-circle {:on-click #(let [input (js/document.getElementById "profile-image")]
-                                    (.click input))}])]
+        (let [img-src (get-image-url image-data (:profile/image-url profile-data))]
+          (if (:profile/image-url profile-data)
+            [:<>
+             [:div.wrapper
+              [edit]
+              [:img
+               {:on-click #(let [input (js/document.getElementById "profile-image")]
+                             (.click input))
+                :src img-src}]]]
+            [add-circle {:on-click #(let [input (js/document.getElementById "profile-image")]
+                                      (.click input))}]))]
        [form/as-table {} f]
        ;; change password
        [:a.change-password
