@@ -51,7 +51,7 @@
              :teleporter/id 6
              :profile/image-url "http://localhost:3000/static/images/christian.jpg"
              :profile/position "Guitar"
-             :jammer/status :jamming
+             :jammer/status :knocking
              :jammer/muted? true
              :jammer/volume 30}})
   (swap! app-db update-in [:teleporters]

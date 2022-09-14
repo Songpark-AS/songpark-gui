@@ -41,7 +41,7 @@
                                           (:auth.user/id @jammer)
                                           :jammer/muted?
                                           (not (:jammer/muted? @jammer))]))]
-    [:div.jammer
+    [:div.jammer.component
      [:div.click-area
       {:on-click mute-event}]
      [muted jammer mute-event]

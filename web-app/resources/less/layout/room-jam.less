@@ -86,6 +86,7 @@
         width: 100%;
         display: flex;
         justify-content: space-between;
+        align-items: center;
         .name {
           font-weight: bold;
         }
@@ -111,7 +112,12 @@
         }
         .actions {
           display: flex;
-          gap: 3rem;
+          gap: 1.5rem;
+        }
+        @media @break-small {
+          .actions {
+            gap: 0.5rem;
+          }
         }
       }
     }
@@ -120,7 +126,7 @@
       position: relative;;
       .knocker {
         position: relative;
-        padding: 1rem 1.5rem 1rem 3rem;
+        padding: 1rem 1.5rem 1rem 1rem;
         margin-right: 0.5rem;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;;
