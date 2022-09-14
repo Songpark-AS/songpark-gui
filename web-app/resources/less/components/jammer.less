@@ -1,6 +1,6 @@
 @import '../colors.less';
 
-@picture-size: 78px;
+@picture-size: 55px;
 
 .jammer.component {
   display: flex;
@@ -77,13 +77,20 @@
     align-items: center;
     gap: 10px;
     .picture {
+      // adjust the .picture element downwards in order to align
+      // with the knobs at the visual layer
+      margin-top: 5px;
       > img {
         width: @picture-size;
         height: @picture-size;
         border-radius: @picture-size;
       }
       span {
-        font-size: @picture-size;
+        // the google icon span has some built in padding
+        // inside the glyph by the looks of it
+        // adding a slightly different adjustment than the img
+        margin-top: 5px;
+        font-size: @picture-size + 8px;
       }
     }
     .name {
