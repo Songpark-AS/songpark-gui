@@ -4,13 +4,30 @@
 
 .jammer {
   display: flex;
+  flex-direction: column;
   background-color: @knob-bg-color2;
   color: @knob-alt-color2;
-  justify-content: space-between;
-  padding: 0 2em;
+  padding: 0.5em 2em;
   border-radius: 1em;
-
+  margin-bottom: 1em;
   position: relative;
+
+  .upper {
+    display: flex;
+    justify-content: space-between;
+    .knobs {
+      display: flex;
+    }
+  }
+  .lower {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .details {
+      display: flex;
+      flex-direction: column;
+    }
+  }
   .click-area {
     position: absolute;
     top: 0;

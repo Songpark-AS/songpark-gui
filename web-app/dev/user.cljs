@@ -30,7 +30,7 @@
 
   @(rf/subscribe [:teleporter/jam-status #uuid "77756ff0-bb05-5e6a-b7d9-28086f3a07fd"])
   @(rf/subscribe [:teleporter/jam-status #uuid "39d04c2c-7214-5e2c-a9ae-32ff15405b7f"])
-  @(rf/subscribe [:teleporter/coredump])
+  @(rf/subscribe [:teleporter/coredump 1])
 
   (rf/dispatch [:app/init])
   (rf/dispatch [:room.jam/host 2])
@@ -39,18 +39,26 @@
   (swap! app-db assoc-in [:room/jam :room/jammers]
          {1 {:profile/name "Emil Bengtsson"
              :auth.user/id 1
+             :teleporter/id 1
              :profile/position "Vocals (deep bass)"}
           5 {:profile/name "Test McTest"
              :auth.user/id 5
              :jammer/status :jamming
+             :teleporter/id 5
              :profile/position "The world's smallest violin"}
           6 {:profile/name "Christian Ruud"
              :auth.user/id 6
+             :teleporter/id 6
              :profile/image-url "http://localhost:3000/static/images/christian.jpg"
              :profile/position "Guitar"
-             :jammer/status :knocking
+             :jammer/status :jamming
              :jammer/muted? true
              :jammer/volume 30}})
+  (swap! app-db update-in [:teleporters]
+         merge
+         {1 {:jam/coredump {:Latency "2.45"}}
+          5 {:jam/coredump {:Latency "5.43"}}
+          6 {:jam/coredump {:Latency "1.24"}}})
 
   (swap! re-frame.db/app-db assoc :room/jammers nil)
   (get @re-frame.db/app-db :room/jammers)

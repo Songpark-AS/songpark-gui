@@ -1,14 +1,14 @@
 @use '../colors.less';
 
-@knob-width: 110px;
-@knob-height: 140px;
+@knob-width: 88px;
+@knob-height: 112px;
 
 .knob {
   position: relative;
   width: @knob-width;
   height: @knob-height;
   display: inline-block;
-  border-radius: 25px;
+  border-radius: 20px;
   &.dark {
     background-color: @knob-bg-color1;
     color: @knob-alt-color1;
@@ -47,7 +47,7 @@
     top: 0;
     right: 0;
     padding: 10px;
-    border-radius: 14px;
+    border-radius: 11px;
   }
   .value {
     position: absolute;
@@ -57,7 +57,7 @@
   }
   .area {
     position: absolute;
-    top: 35px;
+    top: 33px;
     left: 20px;
   }
   .arc {
@@ -72,12 +72,13 @@
     line-height: 0;
     width: 100%;
     text-align: center;
+    font-size: 0.8rem;
   }
 }
 
 .knobs-duo {
   display: inline-block;
-  width: 220px;
+  width: 176px;
   .knob:first-child {
     // for some reason there is a very small gap between the two
     // knobs. adjust the first one by 1 pixel removes it

@@ -228,8 +228,8 @@
             :start-angle rotate-start
             :arc-start arc-start
             :data data}
-       {:width "100px"
-        :height "100px"}]]
+       {:width "80px"
+        :height "80px"}]]
      [:div.area
       {:style {:touch-action "none"}
        :on-touch-start (fn [e]
@@ -258,15 +258,14 @@
               props
               {:data data
                :arc/start arc-start})
-       {:width "70px"
-        :height "70px"}]]
+       {:width "50px"
+        :height "50px"}]]
      (when title
        [:h3 title])]
     (finally
       ;; clean up the watcher
       (remove-watch internal-model watch-key-internal-model)
       (remove-watch model watch-key-model))))
-
 
 (defn show-switch [linked?]
   [:div.switch
