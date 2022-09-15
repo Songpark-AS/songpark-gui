@@ -24,15 +24,6 @@
                jammers (rf/subscribe [:room/people :other-jammers])]
     [:div.levels
      [:div.controls
-      [knob
-       {:title "MASTER"
-        :on-change #(rf/dispatch [:teleporter/setting
-                                  nil
-                                  :volume/global-volume
-                                  %
-                                  {:message/type :teleporter.cmd/global-volume
-                                   :teleporter/volume %}])
-        :model master-volume}]
       [knob-duo
        {:skin "dark"
         :linked? linked?
@@ -67,7 +58,16 @@
                                            :teleporter/volume %}])
                 :model (rf/subscribe [:teleporter/setting
                                       nil
-                                      :volume/input2-volume])}}]]
+                                      :volume/input2-volume])}}]
+      [knob
+       {:title "MASTER"
+        :on-change #(rf/dispatch [:teleporter/setting
+                                  nil
+                                  :volume/global-volume
+                                  %
+                                  {:message/type :teleporter.cmd/global-volume
+                                   :teleporter/volume %}])
+        :model master-volume}]]
      [:div.jammers
       [:<>
        (for [{:keys [auth.user/id]} @jammers]

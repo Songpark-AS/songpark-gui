@@ -1,6 +1,7 @@
 (ns web-app.views.room-jam
   (:require [reagent.core :as r]
             [re-frame.core :as rf]
+            [web-app.components.filler :refer [filler]]
             [web-app.components.icon :refer [account
                                              arrow-left-alt
                                              cancel
@@ -88,7 +89,8 @@
      [:div.knockers
       (for [{:keys [auth.user/id] :as knocker} @knockers]
         ^{:key [::knocker id]}
-        [show-knocker room-id knocker])]]))
+        [show-knocker room-id knocker])]
+     [filler]]))
 
 (defn- show-jam [jam status]
   (let [{room-id :room/id

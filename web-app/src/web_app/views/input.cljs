@@ -9,6 +9,7 @@
             [re-frame.core :as rf]
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
+            [web-app.components.filler :refer [filler]]
             [web-app.components.icon :as icon]
             [web-app.components.knob :refer [knob]]
             [web-app.components.preset :refer [preset]]))
@@ -364,4 +365,5 @@
             :key (str input (:tab fx))}
            [:div.inner
             [:h2 (:tab fx)]
-            [content-pane fx]]])]]]]))
+            [content-pane fx]]])]]
+      [filler]]]))
