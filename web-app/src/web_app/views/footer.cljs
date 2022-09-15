@@ -46,7 +46,7 @@
    "Input 2"])
 
 (defn index [view-name]
-  [:footer
+  [:footer#footer
    [show-room view-name]
    [show-levels view-name]
    [show-input1 view-name]

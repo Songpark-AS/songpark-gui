@@ -6,12 +6,15 @@
     color: @knob-alt-color1;
     display: flex;
     justify-content: space-between;
+    flex-direction: column;
+    gap: 1em;
     align-items: center;
     padding: 5px 10px;
     border-radius: 5px;
     .left {
       display: flex;
       flex-direction: column;
+      width: 100%;
       .current {
         font-size: 0.8rem;
       }
@@ -21,8 +24,9 @@
     }
     .right {
       display: flex;
-      flex-direction: row;
+      justify-content: flex-end;
       gap: 2em;
+      width: 100%;
       .save {
         font-weight: bold;
         font-size: 1rem;
@@ -48,6 +52,9 @@
     border-radius: 5px;
     visibility: hidden;
     height: 0;
+    position: absolute;
+    z-index: 1000;
+    overflow-y: scroll;
 
     .navigation {
       margin-bottom: 2rem;

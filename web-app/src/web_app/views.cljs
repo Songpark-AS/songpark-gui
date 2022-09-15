@@ -61,7 +61,7 @@
           [:<>
            (when teleporter-view?
              [views.topbar/index])
-           [:div.content-wrapper
+           [:div#content-wrapper.content-wrapper
             (if matched
               (let [view (:view data)]
                 [view matched]))]

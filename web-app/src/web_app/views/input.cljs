@@ -331,26 +331,27 @@
         select-tab #(rf/dispatch [:ui.fx.input/tab input %])]
     [:div.input
      {:key [:input input]}
-     [preset {:input (keyword input)}]
-     [:div.input-fx
-      [knob {:title "PAN"
-             :model pan-sub
-             :on-change pan-dispatch
-             :rotate/start 0
-             :rotate/end 180
-             :arc/start 270
-             :value/min -50
-             :value/max 50}]
+     [:div.wrapper
+      [:div.input-fx
+       [knob {:title "PAN"
+              :model pan-sub
+              :on-change pan-dispatch
+              :rotate/start 0
+              :rotate/end 180
+              :arc/start 270
+              :value/min -50
+              :value/max 50}]
 
-      ;; temporarily remove this on orders from Christian
-      ;; it might back in, so leave it as is
+       ;; temporarily remove this on orders from Christian
+       ;; it might back in, so leave it as is
 
-      ;; [knob {:title "GAIN"
-      ;;        :overload? overload?
-      ;;        :model gain-sub
-      ;;        :on-change gain-dispatch
-      ;;        :value-fn (fn [v] (str v " dB"))}]
-      ]
+       ;; [knob {:title "GAIN"
+       ;;        :overload? overload?
+       ;;        :model gain-sub
+       ;;        :on-change gain-dispatch
+       ;;        :value-fn (fn [v] (str v " dB"))}]
+       ]
+      [preset {:input (keyword input)}]]
      [:div.output-fx
       {:class @teleporter-active-inputs}
       [:> Tabs

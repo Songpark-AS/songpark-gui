@@ -50,7 +50,18 @@
                adding? (r/atom false)
                presets (rf/subscribe [:fx/presets])
                current-preset (rf/subscribe [:fx.preset/current input])
-               changed? (rf/subscribe [:teleporter/setting nil :fx.preset/changed?])]
+               changed? (rf/subscribe [:teleporter/setting nil :fx.preset/changed?])
+               content-wrapper-el (js/document.getElementById "content-wrapper")
+               footer-el (js/document.getElementById "footer")
+               [body-left body-width body-height]
+               (when (and content-wrapper-el
+                          footer-el)
+                 (let [offset (+ (.. content-wrapper-el getBoundingClientRect -left) 10)
+                       height (- (.. footer-el getBoundingClientRect -top)
+                                 (.. content-wrapper-el getBoundingClientRect -top)
+                                 30)
+                       width (- (.. content-wrapper-el -offsetWidth) 20)]
+                   [offset width height]))]
     [:div.preset
      {:class (if @active?
                "active")}
@@ -73,8 +84,11 @@
 
      ;; body
      [:div.body
+      {:style {:left (str body-left "px")
+               :height (str body-height "px")
+               :width (str body-width "px")}}
       (if (false? @adding?)
-        [:<>
+        [:div.inner
          [:div.navigation
           {:on-click #(reset! active? false)}
           [:span.material-symbols-outlined "arrow_right_alt"]
