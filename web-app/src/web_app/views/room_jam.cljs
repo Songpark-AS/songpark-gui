@@ -111,7 +111,7 @@
        [:div.room-name
         (:room/name jammed)]
        ;; [:div.share-link
-       ;;  {:on-click #(let [url (str js/window.location.href "/" (:room/name-normaliezed jammed))
+       ;;  {:on-click #(let [url (str js/window.location.href "/" (:room/name-normalized jammed))
        ;;                    title (str "Come join us in " (:room/name jammed))
        ;;                    text "Come jam with me"
        ;;                    data {:url url
