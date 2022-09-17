@@ -32,24 +32,25 @@
     [:div.reset-password.squeeze
      [:div.intro
       [:div.title "Reset your password"]
-      ;;[:div.slogan (if @success)]
-      ]
+      [:div.slogan
+       (if @success?
+         "You have successfully reset your password"
+         "An email has been sent to you with the token required to reset your password.")]]
      (if @success?
        [:div.info
-        "You have successfully reset your password"
         [:> Button
-         {:on-click #(rfe/push-state :views/room)}
+         {:type "primary"
+          :on-click #(rfe/push-state :views/room)}
          "Take me back"]]
        [:<>
         [:div.info
-         "An email has been sent to you with the token required to reset your password."]
+         {:on-click #(rfe/push-state :views/login)}
+         "Take me back to the login view"]
+
         [:form
          [form/as-table {} f]
          [:> Button
-          {:disabled (not (valid? @form-data))
+          {:type "primary"
+           :disabled (not (valid? @form-data))
            :on-click event}
-          "Reset my password"]]
-        #_[:> Button
-           {:type "primary"
-            :on-click #(rfe/push-state :views/login)}
-           "Take me back to the login view"]])]))
+          "Reset my password"]]])]))

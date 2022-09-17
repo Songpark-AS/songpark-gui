@@ -6,11 +6,15 @@
             [clojure.pprint :refer (pprint)]
             [clojure.string :as str]
             [re-frame.core :as rf]
-            [re-frame.db :refer [app-db]]))
+            [re-frame.db :refer [app-db]]
+            [reitit.frontend.easy :as rfe]))
 
 
 
 (comment
+
+  (rfe/push-state :views/reset-password)
+
   (swap! app-db dissoc :room/jam)
 
   (get-in @app-db [:teleporters])
