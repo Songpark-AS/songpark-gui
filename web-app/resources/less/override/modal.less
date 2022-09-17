@@ -1,0 +1,21 @@
+@import '../colors.less';
+
+.ant-modal, .ant-modal-header .ant-modal-title {
+  color: @footer-brown1;
+}
+
+.ant-modal-content, .ant-modal-header {
+  background-color: @knob-bg-color2;
+}
+
+.ant-modal-footer {
+  display: flex;
+  gap: 1em;
+  .ant-btn {
+    width: auto !important;
+    background-color: @light-brown;
+    &:first-child {
+      order: 2;
+    }
+  }
+}

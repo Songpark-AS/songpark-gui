@@ -2,6 +2,7 @@
   (:require
    ["antd" :refer [Button
                    Divider
+                   Modal
                    Radio.Button
                    Radio.Group]]
    [ez-wire.form :as form]
@@ -9,9 +10,11 @@
                                  valid?]]
    [re-frame.core :as rf]
    [reagent.core :as r]
+   [reitit.frontend.easy :as rfe]
    [taoensso.timbre :as log]
    [songpark.common.config :refer [config]]
    ["semver" :as semver]
+   [tick.core :as t]
    [web-app.components.icon :refer [arrow-left-alt]]
    [web-app.event.ui]
    [web-app.forms.ipv4 :as ipv4-form]
@@ -81,7 +84,21 @@
       {:type "primary"
        :disabled (not (valid? form-data))
        :on-click event}
-       "Save settings"]]))
+      "Save settings"]]))
+
+(defn reboot-button []
+  (r/with-let [modal? (r/atom false)]
+    [:<>
+     [:> Modal {:title "Reboot?"
+                :visible @modal?
+                :on-ok #(do (rf/dispatch [:teleporter/reboot])
+                            (rfe/push-state :views/room))
+                :on-cancel #(reset! modal? false)}
+      "Are you sure you want to reboot?"]
+     [:> Button
+      {:type "danger"
+       :on-click #(reset! modal? true)}
+      "Reboot"]]))
 
 (defn index []
   (let [teleporter (rf/subscribe [:teleporter/teleporter])]
@@ -102,6 +119,7 @@
           {:on-click #(back)}
           [arrow-left-alt]
           "Teleporter"]
+
          ;; Details
          [:> Divider
           {:orientation "left"}
@@ -113,7 +131,9 @@
            [:> Button
             {:type "primary"
              :on-click #(rf/dispatch [:teleporter/unpair])}
-            "Unlink Teleporter"]]]
+            "Unlink Teleporter"]
+           [reboot-button]]]
+
          (when (wrap-semver-lt semver
                                @latest-reported-apt-version
                                @latest-available-apt-version)
@@ -131,8 +151,9 @@
          ;;  {:orientation "left"}
          ;;  "Commands"]
          ;; [:div.command-buttons
-         ;;  [:> Button {:type "danger"
-         ;;              :on-click #(stop-all-streams id)} "Stop all streams"]]
+         ;;  ;; [:> Button {:type "danger"
+         ;;  ;;             :on-click #(stop-all-streams id)} "Stop all streams"]
+         ;;  ]
 
          ;; Network
          [:> Divider

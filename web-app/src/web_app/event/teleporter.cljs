@@ -93,6 +93,20 @@
                    :teleporter/id tp-id}))
    nil))
 
+(rf/reg-event-fx
+ :teleporter/reboot
+ (fn [{:keys [db]} _]
+   (let [tp-id (get-tp-id db nil)]
+     {:dispatch [:mqtt/send-message-to-teleporter
+                 tp-id
+                 (message-base
+                  db
+                  {:message/type :teleporter.cmd/reboot
+                   :teleporter/id tp-id})]
+      :db (dissoc db
+                  :teleporter/id
+                  :teleporters)})))
+
 (rf/reg-event-db
  :teleporter/sip-register
  (fn [db [_ {:keys [teleporter/id]}]]
@@ -138,7 +152,6 @@
  (fn [db [_ tp-id jam-status]]
    (assoc-in db [:teleporters tp-id :jam/status] jam-status)))
 
-
 (rf/reg-event-fx
  :teleporter/request-network-config
  [mqtt-client]
@@ -177,7 +190,6 @@
  :teleporter/relay
  (fn [db [_ {:teleporter/keys [id relay value]}]]
    (assoc-in db [:teleporters id relay] value)))
-
 
 (rf/reg-event-db
  :teleporter/global-volume
