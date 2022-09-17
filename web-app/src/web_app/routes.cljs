@@ -64,6 +64,9 @@
    ["/room/join"
     {:name :views.room/join
      :view views.room-join/index}]
+   ["/room/join/:normalized-name"
+    {:name :views.room.join/invite
+     :view views.room-join/invite}]
    ["/room/create"
     {:name :views.room/create
      :view views.room-create/index}]

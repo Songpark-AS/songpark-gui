@@ -9,9 +9,37 @@
             [reitit.frontend.easy :as rfe]
             [taoensso.timbre :as log]
             [tick.core :as t]
+            [web-app.components.icon :refer [logo+slogan]]
             [web-app.forms.room :refer [roomform]]
             [web-app.views.room-host :refer [get-compareable-days
                                              get-time-display]]))
+
+(defn invite [{{:keys [normalized-name]} :path-params}]
+  (r/with-let [error (r/atom nil)
+               handler (fn [data]
+                         (rf/dispatch [:room.jam/knocked data]))
+               error-handler (fn [{:keys [response]}]
+                               (reset! error (:error/message response)))]
+
+    ;; get rid of the query parameters as they're ugly
+    (let [new-url (str js/window.location.protocol
+                       "//"
+                       js/window.location.host
+                       js/window.location.pathname
+                       js/window.location.hash)]
+      (js/window.history.pushState #js {:path new-url} "" new-url))
+    ;; when we've gotten rid of them, we run the dispatch
+    (when (str/blank? js/window.location.search)
+      (rf/dispatch [:room.jam/knock
+                    normalized-name
+                    {:handler handler
+                     :error error-handler}]))
+    [:div.room-invite.squeeze
+     [:div.intro
+      [:div.title "Knocking..."]]
+     (if-let [error-msg @error]
+       [:div.error error-msg])
+     [logo+slogan]]))
 
 (defn- show-jam [days-today {:room/keys [name jammer-names last-jammed]}]
   [:div.history-entry

@@ -48,9 +48,18 @@
      :room/does-not-exist (-> cofx
                               (update-in [:db :room/jam] dissoc)
                               (assoc :rfe/push-state :views/room))
-     :room/user-not-in-the-room (if-let [user-id (:auth.user/id context)]
-                                  (update-in cofx [:db :room/jam :room/jammers] dissoc user-id)
-                                  cofx)
+     :room/user-not-in-the-room (let [user-id (:auth.user/id context)]
+                                  (cond
+                                    user-id
+                                    (update-in cofx [:db :room/jam :room/jammers] dissoc user-id)
+
+                                    (true? (get-in cofx [:db :room/jam :room/knocking?]))
+                                    (-> cofx
+                                        (update-in [:db] dissoc :room/jam)
+                                        (assoc :rfe/push-state :views/room))
+
+                                    :else
+                                    cofx))
      (update-in cofx [:db :room/jam] merge data))))
 
 ;; jam host

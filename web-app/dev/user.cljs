@@ -13,7 +13,7 @@
 
 (comment
 
-  (rfe/push-state :views/reset-password)
+  (rfe/push-state :views.room.join/invite {:normalized-name "my-fantastic-room-2"})
 
   (swap! app-db dissoc :room/jam)
 

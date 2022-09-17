@@ -9,6 +9,7 @@
                                              link]]
             [taoensso.timbre :as log]))
 
+
 (defn- show-jammer [room-id
                     {:keys [room/owner?
                             jammer/you?]
@@ -110,20 +111,25 @@
            "Leave room"])]
        [:div.room-name
         (:room/name jammed)]
-       ;; [:div.share-link
-       ;;  {:on-click #(let [url (str js/window.location.href "/" (:room/name-normalized jammed))
-       ;;                    title (str "Come join us in " (:room/name jammed))
-       ;;                    text "Come jam with me"
-       ;;                    data {:url url
-       ;;                          :title title
-       ;;                          :text text}]
-       ;;                (try
-       ;;                  (js/navigator.share (clj->js data))
-       ;;                  (catch js/Error e
-       ;;                    (log/error "Unable to share" {:exception e
-       ;;                                                  :data data}))))}
-       ;;  "Share link"
-       ;;  [link]]
+       [:div.share-link
+        {:on-click #(let [url (str js/window.location.protocol
+                                   "//"
+                                   js/window.location.host
+                                   js/window.location.pathname
+                                   "?"
+                                   (:room/name-normalized jammed))
+                          title (str "Come join us in " (:room/name jammed))
+                          text "Come jam with me"
+                          data {:url url
+                                :title title
+                                :text text}]
+                      (try
+                        (js/navigator.share (clj->js data))
+                        (catch js/Error e
+                          (log/error "Unable to share" {:exception e
+                                                        :data data}))))}
+        "Share link"
+        [link]]
        [show-jammers room-id owner? status]])))
 
 (defn- show-no-jam [jam]

@@ -1,5 +1,6 @@
 (ns web-app.event.auth
-  (:require [re-frame.core :as rf]
+  (:require [clojure.string :as str]
+            [re-frame.core :as rf]
             [web-app.auth :as auth]
             [web-app.event.util :refer [add-error-message]]
             [web-app.utils :refer [get-api-url get-platform-url]]))
@@ -13,13 +14,21 @@
                :auth.whoami/success
                :auth.whoami/error]}))
 
+(defn- get-room [text]
+  (when-not (and (str/blank? text)
+                 (str/starts-with? text "?")))
+  (subs text 1))
+
 (rf/reg-event-fx
  :auth.whoami/success
  (fn [{:keys [db]} [_ data]]
    (if (auth/logged-in? data)
-     {:db (assoc db :auth/user data)
-      :fx [[:dispatch [:app/init]]
-           [:rfe/push-state :views/room]]}
+     (merge {:db (assoc db :auth/user data)}
+            (if-let [room (get-room js/window.location.search)]
+              {:fx [[:dispatch [:app/init]]
+                    [:rfe/push-state [:views.room.join/invite {:normalized-name room}]]]}
+              {:fx [[:dispatch [:app/init]]
+                    [:rfe/push-state :views/room]]}))
      {:db db})))
 
 (rf/reg-event-db

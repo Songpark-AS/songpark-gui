@@ -3,15 +3,11 @@
             [re-frame.core :as rf]
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
-            [web-app.components.icon :refer [logo]]))
+            [web-app.components.icon :refer [logo+slogan]]))
 
 (defn index [_]
   [:div.start.squeeze
-   [:div.logo-wrapper
-    [logo]]
-   [:div.intro
-    [:div.title "songpark"]
-    [:div.slogan "never play alone"]]
+   [logo+slogan]
    [:> Button
     {:type "primary"
      :on-click #(rfe/push-state :views/login)}
