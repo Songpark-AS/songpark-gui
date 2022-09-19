@@ -15,6 +15,9 @@
                                              get-time-display]]
             [web-app.utils :refer [clear-room!]]))
 
+(defn knocked-handler [data]
+  (rf/dispatch [:room.jam/knocked data]))
+
 (defn invite [{{:keys [normalized-name]} :path-params}]
   (r/with-let [error (r/atom nil)
                handler (fn [data]
@@ -42,12 +45,22 @@
      [logo+slogan]]))
 
 (defn- show-jam [days-today {:room/keys [name jammer-names last-jammed]}]
-  [:div.history-entry
-   [:div.left
-    [:div.room-name name]
-    [:div.jammers (str/join ", " jammer-names)]]
-   [:div.right
-    (get-time-display days-today last-jammed)]])
+  (r/with-let [error-msg (r/atom nil)]
+    [:div.history-entry
+     [:div.left
+      [:div.room-name
+       {:on-click #(rf/dispatch [:room.jam/knock name {:handler knocked-handler
+                                                       :error (fn [{:keys [response]}]
+                                                                (reset! error-msg (:error/message response))
+                                                                (js/setTimeout (fn []
+                                                                                 (reset! error-msg nil))
+                                                                               3000))}])}
+       name]
+      (when @error-msg
+        [:div.error @error-msg])
+      [:div.jammers (str/join ", " jammer-names)]]
+     [:div.right
+      (get-time-display days-today last-jammed)]]))
 
 (defn- show-history [history]
   (let [jams @history
@@ -62,8 +75,6 @@
 (defn index []
   (r/with-let [f (roomform {:label? false} {})
                form-data (rf/subscribe [::form/on-valid (:id f)])
-               handler (fn [data]
-                         (rf/dispatch [:room.jam/knocked data]))
                error-handler (fn [{:keys [response]}]
                                (log/debug response)
                                (add-external-error f
@@ -76,7 +87,7 @@
                          (when (valid? data)
                            (rf/dispatch [:room.jam/knock
                                          (:room/name data)
-                                         {:handler handler
+                                         {:handler knocked-handler
                                           :error error-handler}]))))
                history (rf/subscribe [:room.jam/history])]
     [:div.room-join
