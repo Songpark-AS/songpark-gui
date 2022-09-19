@@ -9,7 +9,8 @@
             [re-frame.core :as rf]
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
-            [web-app.forms.signup :refer [signupform]]))
+            [web-app.forms.signup :refer [signupform]]
+            [web-app.utils :refer [clear-room!]]))
 
 
 (defn index []
@@ -31,6 +32,7 @@
                                          data
                                          {:handler handler
                                           :error error-handler}]))))]
+    (clear-room!)
     [:<>
      [:div.signup.squeeze
       [:div.intro

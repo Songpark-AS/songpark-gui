@@ -8,7 +8,8 @@
             [re-frame.core :as rf]
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
-            [web-app.forms.login :refer [loginform]]))
+            [web-app.forms.login :refer [loginform]]
+            [web-app.utils :refer [clear-room!]]))
 
 
 (defn index [_]
@@ -33,6 +34,7 @@
                                          data
                                          {:handler handler
                                           :error error-handler}]))))]
+    (clear-room!)
     [:div.login.squeeze
      [:div.intro
       [:div.title "Welcome back"]

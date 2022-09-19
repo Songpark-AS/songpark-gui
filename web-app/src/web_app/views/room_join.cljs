@@ -12,7 +12,8 @@
             [web-app.components.icon :refer [logo+slogan]]
             [web-app.forms.room :refer [roomform]]
             [web-app.views.room-host :refer [get-compareable-days
-                                             get-time-display]]))
+                                             get-time-display]]
+            [web-app.utils :refer [clear-room!]]))
 
 (defn invite [{{:keys [normalized-name]} :path-params}]
   (r/with-let [error (r/atom nil)
@@ -22,12 +23,7 @@
                                (reset! error (:error/message response)))]
 
     ;; get rid of the query parameters as they're ugly
-    (let [new-url (str js/window.location.protocol
-                       "//"
-                       js/window.location.host
-                       js/window.location.pathname
-                       js/window.location.hash)]
-      (js/window.history.pushState #js {:path new-url} "" new-url))
+    (clear-room!)
     ;; when we've gotten rid of them, we run the dispatch
     (when (str/blank? js/window.location.search)
       (rf/dispatch [:room.jam/knock
@@ -37,8 +33,12 @@
     [:div.room-invite.squeeze
      [:div.intro
       [:div.title "Knocking..."]]
-     (if-let [error-msg @error]
-       [:div.error error-msg])
+     (when-let [error-msg @error]
+       [:<>
+        [:div.error error-msg]
+        [:div.take-me-back
+         {:on-click #(rfe/push-state :views/room)}
+         "Take me back"]])
      [logo+slogan]]))
 
 (defn- show-jam [days-today {:room/keys [name jammer-names last-jammed]}]
