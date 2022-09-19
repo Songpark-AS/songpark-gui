@@ -145,7 +145,7 @@
                                          ;; (println :x  :value value :update-value (:value updated))
                                          (on-change v))))))
                                (if (> diff-y diff-x)
-                                 (let [step (* sensitivity (- new-y y))]
+                                 (let [step (* sensitivity (* -1 (- new-y y)))]
                                    (swap! data assoc :rotate/rotation (new-rotation rotation start end step))
                                    (when-let [v (rotation->value value value-min value-step rotation)]
                                      ;; swap and check
