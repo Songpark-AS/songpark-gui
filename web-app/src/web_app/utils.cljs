@@ -80,9 +80,8 @@
   ([]
    (get-room js/window.location.search))
   ([text]
-   (println "text->" text)
-   (when-not (and (str/blank? text)
-                  (str/starts-with? text "?"))
+   (when (and (not (str/blank? text))
+              (str/starts-with? text "?"))
      (subs text 1))))
 
 (defn clear-room!
