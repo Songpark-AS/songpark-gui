@@ -60,13 +60,13 @@
         "Continue without connecting"]]
 
       [:div.pad
-       [row update-numbers 0]
-       [row update-numbers 3]
-       [row update-numbers 6]
+       [row update-numbers 7]
+       [row update-numbers 4]
+       [row update-numbers 1]
        [:div.row.last
         [:div.input-number
-         {:on-click (update-numbers 9)}
-         9]
+         {:on-click (update-numbers 0)}
+         0]
         [:div.input-number.no-bg
          [backspace {:on-click backtrack}]]]]]
 
