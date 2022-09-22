@@ -58,6 +58,16 @@
      (get-in db [:teleporters tp-id :teleporter/apt-version]))))
 
 (rf/reg-sub
+ :teleporter/versions
+ (fn [db [_ tp-id]]
+   (let [tp-id (get-tp-id db tp-id)]
+     (select-keys (get-in db [:teleporters tp-id])
+                  [:teleporter/fpga-version
+                   :teleporter/bp-version
+                   :teleporter/tpx-sha
+                   :teleporter/tpx-version]))))
+
+(rf/reg-sub
  :teleporter/latest-available-apt-version
  (fn [db _]
    (get db :teleporter/latest-available-apt-version)))

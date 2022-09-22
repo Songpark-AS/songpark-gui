@@ -5,6 +5,7 @@
                    Modal
                    Radio.Button
                    Radio.Group]]
+   [clojure.string :as str]
    [ez-wire.form :as form]
    [ez-wire.form.helpers :refer [add-external-error
                                  valid?]]
@@ -101,7 +102,8 @@
       "Reboot"]]))
 
 (defn index []
-  (let [teleporter (rf/subscribe [:teleporter/teleporter])]
+  (let [teleporter (rf/subscribe [:teleporter/teleporter])
+        versions (rf/subscribe [:teleporter/versions])]
     ;; grab data
     (rf/dispatch [:teleporter/request-network-config (:teleporter/id @teleporter)])
     (rf/dispatch [:platform/fetch-latest-available-apt-version])
@@ -126,7 +128,8 @@
           "Details"]
          [:div.paired
           [:p "You are currently linked with " nickname  "."]
-          [:p "Firmware version: " @latest-reported-apt-version]
+          (let [{:teleporter/keys [fpga-version bp-version tpx-version]} @versions]
+            [:p "Version: " (str/join " / " [fpga-version bp-version tpx-version])])
           [:div
            [:> Button
             {:type "primary"

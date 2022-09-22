@@ -15,9 +15,14 @@
 
   (rfe/push-state :views.room.join/invite {:normalized-name "my-fantastic-room-2"})
 
+  (def serial0001 #uuid "39d04c2c-7214-5e2c-a9ae-32ff15405b7f")
+
+  (swap! app-db assoc-in [:teleporters serial0001 :teleporter/tpx-version] "0.4")
+
   (swap! app-db dissoc :room/jam)
 
   (get-in @app-db [:teleporters])
+
   (get-in @app-db [:auth/user])
   (get-in @app-db [:room/jam :room/jammers])
   (get-in @app-db [:room/jam])
