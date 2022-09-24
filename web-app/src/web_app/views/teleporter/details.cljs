@@ -129,7 +129,9 @@
          [:div.paired
           [:p "You are currently linked with " nickname  "."]
           (let [{:teleporter/keys [fpga-version bp-version tpx-version]} @versions]
-            [:p "Version: " (str/join " / " [fpga-version bp-version tpx-version])])
+            [:p "Version: " (str/join ", " [(str "FPGA-" fpga-version)
+                                            (str "BP-" bp-version)
+                                            (str "TPX-" tpx-version)])])
           [:div
            [:> Button
             {:type "primary"
