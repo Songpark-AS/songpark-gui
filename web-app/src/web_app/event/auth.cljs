@@ -66,10 +66,13 @@
                data
                handlers]}))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  :auth/user
- (fn [db [_ user]]
-   (assoc db :auth/user user)))
+ (fn [{:keys [db]} [_ user ?push-state]]
+   (merge
+    {:db (assoc db :auth/user user)}
+    (when ?push-state
+      {:rfe/push-state ?push-state}))))
 
 (rf/reg-event-fx
  :auth/signup
