@@ -40,6 +40,7 @@
     (subs string-data index)))
 
 (defn- get-image-url [blob image-url]
+  (log/debug "blob is present?" (some? @blob))
   (if-let [data @blob]
     (let [{:file/keys [type base64]} data
           start (case type
@@ -60,6 +61,7 @@
           (.addEventListener reader
                              "load"
                              (fn [e]
+                               (log/debug "successfully loaded the image from the reader")
                                (let [metadata (get-file-metadata file-object)
                                      image-base64 (trim-image-data (-> e .-target .-result))]
                                  (reset! blob {:file/base64 image-base64
@@ -68,6 +70,24 @@
                                (log/error error)))
           (.readAsDataURL reader file-object))
         true)))
+
+(defn input-image [image-data]
+  [:input {:style {:display "none"}
+           :type :file
+           :accept ".png, .jpg, .jpeg"
+           :id "profile-image"
+           :ref (fn [el]
+                  (when el
+                    (log/debug "adding onchange event")
+                    (.addEventListener el
+                                       "change"
+                                       (fn [e]
+                                         (log/debug "profile-image on-change")
+                                         (let [files (-> e .-target .-files)
+                                               file (if (> (.-length files) 0)
+                                                      (aget files 0)
+                                                      nil)]
+                                           (read-image-data image-data file))))))}])
 
 (defn- show-form [profile-data]
   (r/with-let [f (profileform {:label? false} profile-data)
@@ -103,18 +123,9 @@
       [:form
        {:on-submit event}
        [:div.image
-        [:input {:style {:display "none"}
-                 :type :file
-                 :accept ".png, .jpg, .jpeg"
-                 :on-change (fn [e]
-                              (let [files (-> e .-target .-files)
-                                    file (if (> (.-length files) 0)
-                                           (aget files 0)
-                                           nil)]
-                                (read-image-data image-data file)))
-                 :id "profile-image"}]
+        [input-image image-data]
         (let [img-src (get-image-url image-data (:profile/image-url profile-data))]
-          (if (:profile/image-url profile-data)
+          (if img-src
             [:<>
              [:div.wrapper
               [edit]
