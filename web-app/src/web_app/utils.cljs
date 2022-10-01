@@ -5,6 +5,12 @@
             [taoensso.timbre :as log]
             [web-app.db :as db]))
 
+(def rooms #{:views/room
+             :views.room/create
+             :views.room/jam
+             :views.room/host
+             :views.room/join})
+
 (defn kw->str [x]
   (if (keyword? x)
     (subs (str x) 1)

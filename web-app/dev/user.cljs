@@ -22,6 +22,8 @@
   (swap! app-db dissoc :room/jam)
 
   (get-in @app-db [:teleporters])
+  (get-in @app-db [:navigation/routes])
+  (get-in @app-db [:navigation.room/routes])
 
   (get-in @app-db [:auth/user])
   (get-in @app-db [:room/jam :room/jammers])

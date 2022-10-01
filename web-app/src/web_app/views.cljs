@@ -52,6 +52,7 @@
       ;;             :logged-out? (auth/logged-out? @user)
       ;;             :login-view? login-view?
       ;;             :!login-view (not login-view?)})
+      (rf/dispatch [:navigation/route current-view])
       (if (and (auth/logged-out? @user)
                (not login-view?))
         (do (rfe/push-state :views/start)

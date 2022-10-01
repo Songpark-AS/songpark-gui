@@ -2,7 +2,8 @@
   (:require [re-frame.core :as rf]
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
-            [web-app.components.icon :as icon]))
+            [web-app.components.icon :as icon]
+            [web-app.utils :refer [rooms]]))
 
 
 (defn- get-active-css-class [view-names current]
@@ -11,16 +12,20 @@
     ""))
 
 (defn show-room [view-name]
-  (r/with-let [jamming? (rf/subscribe [:room/jamming?])]
+  (r/with-let [current-view (rf/subscribe [:navigation/current])
+               last-known-room-view (rf/subscribe [:navigation.room/last-known])]
     [:div.room
-     {:class (get-active-css-class #{:views/room
-                                     :views.room/create
-                                     :views.room/jam
-                                     :views.room/host
-                                     :views.room/join} view-name)
-      :on-click #(if @jamming?
-                   (rfe/push-state :views.room/jam)
-                   (rfe/push-state :views/room))}
+     {:class (get-active-css-class rooms view-name)
+      :on-click #(let [view (cond
+                              (not (rooms @current-view))
+                              @last-known-room-view
+
+                              (= @current-view :views.room/jam)
+                              :views.room/jam
+
+                              :else
+                              :views/room)]
+                   (rfe/push-state view))}
      [icon/room]
      "Room"]))
 

@@ -8,6 +8,7 @@
             [web-app.event.fx]
             [web-app.event.jam]
             [web-app.event.mqtt]
+            [web-app.event.navigation]
             [web-app.event.pairing]
             [web-app.event.platform]
             [web-app.event.profile]
