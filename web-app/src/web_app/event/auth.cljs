@@ -24,8 +24,11 @@
             (if-let [room (get-room)]
               {:fx [[:dispatch [:app/init]]
                     [:rfe/push-state [:views.room.join/invite {:normalized-name room}]]]}
-              {:fx [[:dispatch [:app/init]]
-                    [:rfe/push-state :views/room]]}))
+              (let [view (if (:navigation/routes db)
+                           (last (:navigation/routes db))
+                           :views/room)]
+               {:fx [[:dispatch [:app/init]]
+                     [:rfe/push-state view]]})))
      {:db db})))
 
 (rf/reg-event-db
