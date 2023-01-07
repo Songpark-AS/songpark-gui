@@ -29,7 +29,7 @@
   ;; taxonomy
   [songpark/taxonomy "0.3.0-SNAPSHOT"]
   ;; jam
-  [songpark/jam "1.0.0"]
+  [songpark/jam "2.0.0-SNAPSHOT"]
   ;; mqtt
   [songpark/mqtt "1.0.2"]
   [com.cognitect/transit-cljs "0.8.269"]
