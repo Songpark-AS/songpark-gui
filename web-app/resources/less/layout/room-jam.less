@@ -36,12 +36,8 @@
       margin-left: 5px;
     }
   }
-  .jammers {
-    border-top-left-radius: 1.5rem;
-    border-top-right-radius: 1.5rem;
-    background-color: @knob-bg-color2;
+  .jammers-wrapper {
     position: relative;
-    padding-bottom: 2em;
     .status {
       position: absolute;
       top: 0px;
@@ -57,9 +53,34 @@
         border-top: 5px @status-in-room solid;
       }
       &.failed {
-        border-top: 5px @status-not-linked solid;
+        height: 50px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        background-color: @status-not-linked;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: -30px;
+        padding-bottom: 20px;
+        z-index: 1;
+      }
+      div {
+        color: white;
+        display: flex;
+        justify-content: center;
+        .stream {
+          margin-right: 2em;
+        }
       }
     }
+  }
+  .jammers {
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+    background-color: @knob-bg-color2;
+    position: relative;
+    padding-bottom: 2em;
+    z-index: 10;
     .jamming {
       padding: 2rem 1rem 0 1rem;
     }
