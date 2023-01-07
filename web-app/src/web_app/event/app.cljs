@@ -1,6 +1,6 @@
 (ns web-app.event.app
   (:require [re-frame.core :as rf]
-            [songpark.jam.util :refer [get-jam-topic-subscriptions]]
+            [songpark.jam.util :refer [get-jam-subscription-topic]]
             [songpark.mqtt :as mqtt]
             [songpark.mqtt.util :refer [broadcast-topic
                                         heartbeat-topic
@@ -50,8 +50,8 @@
          (mqtt/subscribe mqtt-client {bt 2
                                       ht 2})
          (catch js/Error e (log/error ::handle-init "failed to subscribe." e)))))
-   (doseq [jam jams]
-     (let [topics (get-jam-topic-subscriptions :app jam)]
+   (doseq [{:keys [jam/id] :as jam} jams]
+     (let [topics (get-jam-subscription-topic id)]
        (try
          (mqtt/subscribe mqtt-client topics)
          (catch js/Error e (log/error ::handle-init "failed to subscribe." e)))))

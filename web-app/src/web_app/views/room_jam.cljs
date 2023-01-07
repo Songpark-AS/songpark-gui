@@ -59,39 +59,40 @@
       [:div.text "Accept"]]]]])
 
 (defn- status-indicator [jam-status jammers]
-  (let [{:jam/keys [sip stream sync status]} @jam-status]
+  (let [{:jam/keys [stream sync status]} @jam-status
+        status (and
+                (> (count @jammers) 0)
+                (cond
+                  (#{:stream/broken :stream/stopped} stream) "failed"
+
+                  (#{:stream/streaming} stream) "streaming"
+
+                  :else "idle"))]
     [:div.status
-     {:class (and
-              (> (count @jammers) 0)
-              (cond
-                (or (#{:stream/broken :stream/stopped} stream)
-                    (#{:sync/sync-failed} sync)) "failed"
-
-                (#{:sip/call-ended} sip) "idle"
-
-                (or (#{:sip/in-call :sip/call :sip/calling} sip)
-                    (#{:stream/streaming} stream)
-                    (#{:sync/syncing :sync/synced} sync)) "streaming"
-
-                :else "idle"))}]))
+     {:class status}
+     (when (= status "failed")
+       [:div
+        [:span.stream (str "stream " (name stream))]
+        [:span.sync (str "sync " (name sync))]])]))
 
 (defn- show-jammers [room-id owner? status]
   (r/with-let [owner (rf/subscribe [:room/people :owner])
                jammers (rf/subscribe [:room/people :jamming])
                knockers (rf/subscribe [:room/people :knocking])]
-    [:div.jammers
+    [:div.jammers-wrapper
      [status-indicator status jammers]
-     [:div.jamming
-      [show-jammer room-id @owner]
-      [:<>
-       (for [{:keys [auth.user/id] :as jammer} @jammers]
-         ^{:key [::jammer id]}
-         [show-jammer room-id jammer owner?])]]
-     [:div.knockers
-      (for [{:keys [auth.user/id] :as knocker} @knockers]
-        ^{:key [::knocker id]}
-        [show-knocker room-id knocker])]
-     [filler]]))
+     [:div.jammers
+      [:div.jamming
+       [show-jammer room-id @owner]
+       [:<>
+        (for [{:keys [auth.user/id] :as jammer} @jammers]
+          ^{:key [::jammer id]}
+          [show-jammer room-id jammer owner?])]]
+      [:div.knockers
+       (for [{:keys [auth.user/id] :as knocker} @knockers]
+         ^{:key [::knocker id]}
+         [show-knocker room-id knocker])]
+      [filler]]]))
 
 (defn- show-jam [jam status]
   (let [{room-id :room/id
