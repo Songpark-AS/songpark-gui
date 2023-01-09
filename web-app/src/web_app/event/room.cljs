@@ -134,11 +134,13 @@
 (rf/reg-event-fx
  :room.jam/leave
  (fn [_ [_ room-id]]
-   {:dispatch [:http/post
-               (get-api-url "/room/jam/leave")
-               {:room/id room-id}
-               :room.jam/left
-               :room.jam/left-failed]}))
+   (if room-id
+     {:dispatch [:http/post
+                 (get-api-url "/room/jam/leave")
+                 {:room/id room-id}
+                 :room.jam/left
+                 :room.jam/left-failed]}
+     {:dispatch [:room.jam/left nil]})))
 
 (rf/reg-event-fx
  :room.jam/left
