@@ -263,8 +263,9 @@
    (let [response (:response data)]
      (update-cofx-from-error-message cofx response ?context))))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  :room.jam.mqtt/removed
- (fn [db [_ data]]
-   (assoc db :room/jam (:room/jam data))))
+ (fn [{:keys [db]} [_ data]]
+   {:db (dissoc db :room/jam)
+    :rfe/push-state :views/room}))
 ;; eof jam remove
