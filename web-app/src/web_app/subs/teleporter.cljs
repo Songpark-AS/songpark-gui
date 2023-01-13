@@ -96,23 +96,15 @@
  (fn [db [_ tp-id]]
    (let [tp-id (get-tp-id db tp-id)
          status (get-in db [:teleporters tp-id :jam/status] :idle)
-         sip (get-in db [:teleporters tp-id :jam/sip])
          stream (get-in db [:teleporters tp-id :jam/stream])
          sync (get-in db [:teleporters tp-id :jam/sync])
-         out {:jam/status status
-              :jam/sip sip
-              :jam/stream stream
-              :jam/sync sync}
-         with-tp-id (if-not (#{:idle :jam/waiting} status)
-                      (reduce (fn [out [_ {:keys [jam/members]}]]
-                                (let [m (set members)]
-                                 (if (m tp-id)
-                                   (reduced (-> m (disj tp-id) first))
-                                   false)))
-                              false (:jams db))
-                      nil)]
-     (assoc out
-            :jam/with (get-in db [:teleporters with-tp-id :teleporter/nickname])))))
+         syncing (get-in db [:teleporters tp-id :sync/syncing])]
+     (assoc (select-keys (get-in db [:teleporters tp-id])
+                         [:jam/stream
+                          :jam/sync
+                          :sync/syncing
+                          :sync/end])
+            :jam/status status))))
 
 (rf/reg-sub
  :teleporter/setting

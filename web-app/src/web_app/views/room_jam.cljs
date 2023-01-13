@@ -59,21 +59,30 @@
       [:div.text "Accept"]]]]])
 
 (defn- status-indicator [jam-status jammers]
-  (let [{:jam/keys [stream sync status]} @jam-status
+  (let [{:jam/keys [stream sync status]
+         :sync/keys [syncing end]} @jam-status
         status (and
                 (> (count @jammers) 0)
                 (cond
-                  (#{:stream/broken :stream/stopped} stream) "failed"
+                  (or (#{:stream/broken :stream/stopped} stream)
+                      (#{:sync/timeout :sync/failed :sync/end} sync)) "failed"
 
                   (#{:stream/streaming} stream) "streaming"
 
                   :else "idle"))]
     [:div.status
      {:class status}
-     (when (= status "failed")
+     (if (= stream :stream/streaming)
+       [:div [:span.stream "In jam"]]
        [:div
-        [:span.stream (str "stream " (name stream))]
-        [:span.sync (str "sync " (name sync))]])]))
+        (when stream
+          [:span.stream (str "Stream " (name stream))])
+        (when sync
+          [:span.sync (str "Sync " (name sync)
+                           (when (number? syncing)
+                             (str " / attempt " syncing))
+                           (when (map? end)
+                             (str " / retried " (:retried end) " times")))])])]))
 
 (defn- show-jammers [room-id owner? status]
   (r/with-let [owner (rf/subscribe [:room/people :owner])

@@ -37,7 +37,11 @@
    (let [members (:jam/members msg)
          db (assoc-in db [:jams id] (select-keys msg [:jam/id :jam/members]))]
      {:db (reduce (fn [db tp-id]
-                    (assoc-in db [:teleporters tp-id :jam/status] :jamming))
+                    (update-in db [:teleporters tp-id] merge {:jam/status :jamming
+                                                              :jam/stream nil
+                                                              :jam/coredump nil
+                                                              :sync/syncing nil
+                                                              :sync/end nil}))
                   db members)})))
 
 
@@ -49,16 +53,20 @@
      (mqtt/unsubscribe mqtt-client (keys topics)))
    (let [db (reduce (fn [db tp-id]
                       (-> db
-                          (assoc-in [:teleporters tp-id :jam/status] :idle)
-                          (assoc-in [:teleporters tp-id :jam/stream] nil)
-                          (assoc-in [:teleporters tp-id :jam/sync] nil)
-                          (assoc-in [:teleporters tp-id :jam/coredump] nil)))
+                          (update-in [:teleporters tp-id] merge {:jam/status :idle
+                                                                 :jam/stream nil
+                                                                 :jam/coredump nil
+                                                                 :sync/syncing nil
+                                                                 :sync/end nil})))
                     (update-in db [:jams] dissoc id) members)]
      {:db db})))
 
-(defn jam-teleporter-status [db [_ {:keys [teleporter/id event/type]}]]
+(defn jam-teleporter-status [db [_ {:keys [teleporter/id event/type event/value]}]]
   (update-in db [:teleporters id] merge (case type
-                                          :sync/syncing {:jam/sync type}
+                                          :sync/syncing {:jam/sync type
+                                                         type value}
+                                          :sync/end {:jam/sync type
+                                                     type value}
                                           :sync/failed {:jam/sync type}
                                           :sync/synced {:jam/sync type}
                                           :sync/timeout {:jam/sync type}

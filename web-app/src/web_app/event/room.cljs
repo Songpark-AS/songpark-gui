@@ -150,9 +150,9 @@
 
 (rf/reg-event-fx
  :room.jam/left-failed
- (fn [cofx [_ data]]
-   (let [response (:response data)]
-    (update-cofx-from-error-message cofx response))))
+ (fn [{:keys [db]} [_ data]]
+   {:db (dissoc db :room/jam)
+    :rfe/push-state :views/room}))
 
 (rf/reg-event-db
  :room.jam.mqtt/left
@@ -226,10 +226,15 @@
                 :auth.user/id user-id}
                :room.jam/accepted
                :room.jam/accepted-failed]}))
-(rf/reg-event-db
+(rf/reg-event-fx
  :room.jam/accepted
- (fn [db [_ data]]
-   (assoc-in db [:room/jam :room/jammers (:auth.user/id data) :jammer/status] :jamming)))
+ (fn [{:keys [db]} [_ data]]
+   {:dispatch [:http/get
+               (get-api-url "/room")
+               {}
+               :app.init/rooms]
+    :db (assoc-in db [:room/jam :room/jammers (:auth.user/id data) :jammer/status] :jamming)}))
+
 (rf/reg-event-fx
  :room.jam/accepted-failed
  (fn [cofx [_ data]]

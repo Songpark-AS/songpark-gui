@@ -1,8 +1,7 @@
 module.exports = {
     platform: {
         port: 443,
-        //host: "http://127.0.0.1",
-        host:"https://platform.songpark.com",
+        host: "https://songpark.dev.glace.com",
         api_base: "/api",
     },
     mqtt: {
@@ -16,7 +15,6 @@ module.exports = {
     heartbeat: {
         timer: 61000
     },
-    upgrade_timeout: 600000,
     version: "DEV",
     sha: "DEV"
 }
