@@ -1,19 +1,19 @@
 module.exports = {
     platform: {
         port: 443,
-        host: "https://spp.inonit.no",
+        host: "https://platform.songpark.com",
         api_base: "/api",
     },
     mqtt: {
         port: 8000,
-        host: "spmqtt.inonit.no",
+        host: "mqtt.songpark.com",
         userName: "songpark",
         password: "fNhWktaTlfDGlH4mbmaW6esOpgExs8wKIOBapDcq",
         useSSL: true,
         reconnect: true,
     },
     heartbeat: {
-        timer: 8000
+        timer: 61000
     },
     version: "VAR__VERSION",
     sha: "VAR__SHA"

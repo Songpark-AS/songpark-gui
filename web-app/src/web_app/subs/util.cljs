@@ -1,4 +1,5 @@
-(ns web-app.subs.util)
+(ns web-app.subs.util
+  (:require [clojure.string :as str]))
 
 (defn get-selected-teleporter [db]
   (let [tp-id (or (get db :teleporter.view/selected-teleporter)
@@ -10,3 +11,20 @@
                        :teleporter/id))
         teleporter (get-in db [:teleporters tp-id])]
     teleporter))
+
+(defn- get-tp-id [db tp-id]
+  (or
+   tp-id
+   (:teleporter/id db)
+   (->> db
+        :teleporters
+        (vals)
+        first
+        :teleporter/id)))
+
+(defn get-input-kw [input k]
+  (let [input* (name input)
+        ns* (namespace k)
+        n* (name k)]
+    (keyword (str/join "." (flatten (remove nil? ["fx" input* ns*])))
+             n*)))

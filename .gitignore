@@ -31,3 +31,4 @@ deployment/songpark-webapp.yaml
 *.png-autosave.kra
 
 web-app/resources/public/css/App.css
+*.less.css

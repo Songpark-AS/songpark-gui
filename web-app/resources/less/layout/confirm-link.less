@@ -1,0 +1,31 @@
+@import '../colors.less';
+.confirm-link {
+  .intro {
+    margin-bottom: 30px;
+  }
+  .note {
+    color: white;
+    font-weight: bold;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  .teleporter {
+    position: relative;
+    .circle {
+      z-index: 0;
+      position: absolute;
+      top: 10%;
+      left: 10%;
+      height: 80%;
+      width: 80%;
+      background-color: @knob-alt-color1;
+      border-radius: 50%;
+    }
+    img {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+    }
+  }
+}

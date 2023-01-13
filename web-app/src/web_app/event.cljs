@@ -3,9 +3,16 @@
             [re-frame.core :as rf]
             [taoensso.timbre :as log]
             [web-app.db :as db]
+            [web-app.event.app]
+            [web-app.event.auth]
+            [web-app.event.fx]
             [web-app.event.jam]
             [web-app.event.mqtt]
+            [web-app.event.navigation]
+            [web-app.event.pairing]
             [web-app.event.platform]
+            [web-app.event.profile]
+            [web-app.event.room]
             [web-app.event.teleporter]
             [web-app.event.ui]
             [web-app.utils]))
@@ -33,8 +40,9 @@
       this
       (do (log/info "Starting EventManager")
           (rf/dispatch-sync [::initialize-db])
-          (rf/dispatch [:init-app])
-          (rf/dispatch [:fetch-platform-version])
+          (rf/dispatch [:auth/whoami])
+          ;; (rf/dispatch [:init-app])
+          ;; (rf/dispatch [:fetch-platform-version])
           (log/info "Setting no contextmenu")
           (set-no-contextmenu!)
           (assoc this

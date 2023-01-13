@@ -1,0 +1,165 @@
+@import '../colors.less';
+
+.jam {
+  .jam-action {
+    color: white;
+    font-weight: bold;
+    margin-left: 1rem;
+    &:hover {
+      cursor: pointer;
+    }
+    div {
+      display: flex;
+      // font-size: 1.2rem;
+      .material-symbols-outlined {
+        // font-size: 1.8rem;
+        margin-right: 5px;
+      }
+    }
+  }
+  .room-name {
+    margin: 1rem 0 2rem 2rem;
+    font-size: 2rem;
+    font-weight: bold;
+    color: @knob-alt-color1;
+  }
+  .share-link {
+    color: white;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+    &:hover {
+      cursor: pointer;
+    }
+    .material-symbols-outlined {
+      margin-left: 5px;
+    }
+  }
+  .jammers-wrapper {
+    .status {
+      position: relative;
+      bottom: -20px;
+      border-radius: 50%;
+      width: 100%;
+      height: 50px;
+      border-radius: 1.5rem;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-bottom: 20px;
+      &.idle {
+        background-color: @status-linked;
+      }
+      &.streaming {
+        background-color: @status-in-room;
+      }
+      &.failed {
+        background-color: @status-not-linked;
+      }
+      div {
+        color: white;
+        display: flex;
+        justify-content: center;
+        .stream {
+          margin-right: 2em;
+        }
+      }
+    }
+  }
+  .jammers {
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+    background-color: @knob-bg-color2;
+    position: relative;
+    padding-bottom: 2em;
+    .jamming {
+      padding: 2rem 1rem 0 1rem;
+    }
+    .jammer {
+      display: flex;
+      align-items: center;
+      &.owner {
+        margin-bottom: 1rem;
+      }
+      .image {
+        margin-right: 1rem;
+        .material-symbols-outlined {
+          font-size: 3rem;
+          font-weight: bold;
+        }
+        img {
+          object-fit: cover;
+          border-radius: 50%;
+          width: 45px;
+          height: 45px;
+        }
+      }
+      .details {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .name {
+          font-weight: bold;
+        }
+        .decline, .accept {
+          display: flex;
+          flex-direction: column;
+        }
+        .decline {
+          color: @status-not-linked;
+        }
+        .accept {
+          color: @status-in-room;
+        }
+        .remove, .decline, .accept {
+          display: flex;
+          align-items: center;
+          .material-symbols-outlined {
+            font-weight: bold;
+          }
+          &:hover {
+            cursor: pointer;
+          }
+        }
+        .actions {
+          z-index: 999999;
+          display: flex;
+          gap: 1.5rem;
+        }
+        @media @break-small {
+          .actions {
+            gap: 0.5rem;
+          }
+        }
+      }
+    }
+    .knockers {
+      margin-top: 80px;
+      position: relative;;
+      .knocker {
+        position: relative;
+        padding: 1rem 1.5rem 1rem 1rem;
+        margin-right: 0.5rem;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;;
+        border-bottom-right-radius: 4rem;
+        border-top-right-radius: 4rem;;
+        background-color: @knob-alt-color2;
+        color: white;
+      }
+    }
+  }
+  .knocking {
+    .punchline {
+      color: white;
+      font-size: 3rem;
+      font-weight: bold;
+      margin-left: 2rem;
+
+    }
+  }
+}

@@ -1,6 +1,6 @@
 (ns web-app.event.jam
   (:require [re-frame.core :as rf]
-            [songpark.jam.util :refer [get-jam-topic-subscriptions]]
+            [songpark.jam.util :refer [get-jam-subscription-topic]]
             [songpark.mqtt :as mqtt]
             [taoensso.timbre :as log]
             [web-app.data :as data]
@@ -29,25 +29,19 @@
         :dispatch [:http/delete (get-api-url "/jam") {:jam/id jam-id}]}))))
 
 (rf/reg-event-fx
- :jam/ask
- (fn [_ [_ tp-id]]
-   {:dispatch [:http/put (get-api-url "/jam/ask") {:teleporter/id tp-id}]}))
-
-(rf/reg-event-fx
- :jam/obviate
- (fn [_ [_ tp-id]]
-   {:dispatch [:http/delete (get-api-url "/jam/ask") {:teleporter/id tp-id}]}))
-
-(rf/reg-event-fx
  :jam/started
  [mqtt-client]
  (fn [{:keys [db mqtt-client]} [_ {:keys [jam/id] :as msg}]]
-   (let [topics (get-jam-topic-subscriptions :app msg)]
+   (let [topics (get-jam-subscription-topic id)]
      (mqtt/subscribe mqtt-client topics))
    (let [members (:jam/members msg)
          db (assoc-in db [:jams id] (select-keys msg [:jam/id :jam/members]))]
      {:db (reduce (fn [db tp-id]
-                    (assoc-in db [:teleporters tp-id :jam/status] :jamming))
+                    (update-in db [:teleporters tp-id] merge {:jam/status :jamming
+                                                              :jam/stream nil
+                                                              :jam/coredump nil
+                                                              :sync/syncing nil
+                                                              :sync/end nil}))
                   db members)})))
 
 
@@ -55,22 +49,31 @@
  :jam/stopped
  [mqtt-client]
  (fn [{:keys [db mqtt-client]} [_ {:keys [jam/id jam/members] :as msg}]]
-   (let [topics (get-jam-topic-subscriptions :app msg)]
+   (let [topics (get-jam-subscription-topic id)]
      (mqtt/unsubscribe mqtt-client (keys topics)))
    (let [db (reduce (fn [db tp-id]
                       (-> db
-                          (assoc-in [:teleporters tp-id :jam/status] :idle)
-                          (assoc-in [:teleporters tp-id :jam/sip] nil)
-                          (assoc-in [:teleporters tp-id :jam/stream] nil)
-                          (assoc-in [:teleporters tp-id :jam/sync] nil)
-                          (assoc-in [:teleproters tp-id :jam/coredump] nil)))
+                          (update-in [:teleporters tp-id] merge {:jam/status :idle
+                                                                 :jam/stream nil
+                                                                 :jam/coredump nil
+                                                                 :sync/syncing nil
+                                                                 :sync/end nil})))
                     (update-in db [:jams] dissoc id) members)]
      {:db db})))
 
-(defn jam-teleporter-status [db [_ {:keys [teleporter/id jam/teleporters]}]]
-  (reduce (fn [db [tp-id {:keys [sip stream sync]}]]
-            (update-in db [:teleporters id] merge {:jam/sip sip :jam/stream stream :jam/sync sync}))
-          db teleporters))
+(defn jam-teleporter-status [db [_ {:keys [teleporter/id event/type event/value]}]]
+  (update-in db [:teleporters id] merge (case type
+                                          :sync/syncing {:jam/sync type
+                                                         type value}
+                                          :sync/end {:jam/sync type
+                                                     type value}
+                                          :sync/failed {:jam/sync type}
+                                          :sync/synced {:jam/sync type}
+                                          :sync/timeout {:jam/sync type}
+                                          :sync/responded {:jam/sync type}
+                                          :stream/stopped {:jam/stream type}
+                                          :stream/streaming {:jam/stream type}
+                                          :stream/broken {:jam/stream type})))
 
 (rf/reg-event-db
  :jam.teleporter/status

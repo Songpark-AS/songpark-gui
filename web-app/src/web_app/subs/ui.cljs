@@ -15,12 +15,7 @@
    (get-in db [:component/radio-group group-key] default-value)))
 
 
-
-(comment
-  @(rf/subscribe [:data/msg])
-  @(rf/subscribe [:teleporters])
-  @(rf/subscribe [:teleporter/net-config #uuid "ad6fc5b7-c52c-5941-bfb7-cf4fb4189775"])
-
-  
-
-  )
+(rf/reg-sub
+ :ui.fx.input/tab
+ (fn [db [_ input default]]
+   (get-in db [:ui.fx.input/tab input] (str input default))))

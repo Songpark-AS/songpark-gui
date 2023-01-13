@@ -14,36 +14,15 @@
                :message "Invalid IP-address"
                :showIcon true}]))
 
-
-
 (defn text-adapter [{:keys [element] :as field}]
   (let [f (r/adapt-react-class element)]
     (fn [{:keys [model value label placeholder disabled] :as data}]
-      [f (merge {:value @model
+      [f (merge {:default-value @model
                  :placeholder placeholder
                  :label label
                  :disabled disabled
                  :on-change #(reset! model (-> % .-target .-value))}
                 (select-keys data [:id]))])))
-
-(defn checkbox-adapter [{:keys [element] :as field}]
-  (let [f (r/adapt-react-class element)]
-    (fn [{:keys [model] :as data}]
-      [f (merge {:checked @model
-                 :on-change #(reset! model (-> % .-target .-checked))}
-                (select-keys data [:id]))])))
-
-(defn input-text [{:keys [model placeholder disabled]}]
-  [:input.input {:type :text
-                 :placeholder placeholder
-                 :value @model
-                 :disabled disabled
-                 :on-change #(reset! model (-> % .-target .-value))}])
-
-(defn input-checkbox [{:keys [model]}]
-  [:input.input {:type :checkbox
-                 :value @model
-                 :on-change #(reset! model (-> % .-target .-checked))}])
 
 (defform form-ipv4
   {}
@@ -67,16 +46,13 @@
     :validation :teleporter/ip}])
 
 (defn ipv4-config [tp-id network-config]
-  (let [form (form-ipv4 {} network-config)
-        data-form (rf/subscribe [:ez-wire.form/on-valid (:id form)])]
+  (r/with-let [form (form-ipv4 {} network-config)
+               data-form (rf/subscribe [:ez-wire.form/on-valid (:id form)])]
     [:div.ipv4-form
-     ;; [:pre (pr-str @data-form)]
-     ;; [:pre (pr-str @(:data form))]
-     ;; [:pre (pr-str @network-config)]
      [form/as-table {} form]
      [:> Button {:type "primary"
                  :on-click #(rf/dispatch [:teleporter/save-ipv4
                                           tp-id
                                           (assoc @data-form
                                                  :ip/dhcp? false)])}
-      "Save"]]))
+      "Set network"]]))

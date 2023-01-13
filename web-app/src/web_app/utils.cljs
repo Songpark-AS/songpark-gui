@@ -1,8 +1,25 @@
 (ns web-app.utils
-  (:require [re-frame.core :as rf]
+  (:require [clojure.string :as str]
+            [re-frame.core :as rf]
             [songpark.common.config :refer [config]]
             [taoensso.timbre :as log]
             [web-app.db :as db]))
+
+(def rooms #{:views/room
+             :views.room/create
+             :views.room/jam
+             :views.room/host
+             :views.room/join})
+
+(defn kw->str [x]
+  (if (keyword? x)
+    (subs (str x) 1)
+    x))
+
+(defn str->kw [x]
+  (if (string? x)
+    (keyword x)
+    x))
 
 (defn get-api-url [path]
   (str (:host (:platform @config))
@@ -63,3 +80,23 @@
   (let [timeout-obj (js/setTimeout #(rf/dispatch [:teleporter/online? tp-id false])
                                    timeout-ms)]
     (rf/dispatch [:teleporter/offline-timeout tp-id timeout-obj])))
+
+(defn get-room
+  "Get the room from the query parametersx"
+  ([]
+   (get-room js/window.location.search))
+  ([text]
+   (when (and (not (str/blank? text))
+              (str/starts-with? text "?"))
+     (subs text 1))))
+
+(defn clear-room!
+  "Clear room from the query parameters"
+  []
+  (when-not (str/blank? js/window.location.search)
+    (let [new-url (str js/window.location.protocol
+                       "//"
+                       js/window.location.host
+                       js/window.location.pathname
+                       js/window.location.hash)]
+      (js/window.history.pushState #js {:path new-url} "" new-url))))

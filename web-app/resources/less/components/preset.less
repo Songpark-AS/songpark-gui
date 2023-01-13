@@ -1,0 +1,127 @@
+@import '../colors.less';
+
+.preset {
+  .info {
+    background-color: @knob-bg-color1;
+    color: @knob-alt-color1;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: 1em;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 5px;
+    .left {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      .current {
+        font-size: 0.8rem;
+      }
+      .name {
+        font-size: 1.5rem;
+      }
+    }
+    .right {
+      display: flex;
+      justify-content: flex-end;
+      gap: 2em;
+      width: 100%;
+      .save {
+        font-weight: bold;
+        font-size: 1rem;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+    .change span {
+      font-size: 2rem !important;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+  .body {
+    -webkit-transition: height 500ms ease-out;
+    -moz-transition: height 500ms ease-out;
+    transition: height 500ms ease-out;
+    background-color: @preset-background;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 5px;
+    visibility: hidden;
+    height: 0;
+    position: absolute;
+    z-index: 1000;
+    overflow-y: scroll;
+
+    .navigation {
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      &:hover {
+        cursor: pointer;
+      }
+      .material-symbols-outlined {
+        transform: rotate(180deg);
+      }
+      span, div {
+        font-size: 2rem;
+      }
+    }
+    h2 {
+      color: white;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      margin-bottom: 1rem;
+    }
+    h2.user-effects {
+      margin-top: 2rem;
+    }
+  }
+  &.active {
+    .body {
+      visibility: visible;
+      height: 500px;
+      margin-bottom: 3rem;
+    }
+    .info {
+      visibility: hidden;
+      height: 0;
+    }
+  }
+
+  .preset {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    > div:first-child {
+      display: flex;
+      flex-direction: column;
+    }
+    .title {
+      font-size: 1.5rem;
+    }
+    .fxs {
+      color: @preset-fx;
+      &::first-letter {
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  .add {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    &:hover {
+      cursor: pointer;
+    }
+    span {
+      font-size: 2rem;
+    }
+  }
+
+}

@@ -1,0 +1,83 @@
+@import '../colors.less';
+
+.room-invite {
+  .error {
+    margin-bottom: 0.5em;
+    font-size: 2em;
+    color: @status-not-linked;
+    background-color: @dark-brown;
+    text-align: center;
+  }
+  .take-me-back {
+    color: white;
+    margin-bottom: 3em;
+    margin-left: 2em;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  #logo {
+    fill: white;
+  }
+}
+
+.room-join {
+  display: flex;
+  flex-direction: column;
+  .intro {
+    margin-bottom: 2rem;
+  }
+  table {
+    width: 100%;
+    input {
+      background-color: @light-brown;
+      border: 0;
+      border-bottom: 1px solid @knob-alt-color1;
+      border-radius: 0;
+      &:focus {
+        outline: 0;
+        box-shadow: 0 0 0 0 rgba(0,0,0,0);
+        border-bottom: 1px solid @knob-alt-color1;
+      }
+      &:hover {
+        border-color: @knob-alt-color1;
+      }
+    }
+  }
+  .container {
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+  .host-room {
+    margin-top: 10px;
+    color: @knob-alt-color1;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .history {
+    margin: 1rem 0;
+    h3 {
+      text-transform: uppercase;
+      color: @knob-alt-color1;
+    }
+    .history-entry {
+      border-top: 1px solid @light-white;
+      padding: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: @knob-alt-color1;
+      .room-name {
+        font-size: 1.3rem;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+      .error {
+        margin: auto;
+      }
+    }
+  }
+}

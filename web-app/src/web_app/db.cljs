@@ -3,7 +3,8 @@
   (:refer-clojure :exclude [get-in]))
 
 (def default-db
-  {:teleporters {}})
+  {:teleporters {}
+   :error/messages (list)})
 
 
 (defn get-in

@@ -1,0 +1,24 @@
+@import '../colors.less';
+
+.paired {
+  .ant-btn {
+    margin-bottom: 20px;
+  }
+  &.success {
+    text-align: center;
+    margin-top: 100px;
+    img {
+      width: 200px;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+    .connected, .nickname {
+      color: @footer-brown2;
+      font-size: 1.5rem;
+    }
+    .connected {
+      font-weight: bold;
+    }
+  }
+}

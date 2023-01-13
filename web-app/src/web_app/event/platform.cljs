@@ -11,7 +11,10 @@
 (rf/reg-event-fx
  :platform/fetch-latest-available-apt-version
  (fn [_ _]
-   {:dispatch [:http/get (get-platform-url "/latest-available-version") nil :platform/set-latest-available-apt-version]}))
+   {:dispatch [:http/get
+               (get-platform-url "/latest-available-version")
+               nil
+               :platform/set-latest-available-apt-version]}))
 
 (rf/reg-event-db
  :set-platform-version

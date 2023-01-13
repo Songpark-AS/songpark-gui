@@ -1,0 +1,135 @@
+@import '../colors.less';
+
+.input {
+  .wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 2em;
+    .preset {
+      flex-grow: 10;
+    }
+  }
+}
+
+.input-fx {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.output-fx {
+  @media @break-small {
+    position: relative;
+    margin-left: -1em;
+    margin-right: -1em;
+  }
+  min-height: 150px;
+  background-color: @knob-bg-color2;
+  &.Gate {
+    .ant-tabs-tab:nth-child(1)  .ant-tabs-tab-btn {
+      color: rgba(255,255,255,1);
+    }
+  }
+  &.Reverb {
+    .ant-tabs-tab:nth-child(2)  .ant-tabs-tab-btn {
+      color: rgba(255,255,255,1);
+    }
+  }
+  &.Amplify {
+    .ant-tabs-tab:nth-child(3)  .ant-tabs-tab-btn {
+      color: rgba(255,255,255,1);
+    }
+  }
+  &.Equalizer {
+    .ant-tabs-tab:nth-child(4)  .ant-tabs-tab-btn {
+      color: rgba(255,255,255,1);
+    }
+  }
+  &.Echo {
+    .ant-tabs-tab:nth-child(5)  .ant-tabs-tab-btn {
+      color: rgba(255,255,255,1);
+    }
+  }
+  &.Compressor {
+    .ant-tabs-tab:nth-child(6)  .ant-tabs-tab-btn {
+      color: rgba(255,255,255,1);
+    }
+  }
+  .ant-tabs-nav {
+    background-color: @knob-bg-color1;
+    padding: 10px 20px;
+    margin: 0;
+    &::before {
+      border: 0;
+    }
+    .ant-tabs-tab {
+      padding: 8px 0;
+      text-align: center;
+    }
+    .ant-tabs-tab-btn {
+      width: 100%;
+      color: rgba(255,255,255,0.5);
+      text-shadow: none !important;
+    }
+  }
+  .inner {
+    padding-top: 10px;
+    > h2 {
+      margin-left: 20px;
+    }
+  }
+  .switch {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .inner {
+    background-color: @knob-bg-color2;
+    .ant-switch-handle::before {
+      background-color: @knob-alt-color1;
+    }
+    .ant-switch, .ant-switch-checked {
+      background-color: @knob-bg-color1;
+    }
+    .ant-switch-inner {
+      color: @knob-alt-color1;
+    }
+    .knobs, .sliders {
+      display: flex;
+      justify-content: center;
+      padding-bottom: 20px;
+    }
+    .sliders {
+      .slider {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 80px;
+        h2 {
+          font-size: 1em;
+          text-align: center;
+        }
+      }
+      .ant-slider-vertical {
+        height: 120px;
+        .ant-slider-rail,
+        .ant-slider-track {
+          width: 8px;
+          border-radius: 8px;
+        }
+        .ant-slider-rail {
+          background-color: @slider-rail;
+        }
+        .ant-slider-track {
+          background-color: @slider-track;
+        }
+        .ant-slider-handle {
+          background-color: @slider-handle;
+          border: solid 2px @slider-rail;
+          margin-left: -3px;
+        }
+      }
+    }
+  }
+}

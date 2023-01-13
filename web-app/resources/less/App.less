@@ -1,281 +1,51 @@
+/* Ant Design specific */
 @import 'antd/dist/antd.less';
 @import './theme.less';
+@import './media-rules.less';
+@import './error-boundary.less';
 
-.ant-layout-content {
-    overflow: hidden;
-}
+/* Layout */
+@import 'layout/base.less';
+@import 'layout/body.less';
+@import 'layout/splash.less';
+@import 'layout/start.less';
+@import 'layout/topbar.less';
+@import 'layout/footer.less';
+@import 'layout/login.less';
+@import 'layout/forgot-password.less';
+@import 'layout/reset-password.less';
+@import 'layout/verify-email.less';
+@import 'layout/signup.less';
+@import 'layout/pairing.less';
+@import 'layout/paired.less';
+@import 'layout/confirm-link.less';
+@import 'layout/profile.less';
+@import 'layout/teleporter.less';
+@import 'layout/change-password.less';
+@import 'layout/levels.less';
+@import 'layout/input.less';
+@import 'layout/room.less';
+@import 'layout/room-host.less';
+@import 'layout/room-jam.less';
+@import 'layout/room-join.less';
+@import 'layout/room-create.less';
 
-.dev {
-    width: min(100%, 38rem);
-    margin-inline: auto;
-    .cards {
-        display: grid;
-        grid-row-gap: 2rem;
-    }
-    .topbar {
-        .tps-container {
-            @tp-btn-width: 10rem;
-            @tp-btn-gap: 0.8rem;
-            position: relative;
-            width: 100%;
-            height: 40px;
-            .tps {
-                position: absolute;
-                display: flex;
-                gap: @tp-btn-gap;
-                left: calc(50% - (@tp-btn-width / 2 ));
-                .ant-btn {
-                    font-weight: bold;
-                    background-color: @sp-tp-btn-inactive-background-color;
-                    border: 0;
-                    color: @sp-tp-btn-inactive-color;
-                    width: @tp-btn-width;
-                    &.active {
-                        background-color: @sp-tp-btn-active-background-color;
-                        color: @sp-tp-btn-active-color;
-                    }
-                }
-            }
-        }
-        .status {
-            margin-top: 0.6rem;
-            text-align: center;
-            padding: 0 20%;
-        }
-    }
-    .ant-card {
-        border-radius: 1.2rem;
-        .ant-card-body {
-            &::before,&::after {
-                content: none;
-            }
-            display: grid;
-            grid-row-gap: 1.2rem;
-            .ant-divider-horizontal {
-                margin: 0;
-                &.ant-divider-with-text {
-                    user-select: none;
-                    &::before, &::after {
-                        position: static;
-                    }
-                }
-            }
-        }
-    }
-    .ant-radio-group-solid {
-        @border-radius: 0.2rem;
-        // width: min(100%, 36rem);
-        // margin-inline: auto;
-        user-select: none;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        .ant-radio-button-wrapper {
-            background: @sp-radio-button-wrapper-background;
-            color: @sp-radio-button-wrapper-color;
-            border: unset;
-            text-align: center;
-            flex: 1;
-            &:first-child {
-                border-radius: @border-radius 0 0 @border-radius;
-            }
-            &:last-child {
-                border-radius: 0 @border-radius @border-radius 0;
-            }
-        }
-        .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
-            background: @radio-btn-solid-checked-background;
-            border-color: @radio-btn-solid-checked-border-color;
-            color: @radio-btn-solid-checked-color;
-            &::before {
-                background-color: unset;
-            }
-        }
-    }
-    .sp-slider {
-        @height: 2.85rem;
-        @border-radius: 0.4rem;
-        @label-top: -0.2rem;
-        &.overload {
-            .ant-slider .ant-slider-track {
-                background-color: @sp-overload-bg-color;
-            }
-        }
-        .label {
-            user-select: none;
-            font-weight: bold;
-            position: relative;
-            left: 0.6rem;
-            top: @label-top;
-            font-size: 0.8rem;
-        }
-        .pd-value {
-            color: @sp-slider-pd-value-color;
-            font-size: 1rem;
-            position: relative;
-            top: calc(@height/1.3 * -1);
-            left: 1rem;
-            z-index: 2;
-            pointer-events: none;
-            user-select: none;
-            mix-blend-mode: difference;
-        }
+/* Components */
+@import 'components/knob.less';
+@import 'components/jammer.less';
+@import 'components/preset.less';
+@import 'components/icon.less';
 
-        .sp-slider-clip {
-            height: 2.85rem;
-            width: 100%;
-            border-radius: @border-radius;
-            overflow: hidden;
-        }
+/* Generic */
+@import 'generic/form.less';
+@import 'generic/intro.less';
+@import 'generic/squeezed.less';
+@import 'generic/history.less';
+@import 'generic/filler.less';
 
-        .ant-slider {
-            height: @height;
-            margin: 0;
-            padding: 0;
-            .ant-slider-step {
-                height: @height;
-            }
-            .ant-slider-rail {
-                height: @height;
-                border-radius: 0;
-                background-color: @slider-rail-background-color;
-            }
-            .ant-slider-track {
-                height: @height;
-                background-color: @sp-slider-track-color;
-                border-radius: 0;
-            }
-            .ant-slider-handle {
-                margin-top: 0;
-                border-radius: 0;
-                height: 100%;
-                border: 0;
-                background-color: transparent;
-                box-shadow: none;
-            }
-        }
-    }
-    .v-switch {
-        justify-self: end;
-        display: grid;
-        align-items: center;
-        grid-template-columns: auto 1fr;
-        grid-column-gap: 0.4rem;
-        .label {
-            user-select: none;
-            font-weight: bold;
-            font-size: 0.7rem;
-        }
-    }
-    .ant-switch-checked .ant-switch-inner {
-        color: @sp-switch-checked-color;
-    }
-
-    .pd-display{
-        position: relative;
-        .latency-text {
-            display: block;
-        }
-        .latency-triangle {
-            position: absolute;
-            left: 0;
-            &::after {
-                position: relative;
-                left: -50%;
-            }
-        }
-    }
-
-
-    .triangle-up::after {
-        content: '\25b2';
-    }
-
-    .triangle-down::after {
-        content: '\25bc';
-    }
-    .tp-details {
-        padding-bottom: 20px;
-        position: relative;
-        margin: 2rem 0 0 0;
-        @border-height: 40px;
-        .ant-card {
-            background-color: transparent;
-        }
-        .status {
-            text-align: center;
-            margin: .6rem 0 0 0;
-        }
-        .bottom-border {
-            border-bottom: 3px @sp-scroller-color solid;
-            position: relative;
-            height: @border-height;
-            width: 100vw;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
-        }
-        .scroll-area {
-            cursor: pointer;
-            position: relative;
-            //background-color: green;
-            height: @border-height;
-            top: -20px;
-            width: 100vw;
-            left: 50%;
-            right: 50%;
-            margin-left: -50vw;
-            margin-right: -50vw;
-            touch-action: none;
-        }
-        .board {
-            display: none;
-            margin-bottom: 2rem;
-            &.show {
-                display: block;
-            }
-        }
-        .logo {
-            cursor: pointer;
-            touch-action: none;
-            position: absolute;
-            bottom: -40px;
-
-            // 1.2rem is the padding on layout on mobile screens
-            // 3px    is the border width
-            // 38rem  is the width of .dev when there is space enough
-            left: calc(50% - (min(50% - 1.2rem + 3px, (38rem / 2) + 3px)) + 1rem);
-
-            height: 80px;
-            background-color: @layout-body-background;
-            border-radius: 20em;
-            border: 3px @sp-scroller-color solid;
-            z-index: 1;
-        }
-        .versions {
-            margin-bottom: 30px;
-            span {
-                font-weight: bold;
-                color: white;
-                margin-bottom: 0.5rem;
-                display: block;
-            }
-        }
-        .commands {
-            display: grid;
-            grid-row-gap: 1rem;
-            margin-bottom: 2rem;
-            .ant-btn {
-                font-weight: bold;
-            }
-        }
-
-        .network {
-            .ant-radio-group {
-                margin-bottom: 1rem;
-            }
-            margin-bottom: 1rem;
-        }
-    }
-}
+/* Override */
+@import 'override/input.less';
+@import 'override/button.less';
+@import 'override/divider.less';
+@import 'override/radio-group.less';
+@import 'override/modal.less';

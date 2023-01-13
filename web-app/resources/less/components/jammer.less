@@ -1,0 +1,103 @@
+@import '../colors.less';
+
+@picture-size: 55px;
+
+.jammer.component {
+  display: flex;
+  flex-direction: column;
+  background-color: @knob-bg-color2;
+  color: @knob-alt-color2;
+  padding: 0.5em 2em;
+  border-radius: 1em;
+  margin-bottom: 1em;
+  position: relative;
+
+  .upper {
+    display: flex;
+    justify-content: space-between;
+    .knobs {
+      display: flex;
+    }
+  }
+  .lower {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .details {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+  .click-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+  .muted {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    .blank {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      opacity: 0.5;
+      background-color: black;
+      width: 100%;
+      height: 100%;
+      border-radius: 1em;
+    }
+    .text {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    h2 {
+      background-color: black;
+      color: white;
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 10px;
+      margin: 0;
+    }
+  }
+
+  .profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    .picture {
+      // adjust the .picture element downwards in order to align
+      // with the knobs at the visual layer
+      margin-top: 5px;
+      > img {
+        width: @picture-size;
+        height: @picture-size;
+        border-radius: @picture-size;
+      }
+      span {
+        // the google icon span has some built in padding
+        // inside the glyph by the looks of it
+        // adding a slightly different adjustment than the img
+        margin-top: 5px;
+        font-size: @picture-size + 8px;
+      }
+    }
+    .name {
+      font-weight: bold;
+    }
+    .latency {
+      font-size: 12px;
+    }
+  }
+}

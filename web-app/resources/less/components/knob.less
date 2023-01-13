@@ -1,0 +1,128 @@
+@use '../colors.less';
+
+@knob-width: 88px;
+@knob-height: 112px;
+
+.knob {
+  position: relative;
+  width: @knob-width;
+  height: @knob-height;
+  display: inline-block;
+  border-radius: 20px;
+  &.dark {
+    background-color: @knob-bg-color1;
+    color: @knob-alt-color1;
+    .overload {
+      background-color: @knob-bg-color1;
+    }
+    h3 {
+      color: @knob-alt-color1;
+    }
+    .arc-path {
+      stroke: @knob-alt-color1;
+      fill: transparent;
+    }
+  }
+  &.light {
+    background-color: @knob-bg-color2;
+    color: @knob-alt-color2;
+    .overload {
+      background-color: @knob-bg-color2;
+    }
+    h3 {
+      color: @knob-alt-color2;
+    }
+    .arc-path {
+      stroke: @knob-alt-color2;
+      fill: transparent;
+    }
+  }
+  &.disabled {
+    .overload, .value, .area, .arc, h3 {
+      opacity: 0.3;
+    }
+  }
+  .overload {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    border-radius: 11px;
+  }
+  .value {
+    position: absolute;
+    top: 5px;
+    width: 100%;
+    text-align: center;
+  }
+  .area {
+    position: absolute;
+    top: 33px;
+    left: 20px;
+  }
+  .arc {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+  }
+  h3 {
+    position: absolute;
+    left: 0;
+    bottom: 10px;
+    line-height: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 0.8rem;
+  }
+}
+
+.knobs-duo {
+  display: inline-block;
+  width: 176px;
+  .knob:first-child {
+    // for some reason there is a very small gap between the two
+    // knobs. adjust the first one by 1 pixel removes it
+    right: -1px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .knob:nth-child(2) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  &.dark {
+    .ant-switch-handle::before {
+      background-color: @knob-alt-color1;
+    }
+    .ant-switch, .ant-switch-checked {
+      background-color: @knob-bg-color1;
+      color: @knob-alt-color1;
+    }
+    .ant-switch-inner {
+      color: @knob-alt-color1;
+    }
+  }
+  &.light {
+    .ant-switch-handle::before {
+      background-color: @knob-alt-color2;
+    }
+    .ant-switch, .ant-switch-checked {
+      background-color: @knob-bg-color2;
+    }
+    .ant-switch-inner {
+      color: @knob-alt-color2;
+    }
+  }
+  .switch {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    &.linked {
+      opacity: 0.5;
+    }
+    .right {
+      transform: rotate(-90deg);
+    }
+  }
+}

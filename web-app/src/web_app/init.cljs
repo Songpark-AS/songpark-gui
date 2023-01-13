@@ -10,7 +10,10 @@
             [web-app.event :as event]
             [web-app.mqtt.interceptor :as mqtt.int]
             [web-app.mqtt.handler.jam]
+            [web-app.mqtt.handler.pairing]
+            [web-app.mqtt.handler.room]
             [web-app.mqtt.handler.teleporter]
+            [web-app.subs]
             [web-app.logging :as logging]))
 
 (defonce -system (atom nil))
@@ -31,16 +34,30 @@
           (assoc this
                  :started? false)))))
 
+(defn start-mqtt [client-id]
+  (when (and (some? client-id)
+             (not= client-id @-system :mqtt-client :id))
+    (let [mqtt-config (:mqtt @songpark.config/config)
+          config {:config
+                  (merge mqtt-config
+                         {:id client-id
+                          :connect-options (select-keys
+                                            mqtt-config
+                                            [:useSSL :reconnect])})}
+          mqtt-client (component/start (mqtt/mqtt-client config))]
+      (reset! mqtt.int/client mqtt-client)
+      (swap! -system assoc :mqtt-client mqtt-client))))
+
+(defn stop-mqtt []
+  (when-let [mqtt-client (:mqtt-client @-system)]
+    (component/stop mqtt-client)
+    (swap! -system dissoc :mqtt-client)))
+
 (defn init-manager [settings]
   (map->InitManager settings))
 
 (defn- system-map [config-settings]
-  (let [config-manager (component/start (config/config-manager config-settings))
-        mqtt-config (:mqtt @songpark.config/config)
-        mqtt-client (component/start (mqtt/mqtt-client {:config (merge mqtt-config
-                                                                       {:connect-options (select-keys mqtt-config [:useSSL :reconnect])})}))]
-    
-    (reset! mqtt.int/client mqtt-client)
+  (let [config-manager (component/start (config/config-manager config-settings))]
     (component/system-map
      :config-manager config-manager
 
@@ -55,14 +72,13 @@
                      [:config-manager])
      :communication-manager (component/using
                              (communication/communication-manager (:communication-manager @songpark.config/config))
-                             [:config-manager])
-     :mqtt-client mqtt-client)))
+                             [:config-manager]))))
 
 (defn init [config-settings]
   (log/info "Initializing system")
   (reset! -system (component/start (system-map config-settings)))
   ;; subscribe to jam
   (try
-    (mqtt/subscribe (:mqtt-client @-system) "jam" 0)
+    (mqtt/subscribe (:mqtt-client @-system) "jam" 2)
     (catch js/Error e
       (log/error e))))

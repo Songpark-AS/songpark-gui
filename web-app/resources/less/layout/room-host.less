@@ -1,0 +1,32 @@
+@import '../colors.less';
+
+.room-host {
+  .rooms {
+    border-top: @knob-alt-color1 1px solid;
+    margin-bottom: 1rem;
+    .room-entry {
+      margin: 1rem 0 0 0;
+      padding-bottom: 1rem;
+      border-bottom: @light-white 1px solid;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: @knob-alt-color1;
+      &:hover {
+        cursor: pointer;
+      }
+      .room-name {
+        font-size: 1.2rem;
+      }
+    }
+  }
+  .create-room {
+    color: @knob-alt-color1;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
