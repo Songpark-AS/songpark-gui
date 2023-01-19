@@ -28,6 +28,7 @@
        {:skin "dark"
         :linked? linked?
         :knob1 {:title "INPUT 1"
+                :value/max 20
                 :on-change #(if @linked?
                               (do
                                 (rf/dispatch [:teleporter/setting
@@ -50,6 +51,7 @@
                                       nil
                                       :volume/input1-volume])}
         :knob2 {:title "INPUT 2"
+                :value/max 20
                 :on-change #(rf/dispatch [:teleporter/setting
                                           nil
                                           :volume/input2-volume
@@ -61,6 +63,7 @@
                                       :volume/input2-volume])}}]
       [knob
        {:title "MASTER"
+        :value/max 20
         :on-change #(rf/dispatch [:teleporter/setting
                                   nil
                                   :volume/global-volume
