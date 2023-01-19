@@ -108,10 +108,11 @@
 
 (rf/reg-sub
  :teleporter/setting
- (fn [db [_ tp-id tp-settings-k]]
+ (fn [db [_ tp-id tp-settings-k default]]
    (let [tp-id (get-tp-id db tp-id)]
      (or (get-in db [:teleporters tp-id :teleporter/setting tp-settings-k])
-         (get-in db [:teleporters tp-id tp-settings-k])))))
+         (get-in db [:teleporters tp-id tp-settings-k])
+         default))))
 
 
 (defn sub-fx-fn [db [_ tp-id input fx-k]]

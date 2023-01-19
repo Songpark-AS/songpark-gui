@@ -5,19 +5,8 @@
             [web-app.components.knob :refer [knob
                                              knob-duo]]))
 
-(rf/reg-event-db
- :knob/volume
- (fn [db [_ id v]]
-   (assoc-in db [:knob/volume id] v)))
-
-(rf/reg-sub
- :knob/volume
- (fn [db [_ id]]
-   (get-in db [:knob/volume id] 0)))
-
 (defn index []
-  (r/with-let [m (r/atom 0)
-               linked? (r/atom false)
+  (r/with-let [linked? (rf/subscribe [:teleporter/setting nil :knob.duo/linked? false])
                master-volume (rf/subscribe [:teleporter/setting
                                             nil
                                             :volume/global-volume])
@@ -27,6 +16,7 @@
       [knob-duo
        {:skin "dark"
         :linked? linked?
+        :linked-change #(rf/dispatch [:teleporter/setting nil :knob.duo/linked? %])
         :knob1 {:title "INPUT 1"
                 :value/max 20
                 :on-change #(if @linked?

@@ -267,7 +267,7 @@
       (remove-watch internal-model watch-key-internal-model)
       (remove-watch model watch-key-model))))
 
-(defn show-switch [linked?]
+(defn show-switch [linked? linked-change]
   [:div.switch
    {:class (if @linked?
              "linked"
@@ -276,14 +276,14 @@
    [:> Switch
     {:checkedChildren "Linked"
      :unCheckedChildren "Link"
-     :on-change #(reset! linked? %)}]
+     :checked @linked?
+     :on-change #(linked-change %)}]
    [:div.right "∟"]])
 
-(defn knob-duo [{:keys [knob1 knob2 linked? skin]
+(defn knob-duo [{:keys [knob1 knob2 linked? linked-change skin]
                  :or {skin "dark"}
                  :as _prop}]
-  (r/with-let [linked? (or linked? (r/atom false))
-               internal-model1 (r/atom nil)
+  (r/with-let [internal-model1 (r/atom nil)
                knob1 (assoc knob1
                             :internal-model internal-model1
                             :skin skin)
@@ -302,4 +302,4 @@
        [:<>
         ^{:key :knob1} [knob knob1]
         ^{:key :knob2} [knob knob2]])
-     [show-switch linked?]]))
+     [show-switch linked? linked-change]]))
