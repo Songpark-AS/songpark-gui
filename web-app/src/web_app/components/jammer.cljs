@@ -60,6 +60,7 @@
                                          :teleporter/playout-delay %}])}]
        [knob {:skin "light"
               :model volume
+              :value/max 20
               :title "Volume"
               :on-change #(rf/dispatch [:teleporter/setting
                                         nil
