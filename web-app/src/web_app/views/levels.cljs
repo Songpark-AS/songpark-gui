@@ -51,16 +51,17 @@
                 :model (rf/subscribe [:teleporter/setting
                                       nil
                                       :volume/input2-volume])}}]
-      [knob
-       {:title "MASTER"
-        :value/max 20
-        :on-change #(rf/dispatch [:teleporter/setting
-                                  nil
-                                  :volume/global-volume
-                                  %
-                                  {:message/type :teleporter.cmd/global-volume
-                                   :teleporter/volume %}])
-        :model master-volume}]]
+      ;; [knob
+      ;;  {:title "MASTER"
+      ;;   :value/max 20
+      ;;   :on-change #(rf/dispatch [:teleporter/setting
+      ;;                             nil
+      ;;                             :volume/global-volume
+      ;;                             %
+      ;;                             {:message/type :teleporter.cmd/global-volume
+      ;;                              :teleporter/volume %}])
+      ;;   :model master-volume}]
+      ]
      [:div.jammers
       [:<>
        (for [{:keys [auth.user/id]} @jammers]
