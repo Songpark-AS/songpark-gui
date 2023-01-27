@@ -64,10 +64,10 @@
         status (and
                 (> (count @jammers) 0)
                 (cond
+                  (#{:stream/streaming} stream) "streaming"
+
                   (or (#{:stream/broken :stream/stopped} stream)
                       (#{:sync/timeout :sync/failed :sync/end} sync)) "failed"
-
-                  (#{:stream/streaming} stream) "streaming"
 
                   :else "idle"))]
     [:div.status
