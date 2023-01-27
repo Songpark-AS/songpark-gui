@@ -51,7 +51,7 @@
        [knob {:skin "light"
               :model playout-delay
               :value/max 24
-              :title "Playout Delay"
+              :title "Total network latency"
               :on-change #(rf/dispatch [:teleporter/setting
                                         nil
                                         :jam/playout-delay
