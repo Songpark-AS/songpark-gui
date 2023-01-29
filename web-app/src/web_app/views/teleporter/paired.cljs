@@ -9,11 +9,16 @@
   (r/with-let [teleporter (rf/subscribe [:teleporter/teleporter])
                paired? (rf/subscribe [:teleporter/paired?])]
     (if @paired?
-      [:div.paired.squeeze.success
-       [:img {:on-click #(rfe/push-state :views/room)
-              :src "/img/checkmark.png"}]
-       [:div.connected "Connected to"]
-       [:div.nickname (:teleporter/nickname @teleporter)]]
+      (do
+        ;; switch over to views/room after 2 seconds
+        (js/setTimeout (fn [_]
+                         (rfe/push-state :views/room))
+                       2000)
+        [:div.paired.squeeze.success
+         [:img {:on-click #(rfe/push-state :views/room)
+                :src "/img/checkmark.png"}]
+         [:div.connected "Connected to"]
+         [:div.nickname (:teleporter/nickname @teleporter)]])
 
       [:div.paired.squeeze
        [:div.intro
