@@ -7,7 +7,7 @@
 
 
 (defn show-latency [jam]
-  [:div.latency (str (get @jam :Latency) "ms latency")])
+  [:div.latency (str (get @jam :Latency) "ms network latency")])
 
 (defn show-jammer [jammer]
   (let [{:profile/keys [name position image-url]} @jammer]
@@ -51,7 +51,7 @@
        [knob {:skin "light"
               :model playout-delay
               :value/max 24
-              :title "Total network latency"
+              :title "Total latency"
               :on-change #(rf/dispatch [:teleporter/setting
                                         nil
                                         :jam/playout-delay
