@@ -12,7 +12,8 @@
             [web-app.components.filler :refer [filler]]
             [web-app.components.icon :as icon]
             [web-app.components.knob :refer [knob]]
-            [web-app.components.preset :refer [preset]]))
+            [web-app.components.preset :refer [preset]]
+            [web-app.components.tba :refer [tba]]))
 
 (defn switch [switch-sub switch-dispatch]
   [:div.switch
@@ -299,6 +300,7 @@
                  nil
                  input fx-k]))
 
+
 (defn index [matched]
   (let [input (-> matched :data :name name)
         fxs (->> ["Gate"
@@ -330,7 +332,23 @@
         current-tab (rf/subscribe [:ui.fx.input/tab input "Gate"])
         select-tab #(rf/dispatch [:ui.fx.input/tab input %])]
     [:div.input
-     {:key [:input input]}
+     ;; TEMP: remove when this is implemented in HW
+     {:style {:position "relative"}
+      :key [:input input]}
+     [:div
+      {:style {:position "absolute"
+               :width "100%"
+               :height "100%"
+               :background-color "rgba(0,0,0,0.5)"
+               :display "flex"
+               :justify-content "center"
+               :align-items "center"
+               :z-index "100"}}
+      [:h3
+       {:style {:font-size "3rem"
+                :color "red"}}
+       "Coming soon"]]
+     ;; TEMP: eof
      [:div.wrapper
       [:div.input-fx
        [knob {:title "PAN"

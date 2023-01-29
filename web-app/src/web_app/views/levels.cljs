@@ -2,6 +2,7 @@
   (:require [reagent.core :as r]
             [re-frame.core :as rf]
             [web-app.components.jammer :refer [jammer]]
+            [web-app.components.tba :refer [tba]]
             [web-app.components.knob :refer [knob
                                              knob-duo]]))
 
@@ -13,7 +14,9 @@
                jammers (rf/subscribe [:room/people :other-jammers])]
     [:div.levels
      [:div.controls
-      [knob-duo
+      [tba
+       nil
+       knob-duo
        {:skin "dark"
         :linked? linked?
         :linked-change #(rf/dispatch [:teleporter/setting nil :knob.duo/linked? %])
