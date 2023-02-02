@@ -1,12 +1,12 @@
 module.exports = {
     platform: {
-        port: 443,
-        host: "https://songpark.dev.glace.com",
+        port: 3000,
+        host: "http://localhost",
         api_base: "/api",
     },
     mqtt: {
         port: 8000,
-        host: "mqtt.songpark.com",
+        host: "10.100.200.8",
         userName: "songpark",
         password: "fNhWktaTlfDGlH4mbmaW6esOpgExs8wKIOBapDcq",
         useSSL: true,

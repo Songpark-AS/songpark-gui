@@ -14,6 +14,8 @@
 (comment
 
   (rfe/push-state :views.room.join/invite {:normalized-name "my-fantastic-room-2"})
+  (rfe/push-state :views/room)
+  (rfe/push-state :views.teleporter/confirm)
 
   (def serial0001 #uuid "39d04c2c-7214-5e2c-a9ae-32ff15405b7f")
 
