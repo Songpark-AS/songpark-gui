@@ -50,7 +50,7 @@
       [:div.knobs
        [knob {:skin "light"
               :model playout-delay
-              :value/max 24
+              :value/max 32
               :title "Total latency"
               :on-change #(rf/dispatch [:teleporter/setting
                                         nil
