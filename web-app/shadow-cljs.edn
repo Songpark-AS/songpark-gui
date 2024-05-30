@@ -29,9 +29,9 @@
   ;; taxonomy
   [songpark/taxonomy "0.3.0-SNAPSHOT"]
   ;; jam
-  [songpark/jam "2.0.0-SNAPSHOT"]
+  [songpark/jam "2.1.0-SNAPSHOT"]
   ;; mqtt
-  [songpark/mqtt "1.0.2"]
+  [songpark/mqtt "1.4.1"]
   [com.cognitect/transit-cljs "0.8.269"]
   [org.clojure/core.async "1.5.648"]
 

@@ -112,10 +112,12 @@
  (fn [db [_ {:keys [teleporter/id]}]]
    (assoc-in db [:teleporters id :sip/register] true)))
 
-(rf/reg-event-db
+(rf/reg-event-fx
  :teleporter/net-config
  (fn [db [_ {:keys [teleporter/id teleporter/network-config]}]]
-   (assoc-in db [:teleporters id :teleporter/net-config] network-config)))
+   (-> db
+       (assoc-in [:teleporters id :teleporter/net-config] network-config)
+       (assoc-in [:component/radio-group :ipv4] (if (:ip/dhcp? network-config) :dhcp :manual)))))
 
 (rf/reg-event-db
  :jam.teleporter/coredump

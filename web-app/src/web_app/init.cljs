@@ -1,6 +1,5 @@
 (ns web-app.init
   (:require [com.stuartsierra.component :as component]
-            [re-frame.core :as rf]
             [songpark.common.config :as songpark.config]
             [songpark.mqtt :as mqtt]
             [songpark.taxonomy.teleporter]
