@@ -112,7 +112,7 @@
  (fn [db [_ {:keys [teleporter/id]}]]
    (assoc-in db [:teleporters id :sip/register] true)))
 
-(rf/reg-event-fx
+(rf/reg-event-db
  :teleporter/net-config
  (fn [db [_ {:keys [teleporter/id teleporter/network-config]}]]
    (-> db
