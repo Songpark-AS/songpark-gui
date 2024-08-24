@@ -13,7 +13,7 @@ module.exports = {
         reconnect: true,
     },
     heartbeat: {
-        timer: 61000
+        timer: 91000
     },
     version: "VAR__VERSION",
     sha: "VAR__SHA"
