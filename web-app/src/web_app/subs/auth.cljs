@@ -4,4 +4,4 @@
 (rf/reg-sub
  :auth/whoami
  (fn [db _]
-   (:auth/user db)))
+   (seq (:auth/user db))))
